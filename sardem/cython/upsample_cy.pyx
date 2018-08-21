@@ -2,9 +2,9 @@
 for calling the upsample.c code in python (in dem.py)
 upsample_cy.c is the auto-generated cython code
 """
-cimport upsample_cy
+from sardem.cython cimport upsample_cy
 
-def upsample(filename, rate, ncols, nrows, outfileUp="elevation.dem"):
+def upsample_wrap(filename, rate, ncols, nrows, outfileUp="elevation.dem"):
     """Wrapper to call the c upsample function in python. Used in dem.py
 
     Args:

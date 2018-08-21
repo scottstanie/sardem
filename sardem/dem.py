@@ -45,6 +45,7 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
 """
 from __future__ import division, print_function
 import collections
+import logging
 import getpass
 import json
 import math
@@ -53,20 +54,23 @@ import netrc
 import os
 import re
 import subprocess
-import sys
 import numpy as np
 import requests
 
-import insar
-from insar.log import get_log
-from insar import sario, utils, c_upsample
+from insar import sario
+from sardem import utils, geojson
+import sardem.cython
+print(dir(sardem.cython))
+from sardem.cython import upsample_cy
 
 try:
     input = raw_input  # Check for python 2
 except NameError:
     pass
 
-logger = get_log()
+logger = logging.Logger()
+logging.basicConfig()
+
 RSC_KEYS = [
     'WIDTH',
     'FILE_LENGTH',
@@ -80,19 +84,6 @@ RSC_KEYS = [
     'Z_SCALE',
     'PROJECTION',
 ]
-
-
-def _get_cache_dir():
-    """Find location of directory to store .hgt downloads
-
-    Assuming linux, uses ~/.cache/insar/
-
-    """
-    path = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
-    path = os.path.join(path, 'insar')  # Make subfolder for our downloads
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
 
 
 def _get_username_pass():
@@ -269,7 +260,7 @@ class Downloader:
         self.data_url = self.DATA_URLS[data_source]
         self.compress_type = self.COMPRESS_TYPES[data_source]
         self.netrc_file = os.path.expanduser(netrc_file)
-        self.cache_dir = cache_dir or _get_cache_dir()
+        self.cache_dir = cache_dir or utils.get_cache_dir()
 
     def _get_netrc_file(self):
         return Netrc(self.netrc_file)
@@ -551,7 +542,8 @@ class Stitcher:
         _, ncols = self.blockshape
         flist = self._create_file_array()
         for idx, row in enumerate(flist):
-            cur_row = np.hstack(sario.load_file(os.path.join(_get_cache_dir(), f)) for f in row)
+            cur_row = np.hstack(
+                sario.load_file(os.path.join(utils.get_cache_dir(), f)) for f in row)
             # Delete columns: 3601*[1, 2,... not-including last column]
             delete_cols = self.num_pixels * np.arange(1, ncols)
             cur_row = np.delete(cur_row, delete_cols, axis=1)
@@ -621,93 +613,6 @@ class Stitcher:
         return rsc_dict
 
 
-def _up_size(cur_size, rate):
-    """Calculates the number of points to be computed in the upsampling
-
-    Example: 3 points at x = (0, 1, 2), rate = 2 becomes 5 points:
-        x = (0, .5, 1, 1.5, 2)
-        >>> _up_size(3, 2)
-        5
-    """
-    return 1 + (cur_size - 1) * rate
-
-
-def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
-    """Creates a new .dem.rsc file for upsampled version
-
-    Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
-
-    Args:
-        rate (int): rate by which to upsample the DEM
-        rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
-        filepath (str): Optional, location of .dem.rsc file
-
-    Note: Must supply only one of rsc_dict or rsc_filepath
-
-    Returns:
-        str: file same as original with upsample adjusted numbers
-
-    Raises:
-        TypeError: if neither (or both) rsc_filepath and rsc_dict are given
-
-    """
-    if rsc_dict and rsc_filepath:
-        raise TypeError("Can only give one of rsc_dict or rsc_filepath")
-    elif not rsc_dict and not rsc_filepath:
-        raise TypeError("Must give at least one of rsc_dict or rsc_filepath")
-    elif not rate:
-        raise TypeError("Must supply rate for upsampling")
-
-    if rsc_filepath:
-        rsc_dict = sario.load_dem_rsc(rsc_filepath)
-
-    outstring = ""
-    for field, value in rsc_dict.items():
-        # Files seemed to be left justified with 13 spaces? Not sure why 13
-        # TODO: its 14- but fix this and previous formatting to be DRY
-        if field.lower() in ('width', 'file_length'):
-            new_size = _up_size(value, rate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() in ('x_step', 'y_step'):
-            # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
-            value /= rate
-            # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
-        else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
-
-    return outstring
-
-
-def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
-    """Finds the indices of stitched dem to crop bounding box
-    Also finds the new x_start and y_start after cropping.
-
-    Note: x_start, y_start could be different from bounds
-    if steps didnt exactly match, but should be further up and left
-
-    Takes the desired bounds, .rsc data from stitched dem,
-    Examples:
-        >>> bounds = (-155.49, 19.0, -154.5, 19.51)
-        >>> x_step = 0.1
-        >>> y_step = -0.1
-        >>> x_first = -156
-        >>> y_first = 20.0
-        >>> print(find_bounding_idxs(bounds, x_step, y_step, x_first, y_first))
-        ((5, 10, 15, 4), (-155.5, 19.6))
-    """
-
-    left, bot, right, top = bounds
-    left_idx = int(math.floor((left - x_first) / x_step))
-    right_idx = int(math.ceil((right - x_first) / x_step))
-    # Note: y_step will be negative for these
-    top_idx = int(math.floor((top - y_first) / y_step))
-    bot_idx = int(math.ceil((bot - y_first) / y_step))
-    new_x_first = x_first + x_step * left_idx
-    new_y_first = y_first + y_step * top_idx  # Again: y_step negative
-    return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
-
-
 def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     """Takes the output of Stitcher.load_and_stitch, crops to bounds
 
@@ -721,7 +626,7 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     Returns:
         numpy.array: a cropped version of the bigger stitched_dem
     """
-    indexes, new_starts = find_bounding_idxs(
+    indexes, new_starts = utils.find_bounding_idxs(
         bounds,
         rsc_data['X_STEP'],
         rsc_data['Y_STEP'],
@@ -734,49 +639,8 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
-def rsc_bounds(rsc_data):
-    """Uses the x/y and step data from a .rsc file to generate LatLonBox for .kml"""
-    north = rsc_data['Y_FIRST']
-    west = rsc_data['X_FIRST']
-    east = west + rsc_data['WIDTH'] * rsc_data['X_STEP']
-    south = north + rsc_data['FILE_LENGTH'] * rsc_data['Y_STEP']
-    return {'north': north, 'south': south, 'east': east, 'west': west}
-
-
-def create_kml(rsc_data, tif_filename, title="Title", desc="Description"):
-    """Make a simply kml file to display a tif in Google Earth from rsc_data"""
-    north, south, east, west = rsc_bounds(rsc_data)
-    template = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://earth.google.com/kml/2.2">
-<GroundOverlay>
-    <name> {title} </name>
-    <description> {description} </description>
-    <Icon>
-          <href> {tif_filename} </href>
-    </Icon>
-    <LatLonBox>
-        <north> {north} </north>
-        <south> {south} </south>
-        <east> {east} </east>
-        <west> {west} </west>
-    </LatLonBox>
-</GroundOverlay>
-</kml>
-"""
-    output = template.format(
-        title=title, description=desc, tif_filename=tif_filename, **rsc_bounds(rsc_data))
-
-    return output
-
-
-def _is_file(f):
-    """python 2/3 compatible check for file object"""
-    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, 'read')
-
-
-def main(geojson, data_source, rate, output_name):
-    """Function for entry point to create a DEM with `insar dem`
+def main(geojson_obj, data_source, rate, output_name):
+    """Function for entry point to create a DEM with `sardem`
 
     Args:
         geojson (str, open file): either name of geojson file or pre-opened file
@@ -784,17 +648,17 @@ def main(geojson, data_source, rate, output_name):
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    geojson_file = geojson if _is_file(geojson) else open(geojson, 'r')
+    geojson_file = geojson if utils.is_file(geojson_obj) else open(geojson_obj, 'r')
     geojson_obj = json.load(geojson_file)
-    bounds = insar.geojson.bounding_box(geojson_obj)
+    bounds = geojson.bounding_box(geojson_obj)
     geojson_file.close()
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
-    tile_names = list(insar.dem.Tile(*bounds).srtm1_tile_names())
-    d = insar.dem.Downloader(tile_names, data_source=data_source)
+    tile_names = list(Tile(*bounds).srtm1_tile_names())
+    d = Downloader(tile_names, data_source=data_source)
     d.download_all()
 
-    s = insar.dem.Stitcher(tile_names)
+    s = Stitcher(tile_names)
     stitched_dem = s.load_and_stitch()
 
     # Now create corresponding rsc file
@@ -802,8 +666,7 @@ def main(geojson, data_source, rate, output_name):
 
     # Cropping: get very close to the bounds asked for:
     logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem, new_starts, new_sizes = insar.dem.crop_stitched_dem(bounds, stitched_dem,
-                                                                      rsc_dict)
+    stitched_dem, new_starts, new_sizes = crop_stitched_dem(bounds, stitched_dem, rsc_dict)
     new_x_first, new_y_first = new_starts
     new_rows, new_cols = new_sizes
     # Now adjust the .dem.rsc data to reflect new top-left corner and new shape
@@ -835,12 +698,12 @@ def main(geojson, data_source, rate, output_name):
 
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
-    c_upsample.upsample(dem_filename_small.encode(), rate, ncols, nrows, output_name.encode())
+    upsample_cy.upsample_wrap(dem_filename_small.encode(), rate, ncols, nrows, output_name.encode())
 
     # Redo a new .rsc file for it
     logger.info("Writing new upsampled dem to %s", rsc_filename)
     with open(rsc_filename, "w") as f:
-        upsampled_rsc = insar.dem.upsample_dem_rsc(rate=rate, rsc_dict=rsc_dict)
+        upsampled_rsc = utils.upsample_dem_rsc(rate=rate, rsc_dict=rsc_dict)
         f.write(upsampled_rsc)
 
     # Clean up the _small versions of dem and dem.rsc

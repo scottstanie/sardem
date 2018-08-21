@@ -29,11 +29,12 @@ setuptools.setup(
     install_requires=["numpy", "requests", "matplotlib", "click"],
     entry_points={
         "console_scripts": [
-            "sardem=cli:cli",
+            "sardem=sardem.cli:cli",
         ],
     },
     ext_modules=[
         setuptools.Extension(
-            "upsample_cy", ["cython/upsample_cy.pyx"], extra_compile_args=["-O3", "-std=gnu99"])
+            "sardem.upsample_cy", ["sardem/cython/upsample_cy.pyx"],
+            extra_compile_args=["-O3", "-std=gnu99"])
     ],
     zip_safe=False)
