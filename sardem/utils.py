@@ -1,15 +1,16 @@
 import os
+import sys
 from math import floor, ceil
 
 
-def _get_cache_dir():
+def get_cache_dir():
     """Find location of directory to store .hgt downloads
 
     Assuming linux, uses ~/.cache/insar/
 
     """
     path = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
-    path = os.path.join(path, 'insar')  # Make subfolder for our downloads
+    path = os.path.join(path, 'sardem')  # Make subfolder for our downloads
     if not os.path.exists(path):
         os.makedirs(path)
     return path

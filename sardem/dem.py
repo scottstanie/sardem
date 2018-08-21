@@ -58,18 +58,16 @@ import numpy as np
 import requests
 
 from insar import sario
-from sardem import utils, geojson
-import sardem.cython
-print(dir(sardem.cython))
-from sardem.cython import upsample_cy
+from sardem import utils, geojson, upsample_cy
 
 try:
     input = raw_input  # Check for python 2
 except NameError:
     pass
 
-logger = logging.Logger()
+logger = logging.Logger(__name__)
 logging.basicConfig()
+logger = logging
 
 RSC_KEYS = [
     'WIDTH',
@@ -648,7 +646,7 @@ def main(geojson_obj, data_source, rate, output_name):
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    geojson_file = geojson if utils.is_file(geojson_obj) else open(geojson_obj, 'r')
+    geojson_file = geojson_obj if utils.is_file(geojson_obj) else open(geojson_obj, 'r')
     geojson_obj = json.load(geojson_file)
     bounds = geojson.bounding_box(geojson_obj)
     geojson_file.close()
