@@ -3,7 +3,8 @@ Main command line entry point to manage all other sub commands
 """
 import click
 import sardem
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from insar import sario
 
 
 # Main entry point:
@@ -87,10 +88,10 @@ def kml(tiffile, rscfile, title, desc):
         Default will be 'dem.rsc'
 
 
-        insar kml 20180420_20180502.tif dem.rsc -t "My igram" -d "From April in Hawaii" > out.kml
+        sardem kml 20180420_20180502.tif dem.rsc -t "My igram" -d "From April in Hawaii" > out.kml
     """
-    # rsc_data = insar.sario.load_dem_rsc(rscfile)
-    # print(sardem.dem.create_kml(rsc_data, tiffile, title=title, desc=desc))
+    rsc_data = sario.load_dem_rsc(rscfile)
+    print(sardem.kml.create_kml(rsc_data, tiffile, title=title, desc=desc))
 
 
 # COMMAND: view
@@ -101,11 +102,11 @@ def view(demfile):
 
     Can list multiple .dem files to open in separate figures.
     """
-    # for fname in demfile:
-    #     dem = insar.sario.load_file(fname)
-    #     plt.figure()
-    #     plt.imshow(dem)
-    #     plt.colorbar()
+    for fname in demfile:
+        dem = sario.load_file(fname)
+        plt.figure()
+        plt.imshow(dem)
+        plt.colorbar()
 
-    # # Wait for windows to close to exit the script
-    # plt.show(block=True)
+    # Wait for windows to close to exit the script
+    plt.show(block=True)

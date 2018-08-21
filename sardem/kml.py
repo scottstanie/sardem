@@ -1,9 +1,9 @@
 def rsc_bounds(rsc_data):
     """Uses the x/y and step data from a .rsc file to generate LatLonBox for .kml"""
-    north = rsc_data['Y_FIRST']
-    west = rsc_data['X_FIRST']
-    east = west + rsc_data['WIDTH'] * rsc_data['X_STEP']
-    south = north + rsc_data['FILE_LENGTH'] * rsc_data['Y_STEP']
+    north = rsc_data['y_first']
+    west = rsc_data['x_first']
+    east = west + rsc_data['width'] * rsc_data['x_step']
+    south = north + rsc_data['file_length'] * rsc_data['y_step']
     return {'north': north, 'south': south, 'east': east, 'west': west}
 
 

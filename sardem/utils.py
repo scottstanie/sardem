@@ -16,7 +16,7 @@ def set_logger_handler(level='INFO'):
 def get_cache_dir():
     """Find location of directory to store .hgt downloads
 
-    Assuming linux, uses ~/.cache/insar/
+    Assuming linux, uses ~/.cache/sardem/
 
     """
     path = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))

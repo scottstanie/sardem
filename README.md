@@ -22,7 +22,7 @@ virtualenv is optional but recommended.
 
 ## Command Line Interface Reference
 
-The command line tool in `insar/scripts/cli.py` was made using the [click](https://pocco-click.readthedocs.io/en/latest/) library.
+The command line tool in `sardem/cli.py` was made using the [click](https://pocco-click.readthedocs.io/en/latest/) library.
 
 ```
 $ sardem --help
@@ -37,9 +37,9 @@ sardem -g data/forrest.geojson -r 5 --output elevation.dem
 
 The geojson can be any valid simple Polygon- you can get one easily from http://geojson.io , for example.
 
-Functions for working with digital elevation maps (DEMs) are mostly contained in the `Downloader` and `Stitcher` classes within `insar/dem.py`.
+Functions for working with digital elevation maps (DEMs) are mostly contained in the `Downloader` and `Stitcher` classes within `sardem/dem.py`.
 
-Once you have made this, if you want to get a quick look in python, the script `insar/scripts/view_dem.py` opens the file and plots with matplotlib.
+Once you have made this, if you want to get a quick look in python, the script `sardem view` opens the file and plots with matplotlib.
 
 If you have multiple, you can plot them using matplotlib for a quick look.
 
