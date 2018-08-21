@@ -65,10 +65,6 @@ try:
 except NameError:
     pass
 
-logger = logging.Logger(__name__)
-logging.basicConfig()
-logger = logging
-
 RSC_KEYS = [
     'WIDTH',
     'FILE_LENGTH',
@@ -82,6 +78,21 @@ RSC_KEYS = [
     'Z_SCALE',
     'PROJECTION',
 ]
+
+logger = logging.getLogger('dem')
+
+
+def _set_logger_handler(level='INFO'):
+    logger.setLevel(level)
+    h = logging.StreamHandler()
+    h.setLevel(level)
+    format_ = '[%(asctime)s] [%(levelname)s %(filename)s] %(message)s'
+    fmt = logging.Formatter(format_, datefmt='%m/%d %H:%M:%S')
+    h.setFormatter(fmt)
+    logger.addHandler(h)
+
+
+_set_logger_handler()
 
 
 def _get_username_pass():
