@@ -1,9 +1,11 @@
 import os
 import sys
 from math import floor, ceil
+import logging
+from insar import sario
 
 
-def set_logger_handler(level='INFO'):
+def set_logger_handler(logger, level='INFO'):
     logger.setLevel(level)
     h = logging.StreamHandler()
     h.setLevel(level)
@@ -31,7 +33,7 @@ def up_size(cur_size, rate):
 
     Example: 3 points at x = (0, 1, 2), rate = 2 becomes 5 points:
         x = (0, .5, 1, 1.5, 2)
-        >>> _up_size(3, 2)
+        >>> up_size(3, 2)
         5
     """
     return 1 + (cur_size - 1) * rate

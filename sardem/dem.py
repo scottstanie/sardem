@@ -79,20 +79,8 @@ RSC_KEYS = [
     'PROJECTION',
 ]
 
-logger = logging.getLogger('dem')
-
-
-def _set_logger_handler(level='INFO'):
-    logger.setLevel(level)
-    h = logging.StreamHandler()
-    h.setLevel(level)
-    format_ = '[%(asctime)s] [%(levelname)s %(filename)s] %(message)s'
-    fmt = logging.Formatter(format_, datefmt='%m/%d %H:%M:%S')
-    h.setFormatter(fmt)
-    logger.addHandler(h)
-
-
-_set_logger_handler()
+logger = logging.getLogger('sardem')
+utils.set_logger_handler(logger)
 
 
 def _get_username_pass():
@@ -373,7 +361,7 @@ class Downloader:
 
     def _unzip_file(self, filepath):
         """Unzips in place the .hgt files downloaded"""
-        ext = sario.get_file_ext(filepath)
+        ext = os.path.splitext(filepath)[1]
         if ext == '.gz':
             unzip_cmd = ['gunzip']
         elif ext == '.zip':
