@@ -1,0 +1,3 @@
+machine urs.earthdata.nasa.gov
+	login testuser
+	password testpass
