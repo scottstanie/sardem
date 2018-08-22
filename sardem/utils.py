@@ -1,8 +1,9 @@
 import os
 import sys
 from math import floor, ceil
+import geojson
 import logging
-from insar import sario
+from sardem import loading
 
 
 def set_logger_handler(logger, level='INFO'):
@@ -116,7 +117,7 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
         raise TypeError("Must supply rate for upsampling")
 
     if rsc_filepath:
-        rsc_dict = sario.load_dem_rsc(rsc_filepath)
+        rsc_dict = loading.load_dem_rsc(rsc_filepath)
 
     outstring = ""
     for field, value in rsc_dict.items():
@@ -134,3 +135,24 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 
     return outstring
+
+
+def bounding_box(geojson_obj):
+    """From a geojson object, compute bounding lon/lats
+
+    Valid geojson types: Geometry, Feature (Polygon)
+
+    Args:
+        geojson (dict): json pre-loaded into a dict
+
+    Returns:
+        tuple[float]: the left,bottom,right,top bounding box of the Polygon
+    """
+    coordinates = list(geojson.coords(geojson_obj))
+
+    left = min(float(lon) for (lon, lat) in coordinates)
+    right = max(float(lon) for (lon, lat) in coordinates)
+
+    top = max(float(lat) for (lon, lat) in coordinates)
+    bottom = min(float(lat) for (lon, lat) in coordinates)
+    return left, bottom, right, top
