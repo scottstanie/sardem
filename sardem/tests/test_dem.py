@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import unittest
 import json
 import tempfile
@@ -50,8 +51,10 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
         self.cache_dir = tempfile.mkdtemp()
 
-    def test_init(self):
+    def tearDown(self):
+        shutil.rmtree(self.cache_dir)
 
+    def test_init(self):
         d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH)
         self.assertEqual(d.data_url, "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11")
 
@@ -61,9 +64,6 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir)
         d.download_all()
         self.assertTrue(os.path.exists(join(d.cache_dir, self.test_tile)))
-
-    def tearDown(self):
-        shutil.rmtree(self.cache_dir)
 
 
 class TestRsc(unittest.TestCase):
