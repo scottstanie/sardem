@@ -6,7 +6,7 @@ from os.path import join, dirname
 import os
 import responses
 
-from sardem import dem, geojson, kml, utils
+from sardem import dem, utils
 
 DATAPATH = join(dirname(__file__), 'data')
 NETRC_PATH = join(DATAPATH, 'netrc')
@@ -25,7 +25,7 @@ class TestTile(unittest.TestCase):
         self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
         with open(self.geojson_path, 'r') as f:
             self.geojson = json.load(f)
-        self.bounds = geojson.bounding_box(self.geojson)
+        self.bounds = utils.bounding_box(self.geojson)
 
     def test_init(self):
         t = dem.Tile(*self.bounds)
@@ -39,7 +39,7 @@ class TestDownload(unittest.TestCase):
         self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
         with open(self.geojson_path, 'r') as f:
             self.geojson = json.load(f)
-        self.bounds = geojson.bounding_box(self.geojson)
+        self.bounds = utils.bounding_box(self.geojson)
         self.test_tile = 'N19W156.hgt'
         self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
@@ -106,33 +106,6 @@ PROJECTION    LL
 """
 
         self.assertEqual(expected, up_rsc)
-
-    def test_rsc_bounds(self):
-        expected = {'north': 3.0, 'south': 2.5, 'west': -10.0, 'east': -9.0}
-        self.assertEqual(expected, kml.rsc_bounds(self.test_rsc_data))
-
-    def test_create_kml(self):
-        expected = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://earth.google.com/kml/2.2">
-<GroundOverlay>
-    <name> test_title </name>
-    <description> my desc </description>
-    <Icon>
-          <href> out.tif </href>
-    </Icon>
-    <LatLonBox>
-        <north> 3.0 </north>
-        <south> 2.5 </south>
-        <east> -9.0 </east>
-        <west> -10.0 </west>
-    </LatLonBox>
-</GroundOverlay>
-</kml>
-"""
-        tifname = "out.tif"
-        output = kml.create_kml(self.test_rsc_data, tifname, desc="my desc", title="test_title")
-        self.assertEqual(expected, output)
 
 
 """
