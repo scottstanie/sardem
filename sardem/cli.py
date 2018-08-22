@@ -18,14 +18,14 @@ import matplotlib.pyplot as plt
     "depending on command.")
 @click.pass_context
 def cli(ctx, verbose, path):
-    """Command line tool for processing create DEMs."""
-    # Store these to be passed to all sub commands
+    """Command line tool for creating upsampled DEMs."""
+    # Store these to be passed to all subcommands
     ctx.obj = {}
     ctx.obj['verbose'] = verbose
     ctx.obj['path'] = path
 
 
-# COMMAND: DEM
+# COMMAND: CREATE
 @cli.command()
 @click.option(
     "--geojson",
@@ -51,8 +51,8 @@ def cli(ctx, verbose, path):
     default='NASA',
     help="Source of SRTM data. See dem docstring for more about data.")
 @click.pass_obj
-def dem(context, geojson, data_source, rate, output):
-    """Stiches .hgt files to make one DEM and .dem.rsc file
+def create(context, geojson, data_source, rate, output):
+    """Stiches .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tile, combine into one array,
@@ -63,9 +63,9 @@ def dem(context, geojson, data_source, rate, output):
 
     Usage:
 
-        sardem --geojson data/mybox.geojson --rate 2
+        sardem create --geojson data/mybox.geojson --rate 2
 
-        sardem -g data/mybox.geojson -r 2 -o elevation.dem
+        sardem create -g data/mybox.geojson -r 2 -o elevation.dem
 
     Default out is elevation.dem for upsampled version, elevation_small.dem
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
@@ -82,7 +82,7 @@ def view(demfile):
     Can list multiple .dem files to open in separate figures.
     """
     for fname in demfile:
-        dem = utils.load_elevation(fname)
+        dem = sardem.utils.load_elevation(fname)
         plt.figure()
         plt.imshow(dem)
         plt.colorbar()
