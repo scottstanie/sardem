@@ -161,7 +161,8 @@ class Tile:
             >>> Tile.get_tile_parts('Notrealname.hgt')
             Traceback (most recent call last):
                ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match ([NS])(\d{1,2})([EW])(\d{1,3}).hgt
+            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
+([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
         lon_lat_regex = r'([NS])(\d{1,2})([EW])(\d{1,3}).hgt'
         match = re.match(lon_lat_regex, tile_name)
@@ -406,7 +407,7 @@ class Downloader:
             self.handle_credentials()
 
         pool = ThreadPool(processes=5)
-        results = pool.map(self.download_and_save, self.tile_names)
+        pool.map(self.download_and_save, self.tile_names)
         pool.close()
 
 
@@ -498,8 +499,8 @@ class Stitcher:
             >>> Stitcher.start_lon_lat('Notrealname.hgt')
             Traceback (most recent call last):
                ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match ([NS])(\d{1,2})([EW])(\d{1,3}).hgt
-
+            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
+([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
 
         lat_str, lat, lon_str, lon = Tile.get_tile_parts(tile_name)
@@ -585,7 +586,9 @@ class Stitcher:
         Examples:
             >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
             >>> s.create_dem_rsc()
-            OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), ('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), ('Y_UNIT', 'degrees'), ('Z_OFFSET', 0), ('Z_SCALE', 1), ('PROJECTION', 'LL')])
+            OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), \
+('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), \
+('Y_UNIT', 'degrees'), ('Z_OFFSET', 0), ('Z_SCALE', 1), ('PROJECTION', 'LL')])
         """
 
         # Use an OrderedDict for the key/value pairs so writing to file easy
