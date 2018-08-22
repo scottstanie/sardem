@@ -26,7 +26,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering",
         "Intended Audience :: Science/Research",
     ),
-    install_requires=["numpy", "requests", "matplotlib", "click"],
+    install_requires=["numpy", "requests", "geojson", "matplotlib", "click"],
     entry_points={
         "console_scripts": [
             "sardem=sardem.cli:cli",
