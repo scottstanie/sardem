@@ -41,7 +41,8 @@ class TestDownload(unittest.TestCase):
             self.geojson = json.load(f)
         self.bounds = utils.bounding_box(self.geojson)
         self.test_tile = 'N19W156.hgt'
-        self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
+        self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
+SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
         sample_hgt_path = join(DATAPATH, self.test_tile + '.zip')
         with open(sample_hgt_path, 'rb') as f:
@@ -106,6 +107,30 @@ PROJECTION    LL
 """
 
         self.assertEqual(expected, up_rsc)
+
+
+class TestGeojson(unittest.TestCase):
+    def setUp(self):
+        self.geojson = {
+            "type":
+            "Polygon",
+            "coordinates": [[[-156.0, 18.7], [-154.6, 18.7], [-154.6, 20.3], [-156.0, 20.3],
+                             [-156.0, 18.7]]]
+        }
+        self.jsonfile = tempfile.NamedTemporaryFile(mode='w+')
+        with open(self.jsonfile.name, 'w+') as f:
+            json.dump(self.geojson, f)
+
+        self.bad_geojson = {"Point": 0}
+
+    def tearDown(self):
+        self.jsonfile.close()
+
+    def test_bounding_box(self):
+        self.assertEqual(utils.bounding_box(self.geojson), (-156.0, 18.7, -154.6, 20.3))
+
+    def test_fail_format(self):
+        self.assertRaises(AttributeError, utils.bounding_box, self.bad_geojson)
 
 
 """
