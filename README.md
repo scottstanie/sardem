@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/scottstanie/insar.svg?branch=master)](https://travis-ci.org/scottstanie/insar) 
-[![Coverage Status](https://coveralls.io/repos/github/scottstanie/insar/badge.svg?branch=master)](https://coveralls.io/github/scottstanie/insar?branch=master)
+[![Build Status](https://travis-ci.org/scottstanie/sardem.svg?branch=master)](https://travis-ci.org/scottstanie/sardem)
+[![Coverage Status](https://coveralls.io/repos/github/scottstanie/sardem/badge.svg?branch=master)](https://coveralls.io/github/scottstanie/sardem?branch=master)
 
 # DEM creator
 
