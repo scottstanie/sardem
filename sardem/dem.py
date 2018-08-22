@@ -56,9 +56,8 @@ import re
 import subprocess
 import numpy as np
 import requests
-
-from insar import sario
-from sardem import utils, geojson, upsample_cy
+import geojson
+from sardem import utils, loading, upsample_cy
 
 try:
     input = raw_input  # Check for python 2
@@ -541,7 +540,7 @@ class Stitcher:
         flist = self._create_file_array()
         for idx, row in enumerate(flist):
             cur_row = np.hstack(
-                sario.load_file(os.path.join(utils.get_cache_dir(), f)) for f in row)
+                loading.load_elevation(os.path.join(utils.get_cache_dir(), f)) for f in row)
             # Delete columns: 3601*[1, 2,... not-including last column]
             delete_cols = self.num_pixels * np.arange(1, ncols)
             cur_row = np.delete(cur_row, delete_cols, axis=1)
@@ -683,7 +682,7 @@ def main(geojson_obj, data_source, rate, output_name):
         stitched_dem.tofile(output_name)
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
-            f.write(sario.format_dem_rsc(rsc_dict))
+            f.write(loading.format_dem_rsc(rsc_dict))
         return
 
     logger.info("Upsampling by {}".format(rate))
@@ -694,7 +693,7 @@ def main(geojson_obj, data_source, rate, output_name):
     stitched_dem.tofile(dem_filename_small)
     logger.info("Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small)
     with open(rsc_filename_small, "w") as f:
-        f.write(sario.format_dem_rsc(rsc_dict))
+        f.write(loading.format_dem_rsc(rsc_dict))
 
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
