@@ -4,7 +4,6 @@ Main command line entry point to manage all other sub commands
 import click
 import sardem
 import matplotlib.pyplot as plt
-from insar import sario
 
 
 # Main entry point:
@@ -74,26 +73,6 @@ def dem(context, geojson, data_source, rate, output):
     sardem.dem.main(geojson, data_source, rate, output)
 
 
-# COMMAND: kml
-@cli.command()
-@click.argument("tiffile", required=True)
-@click.argument("rscfile", default="dem.rsc")
-@click.option("--title", "-t", help="Title of the KML object once loaded.")
-@click.option("--desc", "-d", help="Description for google Earth.")
-def kml(tiffile, rscfile, title, desc):
-    """Creates .kml file for tif image
-
-    TIFFILE is the .tif image to load into Google Earth
-    RSCFILE is the .rsc file containing lat/lon start and steps
-        Default will be 'dem.rsc'
-
-
-        sardem kml 20180420_20180502.tif dem.rsc -t "My igram" -d "From April in Hawaii" > out.kml
-    """
-    rsc_data = sario.load_dem_rsc(rscfile)
-    print(sardem.kml.create_kml(rsc_data, tiffile, title=title, desc=desc))
-
-
 # COMMAND: view
 @cli.command(name='view')
 @click.argument("demfile", type=click.Path(exists=True, dir_okay=False), nargs=-1)
@@ -103,7 +82,7 @@ def view(demfile):
     Can list multiple .dem files to open in separate figures.
     """
     for fname in demfile:
-        dem = sario.load_file(fname)
+        dem = utils.load_elevation(fname)
         plt.figure()
         plt.imshow(dem)
         plt.colorbar()
