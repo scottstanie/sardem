@@ -38,7 +38,7 @@ def up_size(cur_size, rate):
         >>> up_size(3, 2)
         5
     """
-    return 1 + (cur_size - 1) * rate
+    return int(floor(1 + (cur_size - 1) * rate))
 
 
 def floor_float(num, ndigits):
