@@ -641,9 +641,10 @@ def main(corner, dlon, dlat, geojson_obj, data_source, rate, output_name):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
-        corner (tuple [float, float]):
-        dlon (float):
-        dlat (float);
+        corner (tuple [float, float]): top left corner of area
+            (longitude, latitude). Used instead of --geojson
+        dlon (float): Width of box in longitude degrees (used with corner)
+        dlat (float): Height of box in latitude degrees (used with corner)
         geojson_obj (open file): pre-opened geojson file
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         rate (int): rate to upsample DEM (positive int)
