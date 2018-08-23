@@ -56,8 +56,7 @@ import re
 import subprocess
 import numpy as np
 import requests
-import geojson
-from sardem import utils, loading, upsample_cy
+from sardem import utils, geojson, loading, upsample_cy
 
 try:
     input = raw_input  # Check for python 2
@@ -649,8 +648,10 @@ def main(geojson_obj, data_source, rate, output_name):
     """
     geojson_file = geojson_obj if utils.is_file(geojson_obj) else open(geojson_obj, 'r')
     geojson_obj = json.load(geojson_file)
+
     bounds = geojson.bounding_box(geojson_obj)
     geojson_file.close()
+
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
