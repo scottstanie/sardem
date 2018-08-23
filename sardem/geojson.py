@@ -22,8 +22,7 @@ def coords(geojson):
         list: coordinates of polygon in the geojson
 
     Raises:
-        KeyError: if invalid geojson type (no 'geometry' in the json)
-        AssertionError: if the geojson 'type' is not 'Polygon'
+        ValueError: if invalid geojson type (no 'geometry' in the json)
     """
     # First, if given a deeper object (e.g. from geojson.io), extract just polygon
     try:
@@ -32,14 +31,12 @@ def coords(geojson):
         elif geojson.get('type') == 'Feature':
             geojson = geojson['geometry']
     except KeyError:
-        print("Invalid geojson")
-        raise
+        raise ValueError("Invalid geojson")
 
-    assert geojson['type'] == 'Polygon', 'Must use polygon geojson'
     return geojson['coordinates'][0]
 
 
-def bounding_box(geojson):
+def bounding_box(geojson=None):
     """From a geojson object, compute bounding lon/lats
 
     Valid geojson types: Geometry, Feature (Polygon), Feature Collection

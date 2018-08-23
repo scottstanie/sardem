@@ -18,4 +18,4 @@ dist
 docs/_build
 
 # cython build product
-*cpython*.so
+*.so
