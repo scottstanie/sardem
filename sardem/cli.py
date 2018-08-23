@@ -28,11 +28,19 @@ def cli(ctx, verbose, path):
 # COMMAND: CREATE
 @cli.command()
 @click.option(
+    "--corner",
+    "-c",
+    type=float,
+    nargs=2,
+    help="top left corner of area (longitude, latitude). Ex.: -c -150.0 20.0\n"
+    "Used instead of --geojson, must also specify --dlat and --dlon")
+@click.option("--dlon", type=float, help="Width of box in longitude degrees (used with --corner)")
+@click.option("--dlat", type=float, help="Height of box in latitude degrees (used with --corner)")
+@click.option(
     "--geojson",
     "-g",
-    required=True,
     type=click.File('r'),
-    help="File containing the geojson object for DEM bounds")
+    help="Alternate to --corner: File containing the geojson object for DEM bounds")
 @click.option(
     "--rate",
     "-r",
@@ -51,26 +59,26 @@ def cli(ctx, verbose, path):
     default='NASA',
     help="Source of SRTM data. See dem docstring for more about data.")
 @click.pass_obj
-def create(context, geojson, data_source, rate, output):
+def create(context, corner, dlon, dlat, geojson, data_source, rate, output):
     """Stiches .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tile, combine into one array,
     then upsample using upsample.c
+    Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
 
-    Suggestion for box: http://geojson.io gives you geojson for any polygon
-    Take the output of that and save to a file (e.g. mybox.geojson
+    If you want geojson: http://geojson.io gives you geojson for any polygon
+    Take the output of that and save to a file (e.g. mybox.geojson)
 
     Usage:
 
         sardem create --geojson data/mybox.geojson --rate 2
 
-        sardem create -g data/mybox.geojson -r 2 -o elevation.dem
+        sardem create --corner -150.0 20.2 --dlon 0.5 --dlat 0.5 -r 2
 
-    Default out is elevation.dem for upsampled version, elevation_small.dem
-    Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
+    Default out is elevation.dem for upsampled version
     """
-    sardem.dem.main(geojson, data_source, rate, output)
+    sardem.dem.main(corner, dlon, dlat, geojson, data_source, rate, output)
 
 
 # COMMAND: view
