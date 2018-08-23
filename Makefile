@@ -11,7 +11,7 @@ clean:
 	rm -f *.o
 	rm -f $(TARGET)
 
-REPO?=pypi  # Set if not speficied (as test, e.g.)
+REPO?=pypi  # Set if not speficied (as pypitest, e.g.)
 
 upload:
 	rm -rf dist

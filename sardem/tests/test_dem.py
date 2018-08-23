@@ -1,4 +1,3 @@
-from collections import OrderedDict
 import unittest
 import json
 import tempfile
@@ -7,7 +6,7 @@ from os.path import join, dirname
 import os
 import responses
 
-from sardem import dem, utils
+from sardem import dem, utils, geojson
 
 DATAPATH = join(dirname(__file__), 'data')
 NETRC_PATH = join(DATAPATH, 'netrc')
@@ -26,7 +25,7 @@ class TestTile(unittest.TestCase):
         self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
         with open(self.geojson_path, 'r') as f:
             self.geojson = json.load(f)
-        self.bounds = utils.bounding_box(self.geojson)
+        self.bounds = geojson.bounding_box(self.geojson)
 
     def test_init(self):
         t = dem.Tile(*self.bounds)
@@ -40,7 +39,7 @@ class TestDownload(unittest.TestCase):
         self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
         with open(self.geojson_path, 'r') as f:
             self.geojson = json.load(f)
-        self.bounds = utils.bounding_box(self.geojson)
+        self.bounds = geojson.bounding_box(self.geojson)
         self.test_tile = 'N19W156.hgt'
         self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
@@ -107,30 +106,6 @@ PROJECTION    LL
 """
 
         self.assertEqual(expected, up_rsc)
-
-
-class TestGeojson(unittest.TestCase):
-    def setUp(self):
-        self.geojson = {
-            "type":
-            "Polygon",
-            "coordinates": [[[-156.0, 18.7], [-154.6, 18.7], [-154.6, 20.3], [-156.0, 20.3],
-                             [-156.0, 18.7]]]
-        }
-        self.jsonfile = tempfile.NamedTemporaryFile(mode='w+')
-        with open(self.jsonfile.name, 'w+') as f:
-            json.dump(self.geojson, f)
-
-        self.bad_geojson = {"Point": 0}
-
-    def tearDown(self):
-        self.jsonfile.close()
-
-    def test_bounding_box(self):
-        self.assertEqual(utils.bounding_box(self.geojson), (-156.0, 18.7, -154.6, 20.3))
-
-    def test_fail_format(self):
-        self.assertRaises(AttributeError, utils.bounding_box, self.bad_geojson)
 
 
 """
