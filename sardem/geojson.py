@@ -1,13 +1,59 @@
 """
 Takes in coordinates, outputs bounds to use for dem download
 
-Can come from a top corner and bot corner, corner and height/width,
-or used with http://geojson.io to get a quick geojson polygon
+Can come from a corner and height/width, or be used with
+http://geojson.io to get a quick geojson polygon
 
 Coordinates are (lon, lat) to match (x, y)
 Bounding box order is  (left, bottom, right, top) (floats)
 """
 import itertools
+
+
+def bounding_box(geojson=None, top_corner=None, dlon=None, dlat=None):
+    """From a geojson object, compute bounding lon/lats
+
+    Note: either geojson required, OR top_corner, dlon, dlat required
+
+    Valid geojson types: Geometry, Feature (Polygon), Feature Collection
+        (will choose the first Feature in the collection)
+
+    Args:
+        geojson (dict): json pre-loaded into a dict
+        top_corner (tuple[float, float]): top left corner of desired box
+            as a (lon, lat)
+        dlon (float): width of bounding box (if top_corner given)
+        dlat (float): height of bounding box (if top_corner given)
+
+    Returns:
+        tuple[float]: the left,bottom,right,top coords of bounding box
+    """
+
+    if not geojson:
+        if not top_corner or not dlon or not dlat:
+            raise ValueError("Must provide geojson, or top_corner, dlon, and dlat")
+        coordinates = corner_coords(top_corner, dlon, dlat)
+    else:
+        coordinates = coords(geojson)
+
+    left = min(float(lon) for (lon, lat) in coordinates)
+    right = max(float(lon) for (lon, lat) in coordinates)
+
+    top = max(float(lat) for (lon, lat) in coordinates)
+    bottom = min(float(lat) for (lon, lat) in coordinates)
+    return left, bottom, right, top
+
+
+def corner_coords(top_corner, dlon, dlat):
+    lon, lat = top_corner
+    dlat = abs(dlat)
+    return [
+        [lon, lat],
+        [lon + dlon, lat],
+        [lon + dlon, lat - dlat],
+        [lon, lat - dlat],
+        [lon, lat],
+    ]
 
 
 def coords(geojson):
@@ -34,28 +80,6 @@ def coords(geojson):
         raise ValueError("Invalid geojson")
 
     return geojson['coordinates'][0]
-
-
-def bounding_box(geojson=None):
-    """From a geojson object, compute bounding lon/lats
-
-    Valid geojson types: Geometry, Feature (Polygon), Feature Collection
-        (will choose the first Feature in the collection)
-
-    Args:
-        geojson (dict): json pre-loaded into a dict
-
-    Returns:
-        tuple[float]: the left,bottom,right,top bounding box of the Polygon
-    """
-    coordinates = coords(geojson)
-
-    left = min(float(lon) for (lon, lat) in coordinates)
-    right = max(float(lon) for (lon, lat) in coordinates)
-
-    top = max(float(lat) for (lon, lat) in coordinates)
-    bottom = min(float(lat) for (lon, lat) in coordinates)
-    return left, bottom, right, top
 
 
 def print_coordinates(geojson_dict):
