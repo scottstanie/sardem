@@ -643,13 +643,13 @@ def main(left_lon, top_lat, dlon, dlat, data_source, rate, output_name):
     Args:
         left_lon (float): Left most longitude of DEM box
         top_lat (float): Top most longitude of DEM box
-        dlon (float): Width of box in longitude degrees (used with corner)
-        dlat (float): Height of box in latitude degrees (used with corner)
+        dlon (float): Width of box in longitude degrees
+        dlat (float): Height of box in latitude degrees
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    bounds = utils.bounding_box(top_corner=(left_lon, top_lat), dlat=dlat, dlon=dlon)
+    bounds = utils.bounding_box(left_lon, top_lat, dlat, dlon)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())

@@ -73,14 +73,14 @@ def corner_coords(lon, lat, dlon, dlat):
 
 
 def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None):
-    """From a corner/dlat/dlon, compute bounding lon/lats
+    """From a top left/dlat/dlon, compute bounding lon/lats
 
     Args:
         left_lon (float): Left (western) most longitude of DEM box
             in degrees (west=negative)
         top_lat (float): Top (northern) most latitude of DEM box (deg)
-        dlon (float): width of bounding box (if top_corner given)
-        dlat (float): height of bounding box (if top_corner given)
+        dlon (float): width of bounding box
+        dlat (float): height of bounding box
 
     Returns:
         tuple[float]: the left,bottom,right,top coords of bounding box
