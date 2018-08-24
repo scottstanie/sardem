@@ -2,7 +2,6 @@ from __future__ import division, print_function
 import os
 import sys
 from math import floor, ceil
-import geojson
 import logging
 from sardem import loading
 
