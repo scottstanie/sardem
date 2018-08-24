@@ -3,6 +3,7 @@ Command line interface for running createdem
 """
 import argparse
 import sardem
+import sys
 
 
 def positive_int(argstring):
@@ -10,11 +11,17 @@ def positive_int(argstring):
         intval = int(argstring)
         assert intval > 0
     except (ValueError, AssertionError):
-        raise argparse.ArgumentError("--rate must be a positive int")
+        raise argparse.ArgumentTypeError("--rate must be a positive int")
     return intval
 
 
-USAGE_STRING = """Stiches .hgt files to make (upsampled) DEM
+# Note: overriding this to show the positionals first
+USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON }
+                 [-h] [--rate RATE] [--output OUTPUT]
+                 [--data-source {NASA,AWS}]
+                 """
+
+DESCRIPTION = """Stiches .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tile, combine into one array,
@@ -26,29 +33,30 @@ USAGE_STRING = """Stiches .hgt files to make (upsampled) DEM
 
     Usage:
 
-        sardem create --geojson data/mybox.geojson --rate 2
+        createdem -150.0 20.2 0.5 0.5 -r 2
 
-        sardem create --corner -150.0 20.2 --dlon 0.5 --dlat 0.5 -r 2
+        createdem --geojson data/mybox.geojson --rate 2
+
+        createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
+
 
     Default out is elevation.dem for upsampled version
     """
 
 
-def main():
-    parser = argparse.ArgumentParser(prog='createdem', description=USAGE_STRING)
+def cli():
+    parser = argparse.ArgumentParser(prog='createdem', description=DESCRIPTION, usage=USAGE)
     parser.add_argument(
-        "corner",
-        type=float,
-        nargs='*',
-        help="Specify box with 'left-long top-lat dlon dlat' in degrees, "
-        " where dlon is width in degrees, dlat is height in degrees "
-        " Example.: -150.0 20.0 1.5 2.0"
-        "Used instead of --geojson, must also specify --dlat and --dlon")
+        "left_lon", nargs="?", type=float, help="Left most longitude of DEM box (in degrees)")
+    parser.add_argument(
+        "top_lat", nargs="?", type=float, help="Left most longitude of DEM box (in degrees)")
+    parser.add_argument("dlon", nargs="?", type=float, help="Width of DEM box in degrees")
+    parser.add_argument("dlat", nargs="?", type=float, help="Height of DEM box in degrees")
     parser.add_argument(
         "--geojson",
         "-g",
         type=argparse.FileType(),
-        help="Alternate to corner box specification: "
+        help="Alternate to corner/dlon/dlat box specification: "
         "File containing the geojson object for DEM bounds")
     parser.add_argument(
         "--rate",
@@ -69,7 +77,14 @@ def main():
         help="Source of SRTM data. See dem docstring for more about data.")
 
     args = parser.parse_args()
+    if args.left_lon and args.geojson:
+        raise argparse.ArgumentError(
+            args.geojson, "Can't use both positional arguments "
+            "(left_lon top_lat dlon dlat) and --geojson")
+    # Need all 4 positionals, or the --geosjon
+    elif not (args.left_lon and args.top_lat and args.dlon and args.dlat) and not args.geojson:
+        parser.print_usage(sys.stderr)
+        sys.exit(1)
 
-    start_lon, start_lat, dlon, dlat = args.corner
-    sardem.dem.main(start_lon, start_lat, dlon, dlat, args.geojson, args.data_source, args.rate,
-                    args.output)
+    sardem.dem.main(args.left_lon, args.top_lat, args.dlon, args.dlat, args.geojson,
+                    args.data_source, args.rate, args.output)
