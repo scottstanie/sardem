@@ -44,11 +44,9 @@ $ createdem --help
 #### Examples:
 
 ```bash
-createdem --geojson data/hawaii.geojson --rate 2 --output elevation.dem
-createdem -g data/forrest.geojson -r 5 --output elevation.dem
+createdem -150.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
+createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
 ```
-
-The geojson can be any valid simple Polygon- you can get one easily from http://geojson.io , for example.
 
 The code used for bilinear interpolation in the upsampling routine is in `cython/upsample.c`, and is wrapped in [cython](http://docs.cython.org/en/latest/) to allow easier installation and ability to call the function from Python.
 The installation is  handled through `pip install`, or by running `make build`.
