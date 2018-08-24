@@ -87,7 +87,8 @@ Functions for working with digital elevation maps (DEMs) are mostly contained in
 ### NASA SRTM Data access
 
 The default datasource is NASA's SRTM version 3 global 1 degree data.
-See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003
+See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003 .
+The data is valid outside of artic regions (-60 to 60 degrees latitude), and is zeros over open ocean.
 
 This data requires a username and password from here:
 https://urs.earthdata.nasa.gov/users/new
