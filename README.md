@@ -5,7 +5,13 @@
 
 Tool for making Digital Elevation Maps (DEMs) in Roipac data format (16-bit integers, little endian) for use in Interferometric SAR (InSAR) processing
 
-`createdem` creates a cropped (and possibly upsampled) digital elevation map.
+`createdem` creates a cropped (and possibly upsampled) digital elevation map:
+
+```bash
+usage: createdem left_lon top_lat dlon dlat
+                 [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
+                 [--data-source {NASA,AWS}]
+```
 
 ## Setup and installation
 
@@ -33,23 +39,47 @@ pip install sardem
 ```
 
 
-## Command Line Interface Reference
+## Command Line Interface
 
 The full options for the command line tool in `sardem/cli.py` can be found using
 
 ```
 $ createdem --help
-```
+usage: createdem left_lon top_lat dlon dlat
+                 [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
+                 [--data-source {NASA,AWS}]
 
-#### Examples:
 
-```bash
-createdem -150.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
-createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
+Stiches SRTM .hgt files to make (upsampled) DEM
+
+    Pick a lat/lon bounding box for a DEM, and it will download
+    the necessary SRTM1 tiles, stitch together, then upsample.
+
+    Usage Examples:
+        createdem -150.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
+        createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
+
+    Default out is elevation.dem for the final upsampled DEM.
+    Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
+
+positional arguments:
+  left_lon              Left (western) most longitude of DEM box (degrees, west=negative)
+  top_lat               Top (northern) most latitude of DEM box (degrees)
+  dlon                  Width of DEM box (degrees)
+  dlat                  Height of DEM box (degrees)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --rate RATE, -r RATE  Rate at which to upsample DEM (default=1, no upsampling)
+  --output OUTPUT, -o OUTPUT
+                        Name of output dem file (default=elevation.dem)
+  --data-source {NASA,AWS}, -d {NASA,AWS}
+                        Source of SRTM data (default NASA). See README for more.
+
 ```
 
 The code used for bilinear interpolation in the upsampling routine is in `cython/upsample.c`, and is wrapped in [cython](http://docs.cython.org/en/latest/) to allow easier installation and ability to call the function from Python.
-The installation is  handled through `pip install`, or by running `make build`.
+The installation is handled through `pip install`, or by running `make build`.
 
 Functions for working with digital elevation maps (DEMs) are mostly contained in the `Downloader` and `Stitcher` classes within `sardem/dem.py`.
 
