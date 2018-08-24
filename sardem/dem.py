@@ -47,7 +47,6 @@ from __future__ import division, print_function
 import collections
 import logging
 import getpass
-import json
 import math
 from multiprocessing.pool import ThreadPool
 import netrc
@@ -63,6 +62,7 @@ try:
 except NameError:
     pass
 
+NUM_PIXELS = 3601  # For SRTM1
 RSC_KEYS = [
     'WIDTH',
     'FILE_LENGTH',
@@ -352,10 +352,6 @@ class Downloader:
                 # urs.earthdata.nasa.gov/oauth/authorize?scope=uid&app_type=401&client_id=...
                 response = session.get(r1.url, auth=(self.username, self.password))
 
-        # Now check response for auth issues/ errors
-        if response.status_code == 404:
-            logger.error("Cannot find url: check latitudes/ longitudes of input bounding box.")
-        response.raise_for_status()
         return response
 
     def _unzip_file(self, filepath):
@@ -376,7 +372,7 @@ class Downloader:
             e.g. N06W001.SRTMGL1.hgt.zip (usgs) or N19/N19W156.gz (aws)
 
         Returns:
-            None
+            bool: True/False for Success/Failure of download
         """
         # keep all in one folder, compressed
         local_filename = os.path.join(self.cache_dir, tile_name)
@@ -388,10 +384,20 @@ class Downloader:
             with open(local_filename, 'wb') as f:
                 url = self._form_tile_url(tile_name)
                 response = self._download_hgt_tile(url)
+                # Now check response for auth issues/ errors
+                if response.status_code == 404:
+                    logger.warning("Cannot find url %s, using zeros for tile." % url)
+                    # Raise only if we want to kill everything
+                    # response.raise_for_status()
+                    # Return False so caller can track failed downloads
+                    return False
+
                 f.write(response.content)
                 logger.info("Writing to {}".format(local_filename))
             logger.info("Unzipping {}".format(local_filename))
             self._unzip_file(local_filename)
+        # True indicates success for this tile_name
+        return True
 
     def _all_files_exist(self):
         filepaths = [os.path.join(self.cache_dir, tile_name) for tile_name in self.tile_names]
@@ -405,8 +411,12 @@ class Downloader:
             self.handle_credentials()
 
         pool = ThreadPool(processes=5)
-        pool.map(self.download_and_save, self.tile_names)
+        successes = pool.map(self.download_and_save, self.tile_names)
         pool.close()
+        if not any(successes):
+            raise ValueError("No successful .hgt tiles found and downloaded:"
+                             " check lats/ lons of DEM box for valid SRTM land area"
+                             " (<60 deg latitude not open ocean).")
 
 
 class Stitcher:
@@ -415,14 +425,17 @@ class Stitcher:
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
             E.g.: ['N19W156.hgt', 'N19W155.hgt']
+        failures (list[bool]): list of True (for successes) False
+            (for failed downloads) matching tile_file_list
         num_pixels (int): size of the squares of the .hgt files
             Assumes 3601 for SRTM1 (SRTM3, 3 degree not implemented/tested)
 
     """
 
-    def __init__(self, tile_names, num_pixels=3601):
+    def __init__(self, tile_names, failures=[], num_pixels=NUM_PIXELS):
         """List should come from Tile.srtm1_tile_names()"""
         self.tile_file_list = list(tile_names)
+        self.failures = failures
         # Assuming SRTMGL1: 3601 x 3601 squares
         self.num_pixels = num_pixels
 
@@ -523,6 +536,14 @@ class Stitcher:
         nrows, ncols = self.blockshape
         return np.array(self.tile_file_list).reshape((nrows, ncols))
 
+    def _load_tile(self, tile_name):
+        """Loads the tile, or returns a square of zeros if missing"""
+        filename = os.path.join(utils.get_cache_dir(), tile_name)
+        if utils.is_file(filename):
+            return loading.load_elevation()
+        else:
+            return np.zeros((NUM_PIXELS, NUM_PIXELS))
+
     def load_and_stitch(self):
         """Function to load combine .hgt tiles
 
@@ -536,10 +557,9 @@ class Stitcher:
         row_list = []
         # ncols in the number of .hgt blocks wide
         _, ncols = self.blockshape
-        flist = self._create_file_array()
-        for idx, row in enumerate(flist):
-            cur_row = np.hstack(
-                loading.load_elevation(os.path.join(utils.get_cache_dir(), f)) for f in row)
+        tile_grid = self._create_file_array()
+        for idx, row in enumerate(tile_grid):
+            cur_row = np.hstack(self._load_tile(tile_name) for tile_name in row)
             # Delete columns: 3601*[1, 2,... not-including last column]
             delete_cols = self.num_pixels * np.arange(1, ncols)
             cur_row = np.delete(cur_row, delete_cols, axis=1)
@@ -649,7 +669,7 @@ def main(left_lon, top_lat, dlon, dlat, data_source, rate, output_name):
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    bounds = utils.bounding_box(left_lon, top_lat, dlat, dlon)
+    bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
