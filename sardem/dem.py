@@ -637,15 +637,16 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
-def main(corner, dlon, dlat, geojson_obj, data_source, rate, output_name):
+def main(left_lon, top_lat, dlon, dlat, geojson_obj, data_source, rate, output_name):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
-        corner (tuple [float, float]): top left corner of area
-            (longitude, latitude). Used instead of --geojson
+        left_lon (float): Left most longitude of DEM box
+        top_lat (float): Top most longitude of DEM box
         dlon (float): Width of box in longitude degrees (used with corner)
         dlat (float): Height of box in latitude degrees (used with corner)
-        geojson_obj (open file): pre-opened geojson file
+        geojson_obj (open file): pre-opened geojson file,
+            used instead of start corner/dlat/dlon specification
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
@@ -657,7 +658,7 @@ def main(corner, dlon, dlat, geojson_obj, data_source, rate, output_name):
         bounds = geojson.bounding_box(geojson=geojson_obj)
         geojson_file.close()
     else:
-        bounds = geojson.bounding_box(top_corner=corner, dlat=dlat, dlon=dlon)
+        bounds = geojson.bounding_box(top_corner=(left_lon, top_lat), dlat=dlat, dlon=dlon)
 
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
