@@ -1,3 +1,4 @@
+"""utils.py: extra helper functions"""
 from __future__ import division, print_function
 import os
 import sys
@@ -58,6 +59,41 @@ def floor_float(num, ndigits):
 def is_file(f):
     """python 2/3 compatible check for file object"""
     return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, 'read')
+
+
+def corner_coords(lon, lat, dlon, dlat):
+    """Take the width/height, convert to 4 points of box corners"""
+    dlat = abs(dlat)  # Since we start at top and go down
+    return [
+        [lon, lat],
+        [lon + dlon, lat],
+        [lon + dlon, lat - dlat],
+        [lon, lat - dlat],
+    ]
+
+
+def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None):
+    """From a corner/dlat/dlon, compute bounding lon/lats
+
+    Args:
+        left_lon (float): Left (western) most longitude of DEM box
+            in degrees (west=negative)
+        top_lat (float): Top (northern) most latitude of DEM box (deg)
+        dlon (float): width of bounding box (if top_corner given)
+        dlat (float): height of bounding box (if top_corner given)
+
+    Returns:
+        tuple[float]: the left,bottom,right,top coords of bounding box
+    """
+
+    coordinates = corner_coords(left_lon, top_lat, dlon, dlat)
+
+    left = min(float(lon) for (lon, lat) in coordinates)
+    right = max(float(lon) for (lon, lat) in coordinates)
+
+    top = max(float(lat) for (lon, lat) in coordinates)
+    bottom = min(float(lat) for (lon, lat) in coordinates)
+    return left, bottom, right, top
 
 
 def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):

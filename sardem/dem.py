@@ -56,7 +56,7 @@ import re
 import subprocess
 import numpy as np
 import requests
-from sardem import utils, geojson, loading, upsample_cy
+from sardem import utils, loading, upsample_cy
 
 try:
     input = raw_input  # Check for python 2
@@ -637,7 +637,7 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
-def main(left_lon, top_lat, dlon, dlat, geojson_obj, data_source, rate, output_name):
+def main(left_lon, top_lat, dlon, dlat, data_source, rate, output_name):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
@@ -645,21 +645,11 @@ def main(left_lon, top_lat, dlon, dlat, geojson_obj, data_source, rate, output_n
         top_lat (float): Top most longitude of DEM box
         dlon (float): Width of box in longitude degrees (used with corner)
         dlat (float): Height of box in latitude degrees (used with corner)
-        geojson_obj (open file): pre-opened geojson file,
-            used instead of start corner/dlat/dlon specification
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    if geojson_obj:
-        geojson_file = geojson_obj if utils.is_file(geojson_obj) else open(geojson_obj, 'r')
-        geojson_obj = json.load(geojson_file)
-
-        bounds = geojson.bounding_box(geojson=geojson_obj)
-        geojson_file.close()
-    else:
-        bounds = geojson.bounding_box(top_corner=(left_lon, top_lat), dlat=dlat, dlon=dlon)
-
+    bounds = utils.bounding_box(top_corner=(left_lon, top_lat), dlat=dlat, dlon=dlon)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
