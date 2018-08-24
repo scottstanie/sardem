@@ -30,8 +30,8 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     the necessary SRTM1 tiles, stitch together, then upsample.
 
     Usage Examples:
-        createdem -150.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
-        createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
+        createdem -156.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
+        createdem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
 
     Default out is elevation.dem for the final upsampled DEM.
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
