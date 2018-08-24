@@ -6,7 +6,7 @@ from os.path import join, dirname
 import os
 import responses
 
-from sardem import dem, utils, geojson
+from sardem import dem, utils
 
 DATAPATH = join(dirname(__file__), 'data')
 NETRC_PATH = join(DATAPATH, 'netrc')
@@ -22,24 +22,18 @@ class TestNetrc(unittest.TestCase):
 
 class TestTile(unittest.TestCase):
     def setUp(self):
-        self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
-        with open(self.geojson_path, 'r') as f:
-            self.geojson = json.load(f)
-        self.bounds = geojson.bounding_box(self.geojson)
+        self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
 
     def test_init(self):
         t = dem.Tile(*self.bounds)
-        expected = (-155.49898624420166, 19.741217531292406, -155.497784614563, 19.74218696311137)
+        expected = (-155.4, 19.749, -155.399, 19.75)
 
         self.assertEqual(expected, t.bounds)
 
 
 class TestDownload(unittest.TestCase):
     def setUp(self):
-        self.geojson_path = join(DATAPATH, 'hawaii_small.geojson')
-        with open(self.geojson_path, 'r') as f:
-            self.geojson = json.load(f)
-        self.bounds = geojson.bounding_box(self.geojson)
+        self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
         self.test_tile = 'N19W156.hgt'
         self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
@@ -106,6 +100,25 @@ PROJECTION    LL
 """
 
         self.assertEqual(expected, up_rsc)
+
+
+class TestBounds(unittest.TestCase):
+    def setUp(self):
+        self.coords = [[-156.0, 18.7], [-154.6, 18.7], [-154.6, 20.3], [-156.0, 20.3],
+                       [-156.0, 18.7]]
+        self.left_lon = -156.0
+        self.top_lat = 20.3
+        self.dlat = 1.6
+        self.dlon = 1.4
+
+    def test_corner_input(self):
+        result = utils.corner_coords(self.left_lon, self.top_lat, self.dlon, self.dlat)
+        self.assertEqual(set(tuple(c) for c in result), set(tuple(c) for c in self.coords))
+
+    def test_bounding_box(self):
+        self.assertEqual(
+            utils.bounding_box(self.left_lon, self.top_lat, self.dlon, self.dlat),
+            (-156.0, 18.7, -154.6, 20.3))
 
 
 """
