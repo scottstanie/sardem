@@ -1,15 +1,24 @@
-.PHONY: build test clean upload
+.PHONY: build install test clean upload
+SRC_DIR = sardem
+
+default: install
+
+install:
+	pip install -U .
 
 build:
 	python setup.py build_ext --inplace
+
+install-edit:
+	pip install -e .
 
 test:
 	@echo "Running doctests and unittests: nose must be installed"
 	nosetests -v --with-doctest
 
 clean:
-	rm -f *.o
-	rm -f $(TARGET)
+	rm -f *.so
+	rm -f $(SRC_DIR)/*.so
 
 REPO?=pypi  # Set if not speficied (as pypitest, e.g.)
 
