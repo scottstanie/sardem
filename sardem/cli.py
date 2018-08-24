@@ -1,66 +1,20 @@
 """
-Main command line entry point to manage all other sub commands
+Command line interface for running createdem
 """
-import click
+import argparse
 import sardem
-import matplotlib.pyplot as plt
 
 
-# Main entry point:
-@click.group()
-@click.option('--verbose', is_flag=True)
-@click.option(
-    '--path',
-    type=click.Path(exists=False, file_okay=False, writable=True),
-    default='.',
-    help="Path of interest for command. "
-    "Will search for files path or change directory, "
-    "depending on command.")
-@click.pass_context
-def cli(ctx, verbose, path):
-    """Command line tool for creating upsampled DEMs."""
-    # Store these to be passed to all subcommands
-    ctx.obj = {}
-    ctx.obj['verbose'] = verbose
-    ctx.obj['path'] = path
+def positive_int(argstring):
+    try:
+        intval = int(argstring)
+        assert intval > 0
+    except (ValueError, AssertionError):
+        raise argparse.ArgumentError("--rate must be a positive int")
+    return intval
 
 
-# COMMAND: CREATE
-@cli.command()
-@click.option(
-    "--corner",
-    "-c",
-    type=float,
-    nargs=2,
-    help="top left corner of area (longitude, latitude). Ex.: -c -150.0 20.0\n"
-    "Used instead of --geojson, must also specify --dlat and --dlon")
-@click.option("--dlon", type=float, help="Width of box in longitude degrees (used with --corner)")
-@click.option("--dlat", type=float, help="Height of box in latitude degrees (used with --corner)")
-@click.option(
-    "--geojson",
-    "-g",
-    type=click.File('r'),
-    help="Alternate to --corner: File containing the geojson object for DEM bounds")
-@click.option(
-    "--rate",
-    "-r",
-    default=1,
-    type=click.IntRange(0, 30),  # Reasonable range of upsampling rates
-    help="Rate at which to upsample DEM (default=1, no upsampling)")
-@click.option(
-    "--output",
-    "-o",
-    default="elevation.dem",
-    help="Name of output dem file (default=elevation.dem)")
-@click.option(
-    "--data-source",
-    "-d",
-    type=click.Choice(['NASA', 'AWS']),
-    default='NASA',
-    help="Source of SRTM data. See dem docstring for more about data.")
-@click.pass_obj
-def create(context, corner, dlon, dlat, geojson, data_source, rate, output):
-    """Stiches .hgt files to make (upsampled) DEM
+USAGE_STRING = """Stiches .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tile, combine into one array,
@@ -78,22 +32,44 @@ def create(context, corner, dlon, dlat, geojson, data_source, rate, output):
 
     Default out is elevation.dem for upsampled version
     """
-    sardem.dem.main(corner, dlon, dlat, geojson, data_source, rate, output)
 
 
-# COMMAND: view
-@cli.command(name='view')
-@click.argument("demfile", type=click.Path(exists=True, dir_okay=False), nargs=-1)
-def view(demfile):
-    """View a .dem file with matplotlib.
+def main():
+    parser = argparse.ArgumentParser(prog='createdem', description=USAGE_STRING)
+    parser.add_argument(
+        "corner",
+        type=float,
+        nargs='*',
+        help="Specify box with 'left-long top-lat dlon dlat' in degrees, "
+        " where dlon is width in degrees, dlat is height in degrees "
+        " Example.: -150.0 20.0 1.5 2.0"
+        "Used instead of --geojson, must also specify --dlat and --dlon")
+    parser.add_argument(
+        "--geojson",
+        "-g",
+        type=argparse.FileType(),
+        help="Alternate to corner box specification: "
+        "File containing the geojson object for DEM bounds")
+    parser.add_argument(
+        "--rate",
+        "-r",
+        default=1,
+        type=positive_int,  # Reasonable range of upsampling rates
+        help="Rate at which to upsample DEM (default=1, no upsampling)")
+    parser.add_argument(
+        "--output",
+        "-o",
+        default="elevation.dem",
+        help="Name of output dem file (default=elevation.dem)")
+    parser.add_argument(
+        "--data-source",
+        "-d",
+        choices=('NASA', 'AWS'),
+        default='NASA',
+        help="Source of SRTM data. See dem docstring for more about data.")
 
-    Can list multiple .dem files to open in separate figures.
-    """
-    for fname in demfile:
-        dem = sardem.utils.load_elevation(fname)
-        plt.figure()
-        plt.imshow(dem)
-        plt.colorbar()
+    args = parser.parse_args()
 
-    # Wait for windows to close to exit the script
-    plt.show(block=True)
+    start_lon, start_lat, dlon, dlat = args.corner
+    sardem.dem.main(start_lon, start_lat, dlon, dlat, args.geojson, args.data_source, args.rate,
+                    args.output)
