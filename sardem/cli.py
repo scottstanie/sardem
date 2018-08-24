@@ -1,7 +1,13 @@
 """
 Command line interface for running createdem
 """
-import argparse
+from argparse import (
+    ArgumentParser,
+    ArgumentError,
+    ArgumentTypeError,
+    FileType,
+    RawTextHelpFormatter,
+)
 import sardem
 import sys
 
@@ -11,7 +17,7 @@ def positive_int(argstring):
         intval = int(argstring)
         assert intval > 0
     except (ValueError, AssertionError):
-        raise argparse.ArgumentTypeError("--rate must be a positive int")
+        raise ArgumentTypeError("--rate must be a positive int")
     return intval
 
 
@@ -21,42 +27,48 @@ USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON }
                  [--data-source {NASA,AWS}]
                  """
 
-DESCRIPTION = """Stiches .hgt files to make (upsampled) DEM
+DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
-    the necessary SRTM1 tile, combine into one array,
-    then upsample using upsample.c
+    the necessary SRTM1 tiles, stitch together, then upsample.
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
 
-    If you want geojson: http://geojson.io gives you geojson for any polygon
+    If you want to use geojson to describe the DEM area: http://geojson.io
+    can give you geojson for any polygon
     Take the output of that and save to a file (e.g. mybox.geojson)
 
-    Usage:
-
+    Usage Examples:
         createdem -150.0 20.2 0.5 0.5 -r 2
-
         createdem --geojson data/mybox.geojson --rate 2
-
         createdem -150.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
 
-
-    Default out is elevation.dem for upsampled version
+    Default out is elevation.dem for the final upsampled DEM.
     """
 
 
 def cli():
-    parser = argparse.ArgumentParser(prog='createdem', description=DESCRIPTION, usage=USAGE)
+    parser = ArgumentParser(
+        prog='createdem',
+        description=DESCRIPTION,
+        usage=USAGE,
+        formatter_class=RawTextHelpFormatter)
     parser.add_argument(
-        "left_lon", nargs="?", type=float, help="Left most longitude of DEM box (in degrees)")
+        "left_lon",
+        nargs="?",
+        type=float,
+        help="Left (western) most longitude of DEM box (in degrees)")
     parser.add_argument(
-        "top_lat", nargs="?", type=float, help="Left most longitude of DEM box (in degrees)")
+        "top_lat",
+        nargs="?",
+        type=float,
+        help="Top (northern) most latitude of DEM box (in degrees)")
     parser.add_argument("dlon", nargs="?", type=float, help="Width of DEM box in degrees")
     parser.add_argument("dlat", nargs="?", type=float, help="Height of DEM box in degrees")
     parser.add_argument(
         "--geojson",
         "-g",
-        type=argparse.FileType(),
-        help="Alternate to corner/dlon/dlat box specification: "
+        type=FileType(),
+        help="Alternate to corner/dlon/dlat box specification: \n"
         "File containing the geojson object for DEM bounds")
     parser.add_argument(
         "--rate",
@@ -78,7 +90,7 @@ def cli():
 
     args = parser.parse_args()
     if args.left_lon and args.geojson:
-        raise argparse.ArgumentError(
+        raise ArgumentError(
             args.geojson, "Can't use both positional arguments "
             "(left_lon top_lat dlon dlat) and --geojson")
     # Need all 4 positionals, or the --geosjon
