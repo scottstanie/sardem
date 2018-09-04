@@ -657,7 +657,14 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
-def main(left_lon, top_lat, dlon, dlat, data_source, rate, output_name):
+def main(left_lon=None,
+         top_lat=None,
+         dlon=None,
+         dlat=None,
+         geojson=None,
+         data_source=None,
+         rate=None,
+         output_name=None):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
@@ -665,11 +672,15 @@ def main(left_lon, top_lat, dlon, dlat, data_source, rate, output_name):
         top_lat (float): Top most longitude of DEM box
         dlon (float): Width of box in longitude degrees
         dlat (float): Height of box in latitude degrees
+        geojson (dict): geojson object outlining DEM (alternative to lat/lon)
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         rate (int): rate to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
-    bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
+    if geojson:
+        bounds = utils.bounding_box(geojson=geojson)
+    else:
+        bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())

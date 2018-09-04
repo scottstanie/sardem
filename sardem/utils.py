@@ -72,7 +72,7 @@ def corner_coords(lon, lat, dlon, dlat):
     ]
 
 
-def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None):
+def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None):
     """From a top left/dlat/dlon, compute bounding lon/lats
 
     Args:
@@ -81,12 +81,18 @@ def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None):
         top_lat (float): Top (northern) most latitude of DEM box (deg)
         dlon (float): width of bounding box
         dlat (float): height of bounding box
+        geojson (dict): alternative to other args, geojson object for area
 
     Returns:
         tuple[float]: the left,bottom,right,top coords of bounding box
     """
 
-    coordinates = corner_coords(left_lon, top_lat, dlon, dlat)
+    if all(arg is not None for arg in (left_lon, top_lat, dlon, dlat)):
+        coordinates = corner_coords(left_lon, top_lat, dlon, dlat)
+    elif geojson:
+        coordinates = coords(geojson)
+    else:
+        raise ValueError("Must provide geojson, or top_corner, dlon, and dlat")
 
     left = min(float(lon) for (lon, lat) in coordinates)
     right = max(float(lon) for (lon, lat) in coordinates)
@@ -94,6 +100,30 @@ def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None):
     top = max(float(lat) for (lon, lat) in coordinates)
     bottom = min(float(lat) for (lon, lat) in coordinates)
     return left, bottom, right, top
+
+
+def coords(geojson):
+    """Finds the coordinates of a geojson polygon
+    Note: we are assuming one simple polygon with no holes
+
+    Args:
+        geojson (dict): loaded geojson dict
+
+    Returns:
+        list: coordinates of polygon in the geojson
+
+    Raises:
+        ValueError: if invalid geojson type (no 'geometry' in the json)
+    """
+    # First, if given a deeper object (e.g. from geojson.io), extract just polygon
+    try:
+        if geojson.get('type') == 'FeatureCollection':
+            geojson = geojson['features'][0]['geometry']
+        elif geojson.get('type') == 'Feature':
+            geojson = geojson['geometry']
+    except KeyError:
+        raise ValueError("Invalid geojson")
+    return geojson['coordinates'][0]
 
 
 def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
