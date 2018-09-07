@@ -539,8 +539,8 @@ class Stitcher:
     def _load_tile(self, tile_name):
         """Loads the tile, or returns a square of zeros if missing"""
         filename = os.path.join(utils.get_cache_dir(), tile_name)
-        if utils.is_file(filename):
-            return loading.load_elevation()
+        if os.path.exists(filename):
+            return loading.load_elevation(filename)
         else:
             return np.zeros((NUM_PIXELS, NUM_PIXELS))
 
