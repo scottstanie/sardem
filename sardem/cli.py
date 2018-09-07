@@ -83,15 +83,15 @@ def cli():
 
     args = parser.parse_args()
     if args.left_lon and args.geojson:
-        raise ArgumentError(args.geojson, "Can't use both positional arguments "
-                            "(left_lon top_lat dlon dlat) and --geojson")
+        raise ArgumentError(
+            args.geojson, "Can't use both positional arguments "
+            "(left_lon top_lat dlon dlat) and --geojson")
     # Need all 4 positionals, or the --geosjon
     elif any(a is None
              for a in (args.left_lon, args.top_lat, args.dlon, args.dlat)) and not args.geojson:
         parser.print_usage(sys.stderr)
         sys.exit(1)
 
-    if args.geojson:
-        geojson_dict = json.load(args.geojson)
+    geojson_dict = json.load(args.geojson) if args.geojson else None
     sardem.dem.main(args.left_lon, args.top_lat, args.dlon, args.dlat, geojson_dict,
                     args.data_source, args.rate, args.output)
