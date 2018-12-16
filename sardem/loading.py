@@ -59,8 +59,10 @@ def load_elevation(filename):
             dem_img = data.reshape((1201, 1201))
         else:
             raise ValueError("Invalid .hgt data size: must be square size 1201 or 3601")
-        # TODO: do we always want this? Not sure
-        dem_img = np.clip(dem_img, 0, None)
+        # TODO: Verify that the min real value will be above -1000
+        min_valid = -1000
+        # Set NaN values to 0
+        dem_img[dem_img < min_valid] = 0
 
     return dem_img
 
