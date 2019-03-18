@@ -13,7 +13,7 @@
 static int upsample(const char *filename, const int rate, const long ncols,
                     const long nrows, const char *outfileUp);
 
-int getIdx(int r, int c, int ncols) { return ncols * r + c; }
+long getIdx(long r, long c, long ncols) { return ncols * r + c; }
 const char *getFileExt(const char *filename);
 int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int rate,
                    int ncols);
@@ -25,12 +25,13 @@ int main(int argc, char **argv) {
   // Parse input filename, rate, and optional output filename
   const char *defaultOutfile = "elevation.dem";
   if (argc < 5) {
-    fprintf(stderr, "Usage: ./dem filename rate ncols nrows "
-                    "[outfilename] \n"
-                    "filename must be or .dem extension.\n"
-                    "Rate must be a positive integer.\n"
-                    "ncols = width of DEM, ncows = height\n"
-                    "Default outfile name: %s\n",
+    fprintf(stderr,
+            "Usage: ./dem filename rate ncols nrows "
+            "[outfilename] \n"
+            "filename must be or .dem extension.\n"
+            "Rate must be a positive integer.\n"
+            "ncols = width of DEM, ncows = height\n"
+            "Default outfile name: %s\n",
             defaultOutfile);
     return EXIT_FAILURE;
   }
