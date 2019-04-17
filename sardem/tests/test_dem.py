@@ -79,12 +79,12 @@ class TestRsc(unittest.TestCase):
             utils.upsample_dem_rsc,
             rate=2,
             rsc_dict={'something': 1},
-            rsc_filepath=self.rsc_path)
+            rsc_filename=self.rsc_path)
         self.assertRaises(TypeError, utils.upsample_dem_rsc, rate=2)
         self.assertRaises(
-            TypeError, utils.upsample_dem_rsc, rsc_filepath=self.rsc_path)  # Need rate
+            TypeError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path)  # Need rate
 
-        up_rsc = utils.upsample_dem_rsc(rate=2, rsc_filepath=self.rsc_path)
+        up_rsc = utils.upsample_dem_rsc(rate=2, rsc_filename=self.rsc_path)
         expected = """\
 WIDTH         3
 FILE_LENGTH   5
