@@ -156,7 +156,18 @@ def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
     return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
 
 
-def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
+def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
+    if rsc_dict and rsc_filename:
+        raise TypeError("Can only give one of rsc_dict or rsc_filename")
+    elif not rsc_dict and not rsc_filename:
+        raise TypeError("Must give at least one of rsc_dict or rsc_filename")
+
+    if rsc_filename:
+        rsc_dict = loading.load_dem_rsc(rsc_filename)
+    return rsc_dict
+
+
+def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filename=None):
     """Creates a new .dem.rsc file for upsampled version
 
     Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
@@ -166,24 +177,19 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
         rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
         filepath (str): Optional, location of .dem.rsc file
 
-    Note: Must supply only one of rsc_dict or rsc_filepath
+    Note: Must supply only one of rsc_dict or rsc_filename
 
     Returns:
         str: file same as original with upsample adjusted numbers
 
     Raises:
-        TypeError: if neither (or both) rsc_filepath and rsc_dict are given
+        TypeError: if neither (or both) rsc_filename and rsc_dict are given
 
     """
-    if rsc_dict and rsc_filepath:
-        raise TypeError("Can only give one of rsc_dict or rsc_filepath")
-    elif not rsc_dict and not rsc_filepath:
-        raise TypeError("Must give at least one of rsc_dict or rsc_filepath")
-    elif not rate:
+    if not rate:
         raise TypeError("Must supply rate for upsampling")
 
-    if rsc_filepath:
-        rsc_dict = loading.load_dem_rsc(rsc_filepath)
+    rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
 
     outstring = ""
     for field, value in rsc_dict.items():
@@ -201,3 +207,26 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filepath=None):
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 
     return outstring
+
+
+def calc_upsample_rate(rsc_dict=None, rsc_filename=None):
+    """Find the rate of upsampling on an rsc file
+
+    Args:
+        rate (int): rate by which to upsample the DEM
+        rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
+        filepath (str): Optional, location of .dem.rsc file
+
+    Note: Must supply only one of rsc_dict or rsc_filename
+
+    Returns:
+        str: file same as original with upsample adjusted numbers
+
+    Raises:
+        TypeError: if neither (or both) rsc_filename and rsc_dict are given
+
+    """
+    rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
+    default_spacing = 1.0 / 3600  # NASA SRTM uses 3600 pixels for 1 degree, or 30 m
+    current_spacing = abs(rsc_dict['x_step'])
+    return default_spacing / current_spacing
