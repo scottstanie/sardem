@@ -726,12 +726,11 @@ def main(left_lon=None,
         f.write(loading.format_dem_rsc(rsc_dict))
 
     # Redo a new .rsc file for it
-    logger.info("Writing new upsampled dem to %s", rsc_filename)
+    logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
     with open(rsc_filename, "w") as f:
         upsampled_rsc = utils.upsample_dem_rsc(rate=rate, rsc_dict=rsc_dict)
         f.write(upsampled_rsc)
 
-    return
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
     upsample_cy.upsample_wrap(dem_filename_small.encode(), rate, ncols, nrows, output_name.encode())
@@ -739,4 +738,3 @@ def main(left_lon=None,
     # Clean up the _small versions of dem and dem.rsc
     logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
     os.remove(dem_filename_small)
-    os.remove(rsc_filename_small)
