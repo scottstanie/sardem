@@ -738,3 +738,4 @@ def main(left_lon=None,
     # Clean up the _small versions of dem and dem.rsc
     logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
     os.remove(dem_filename_small)
+    os.remove(rsc_filename_small)
