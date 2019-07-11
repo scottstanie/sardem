@@ -21,6 +21,15 @@ RSC_KEY_TYPES = [
 ]
 RSC_KEYS = [tup[0] for tup in RSC_KEY_TYPES]
 
+# in case only speciying rows/cols/steps, these always seem to be same
+DEFAULT_KEYS = {
+    'x_unit': 'degrees',
+    'y_unit': 'degrees',
+    'z_offset': 0,
+    'z_scale': 1,
+    'projection': 'LL',
+}
+
 
 def load_elevation(filename):
     """Loads a digital elevation map from either .hgt file or .dem
@@ -124,7 +133,16 @@ def format_dem_rsc(rsc_dict):
 
     """
     outstring = ""
-    for field, value in rsc_dict.items():
+    # for field, value in rsc_dict.items():
+    for field in RSC_KEYS:
+        # Make sure to skip extra keys that might be in the dict
+        if field not in RSC_KEYS:
+            continue
+
+        value = rsc_dict.get(field, DEFAULT_KEYS.get(field))
+        if value is None:
+            raise ValueError("%s is necessary for .rsc file: missing from dict" % field)
+
         # Files seemed to be left justified with 14 spaces? Not sure why 14
         # Apparently it was an old fortran format, where they use "read(15)"
         if field.lower() in ('x_step', 'y_step'):
