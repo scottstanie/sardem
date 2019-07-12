@@ -133,19 +133,20 @@ def format_dem_rsc(rsc_dict):
 
     """
     outstring = ""
+    rsc_dict = {k.lower(): v for k, v in rsc_dict.items()}
     # for field, value in rsc_dict.items():
     for field in RSC_KEYS:
         # Make sure to skip extra keys that might be in the dict
-        if field.lower() not in RSC_KEYS:
+        if field not in RSC_KEYS:
             continue
 
-        value = rsc_dict.get(field.lower(), DEFAULT_KEYS.get(field.lower()))
+        value = rsc_dict.get(field, DEFAULT_KEYS.get(field))
         if value is None:
             raise ValueError("%s is necessary for .rsc file: missing from dict" % field)
 
         # Files seemed to be left justified with 14 spaces? Not sure why 14
         # Apparently it was an old fortran format, where they use "read(15)"
-        if field.lower() in ('x_step', 'y_step'):
+        if field in ('x_step', 'y_step'):
             # give step floats proper sig figs to not output scientific notation
             outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
         else:
