@@ -136,10 +136,10 @@ def format_dem_rsc(rsc_dict):
     # for field, value in rsc_dict.items():
     for field in RSC_KEYS:
         # Make sure to skip extra keys that might be in the dict
-        if field not in RSC_KEYS:
+        if field.lower() not in RSC_KEYS:
             continue
 
-        value = rsc_dict.get(field, DEFAULT_KEYS.get(field))
+        value = rsc_dict.get(field.lower(), DEFAULT_KEYS.get(field.lower()))
         if value is None:
             raise ValueError("%s is necessary for .rsc file: missing from dict" % field)
 
