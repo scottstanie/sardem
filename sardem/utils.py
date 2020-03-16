@@ -58,7 +58,8 @@ def floor_float(num, ndigits):
 
 def is_file(f):
     """python 2/3 compatible check for file object"""
-    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, 'read')
+    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(
+        f, 'read')
 
 
 def corner_coords(lon, lat, dlon, dlat):
@@ -72,7 +73,11 @@ def corner_coords(lon, lat, dlon, dlat):
     ]
 
 
-def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None):
+def bounding_box(left_lon=None,
+                 top_lat=None,
+                 dlon=None,
+                 dlat=None,
+                 geojson=None):
     """From a top left/dlat/dlon, compute bounding lon/lats
 
     Args:
@@ -197,36 +202,16 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filename=None):
         # TODO: its 14- but fix this and previous formatting to be DRY
         if field.lower() in ('width', 'file_length'):
             new_size = up_size(value, rate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
+            outstring += "{field:<14s}{val}\n".format(field=field.upper(),
+                                                      val=new_size)
         elif field.lower() in ('x_step', 'y_step'):
             # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
             value /= rate
             # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
+            outstring += "{field:<14s}{val:0.12f}\n".format(
+                field=field.upper(), val=value)
         else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
+            outstring += "{field:<14s}{val}\n".format(field=field.upper(),
+                                                      val=value)
 
     return outstring
-
-
-def calc_upsample_rate(rsc_dict=None, rsc_filename=None):
-    """Find the rate of upsampling on an rsc file
-
-    Args:
-        rate (int): rate by which to upsample the DEM
-        rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
-        filepath (str): Optional, location of .dem.rsc file
-
-    Note: Must supply only one of rsc_dict or rsc_filename
-
-    Returns:
-        str: file same as original with upsample adjusted numbers
-
-    Raises:
-        TypeError: if neither (or both) rsc_filename and rsc_dict are given
-
-    """
-    rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
-    default_spacing = 1.0 / 3600  # NASA SRTM uses 3600 pixels for 1 degree, or 30 m
-    current_spacing = abs(rsc_dict['x_step'])
-    return default_spacing / current_spacing
