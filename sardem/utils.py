@@ -58,8 +58,7 @@ def floor_float(num, ndigits):
 
 def is_file(f):
     """python 2/3 compatible check for file object"""
-    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(
-        f, 'read')
+    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, 'read')
 
 
 def corner_coords(lon, lat, dlon, dlat):
@@ -73,11 +72,7 @@ def corner_coords(lon, lat, dlon, dlat):
     ]
 
 
-def bounding_box(left_lon=None,
-                 top_lat=None,
-                 dlon=None,
-                 dlat=None,
-                 geojson=None):
+def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None):
     """From a top left/dlat/dlon, compute bounding lon/lats
 
     Args:
@@ -202,16 +197,13 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filename=None):
         # TODO: its 14- but fix this and previous formatting to be DRY
         if field.lower() in ('width', 'file_length'):
             new_size = up_size(value, rate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(),
-                                                      val=new_size)
+            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
         elif field.lower() in ('x_step', 'y_step'):
             # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
             value /= rate
             # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value)
+            outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
         else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(),
-                                                      val=value)
+            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 
     return outstring
