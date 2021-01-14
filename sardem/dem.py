@@ -564,7 +564,7 @@ class Stitcher:
         if os.path.exists(filename):
             return loading.load_elevation(filename)
         else:
-            return np.zeros((NUM_PIXELS, NUM_PIXELS))
+            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=np.int16)
 
     def load_and_stitch(self):
         """Function to load combine .hgt tiles
