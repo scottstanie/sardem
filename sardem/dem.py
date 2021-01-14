@@ -64,20 +64,20 @@ except NameError:
 
 NUM_PIXELS = 3601  # For SRTM1
 RSC_KEYS = [
-    'WIDTH',
-    'FILE_LENGTH',
-    'X_FIRST',
-    'Y_FIRST',
-    'X_STEP',
-    'Y_STEP',
-    'X_UNIT',
-    'Y_UNIT',
-    'Z_OFFSET',
-    'Z_SCALE',
-    'PROJECTION',
+    "WIDTH",
+    "FILE_LENGTH",
+    "X_FIRST",
+    "Y_FIRST",
+    "X_STEP",
+    "Y_STEP",
+    "X_UNIT",
+    "Y_UNIT",
+    "Z_OFFSET",
+    "Z_SCALE",
+    "PROJECTION",
 ]
 
-logger = logging.getLogger('sardem')
+logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
 
 
@@ -92,8 +92,10 @@ def _get_username_pass():
     password = getpass.getpass(prompt="Password (will not be displayed): ")
     save_to_netrc = input(
         "Would you like to save these to ~/.netrc (machine={}) for future use (y/n)?  ".format(
-            Downloader.NASAHOST))
-    return username, password, save_to_netrc.lower().startswith('y')
+            Downloader.NASAHOST
+        )
+    )
+    return username, password, save_to_netrc.lower().startswith("y")
 
 
 class Netrc(netrc.netrc):
@@ -162,11 +164,14 @@ class Tile:
             ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
 ([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
-        lon_lat_regex = r'([NS])(\d{1,2})([EW])(\d{1,3}).hgt'
+        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).hgt"
         match = re.match(lon_lat_regex, tile_name)
         if not match:
-            raise ValueError('Invalid SRTM1 tile name: {}, must match {}'.format(
-                tile_name, lon_lat_regex))
+            raise ValueError(
+                "Invalid SRTM1 tile name: {}, must match {}".format(
+                    tile_name, lon_lat_regex
+                )
+            )
 
         lat_str, lat, lon_str, lon = match.groups()
         return lat_str, int(lat), lon_str, int(lon)
@@ -217,13 +222,13 @@ class Tile:
 
         # Now iterate in same order in which they'll be stithced together
         for ilat in range(top_int, bot_int - 1, -1):  # north to south
-            hemi_ns = 'N' if ilat >= 0 else 'S'
-            lat_str = '{}{:02d}'.format(hemi_ns, abs(ilat))
+            hemi_ns = "N" if ilat >= 0 else "S"
+            lat_str = "{}{:02d}".format(hemi_ns, abs(ilat))
             for ilon in range(left_int, right_int + 1):  # West to east
-                hemi_ew = 'E' if ilon >= 0 else 'W'
-                lon_str = '{}{:03d}'.format(hemi_ew, abs(ilon))
+                hemi_ew = "E" if ilon >= 0 else "W"
+                lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
 
-                yield '{lat_str}{lon_str}.hgt'.format(lat_str=lat_str, lon_str=lon_str)
+                yield "{lat_str}{lon_str}.hgt".format(lat_str=lat_str, lon_str=lon_str)
 
 
 class Downloader:
@@ -240,19 +245,24 @@ class Downloader:
         ValueError: if data_source not a valid source string
 
     """
-    VALID_SOURCES = ('NASA', 'AWS')
-    DATA_URLS = {
-        'NASA': "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
-        'AWS': "https://s3.amazonaws.com/elevation-tiles-prod/skadi"
-    }
-    COMPRESS_TYPES = {'NASA': 'zip', 'AWS': 'gz'}
-    NASAHOST = 'urs.earthdata.nasa.gov'
 
-    def __init__(self, tile_names, data_source='NASA', netrc_file='~/.netrc', cache_dir=None):
+    VALID_SOURCES = ("NASA", "AWS")
+    DATA_URLS = {
+        "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
+        "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
+    }
+    COMPRESS_TYPES = {"NASA": "zip", "AWS": "gz"}
+    NASAHOST = "urs.earthdata.nasa.gov"
+
+    def __init__(
+        self, tile_names, data_source="NASA", netrc_file="~/.netrc", cache_dir=None
+    ):
         self.tile_names = tile_names
         self.data_source = data_source
         if data_source not in self.VALID_SOURCES:
-            raise ValueError('data_source must be one of: {}'.format(','.join(self.VALID_SOURCES)))
+            raise ValueError(
+                "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
+            )
         self.data_url = self.DATA_URLS[data_source]
         self.compress_type = self.COMPRESS_TYPES[data_source]
         self.netrc_file = os.path.expanduser(netrc_file)
@@ -265,8 +275,11 @@ class Downloader:
         try:
             n = self._get_netrc_file()
             # Check account exists, as well is having username and password
-            return (self.NASAHOST in n.hosts and n.authenticators(self.NASAHOST)[0]
-                    and n.authenticators(self.NASAHOST)[2])
+            return (
+                self.NASAHOST in n.hosts
+                and n.authenticators(self.NASAHOST)[0]
+                and n.authenticators(self.NASAHOST)[2]
+            )
         except (OSError, IOError):
             return False
 
@@ -294,7 +307,7 @@ class Downloader:
                 # Otherwise, make a fresh one to save
                 outstring = self._nasa_netrc_entry(username, password)
 
-            with open(self.netrc_file, 'w') as f:
+            with open(self.netrc_file, "w") as f:
                 f.write(outstring)
         else:
             # Save these as attritubes for the NASA url request
@@ -320,34 +333,36 @@ class Downloader:
             >>> print(d._form_tile_url('N19W155.hgt'))
             https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
         """
-        if self.data_source == 'AWS':
+        if self.data_source == "AWS":
             lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
-            url = '{base}/{lat}/{tile}.{ext}'.format(
+            url = "{base}/{lat}/{tile}.{ext}".format(
                 base=self.data_url,
                 lat=lat_str + str(lat_int),
                 tile=tile_name,
-                ext=self.compress_type)
-        elif self.data_source == 'NASA':
-            url = '{base}/{tile}.{ext}'.format(
+                ext=self.compress_type,
+            )
+        elif self.data_source == "NASA":
+            url = "{base}/{tile}.{ext}".format(
                 base=self.data_url,
-                tile=tile_name.replace('.hgt', '.SRTMGL1.hgt'),
-                ext=self.compress_type)
+                tile=tile_name.replace(".hgt", ".SRTMGL1.hgt"),
+                ext=self.compress_type,
+            )
         return url
 
     def _download_hgt_tile(self, url):
         """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips" """
         # Using AWS or a netrc file are the easy cases
         logger.info("Downloading {}".format(url))
-        if self.data_source == 'AWS':
+        if self.data_source == "AWS":
             response = requests.get(url)
-        elif self.data_source == 'NASA' and self._has_nasa_netrc():
+        elif self.data_source == "NASA" and self._has_nasa_netrc():
             logger.info("Using netrc file: %s", self.netrc_file)
             response = requests.get(url)
         else:
             # NASA without a netrc file needs special auth session handling
             with requests.Session() as session:
                 session.auth = (self.username, self.password)
-                r1 = session.request('get', url)
+                r1 = session.request("get", url)
                 # NASA then redirects to
                 # urs.earthdata.nasa.gov/oauth/authorize?scope=uid&app_type=401&client_id=...
                 response = session.get(r1.url, auth=(self.username, self.password))
@@ -357,11 +372,11 @@ class Downloader:
     def _unzip_file(self, filepath):
         """Unzips in place the .hgt files downloaded"""
         ext = os.path.splitext(filepath)[1]
-        if ext == '.gz':
-            unzip_cmd = ['gunzip']
-        elif ext == '.zip':
+        if ext == ".gz":
+            unzip_cmd = ["gunzip"]
+        elif ext == ".zip":
             # -o forces overwrite without prompt, -d specifices unzip directory
-            unzip_cmd = 'unzip -o -d {}'.format(self.cache_dir).split(' ')
+            unzip_cmd = "unzip -o -d {}".format(self.cache_dir).split(" ")
         subprocess.check_call(unzip_cmd + [filepath])
 
     def download_and_save(self, tile_name):
@@ -380,8 +395,8 @@ class Downloader:
             logger.info("{} already exists, skipping.".format(local_filename))
         else:
             # On AWS these are gzipped: download, then unzip
-            local_filename += '.{}'.format(self.compress_type)
-            with open(local_filename, 'wb') as f:
+            local_filename += ".{}".format(self.compress_type)
+            with open(local_filename, "wb") as f:
                 url = self._form_tile_url(tile_name)
                 response = self._download_hgt_tile(url)
                 # Now check response for auth issues/ errors
@@ -400,13 +415,18 @@ class Downloader:
         return True
 
     def _all_files_exist(self):
-        filepaths = [os.path.join(self.cache_dir, tile_name) for tile_name in self.tile_names]
+        filepaths = [
+            os.path.join(self.cache_dir, tile_name) for tile_name in self.tile_names
+        ]
         return all(os.path.exists(f) for f in filepaths)
 
     def download_all(self):
         """Downloads and saves all tiles from tile list"""
         # Only need to get credentials for this case:
-        if not self._all_files_exist() and self.data_source == 'NASA' and not self._has_nasa_netrc(
+        if (
+            not self._all_files_exist()
+            and self.data_source == "NASA"
+            and not self._has_nasa_netrc()
         ):
             self.handle_credentials()
 
@@ -414,9 +434,11 @@ class Downloader:
         successes = pool.map(self.download_and_save, self.tile_names)
         pool.close()
         if not any(successes):
-            raise ValueError("No successful .hgt tiles found and downloaded:"
-                             " check lats/ lons of DEM box for valid SRTM land area"
-                             " (<60 deg latitude not open ocean).")
+            raise ValueError(
+                "No successful .hgt tiles found and downloaded:"
+                " check lats/ lons of DEM box for valid SRTM land area"
+                " (<60 deg latitude not open ocean)."
+            )
 
 
 class Stitcher:
@@ -517,11 +539,11 @@ class Stitcher:
         lat_str, lat, lon_str, lon = Tile.get_tile_parts(tile_name)
 
         # lat gets added to or subtracted
-        top_lat = float(lat) + 1 if lat_str == 'N' else -float(lat) + 1
+        top_lat = float(lat) + 1 if lat_str == "N" else -float(lat) + 1
 
         # lon is negative if we're in western hemisphere
         # No +1 addition needed to lon: bottom left and top left are same
-        left_lon = -1 * float(lon) if lon_str == 'W' else float(lon)
+        left_lon = -1 * float(lon) if lon_str == "W" else float(lon)
         return (left_lon, top_lat)
 
     def _create_file_array(self):
@@ -559,7 +581,7 @@ class Stitcher:
         _, ncols = self.blockshape
         tile_grid = self._create_file_array()
         for idx, row in enumerate(tile_grid):
-            cur_row = np.hstack(self._load_tile(tile_name) for tile_name in row)
+            cur_row = np.hstack([self._load_tile(tile_name) for tile_name in row])
             # Delete columns: 3601*[1, 2,... not-including last column]
             delete_cols = self.num_pixels * np.arange(1, ncols)
             cur_row = np.delete(cur_row, delete_cols, axis=1)
@@ -611,23 +633,25 @@ class Stitcher:
 
         # Use an OrderedDict for the key/value pairs so writing to file easy
         rsc_dict = collections.OrderedDict.fromkeys(RSC_KEYS)
-        rsc_dict.update({
-            'X_UNIT': 'degrees',
-            'Y_UNIT': 'degrees',
-            'Z_OFFSET': 0,
-            'Z_SCALE': 1,
-            'PROJECTION': 'LL',
-        })
+        rsc_dict.update(
+            {
+                "X_UNIT": "degrees",
+                "Y_UNIT": "degrees",
+                "Z_OFFSET": 0,
+                "Z_SCALE": 1,
+                "PROJECTION": "LL",
+            }
+        )
 
         # Remove paths from tile filenames, if they exist
         x_first, y_first = self.start_lon_lat(self.tile_file_list[0])
         nrows, ncols = self.shape
         # TODO: figure out where to generalize for SRTM3
-        rsc_dict.update({'WIDTH': ncols, 'FILE_LENGTH': nrows})
-        rsc_dict.update({'X_FIRST': x_first, 'Y_FIRST': y_first})
+        rsc_dict.update({"WIDTH": ncols, "FILE_LENGTH": nrows})
+        rsc_dict.update({"X_FIRST": x_first, "Y_FIRST": y_first})
 
         x_step, y_step = self._find_step_sizes()
-        rsc_dict.update({'X_STEP': x_step, 'Y_STEP': y_step})
+        rsc_dict.update({"X_STEP": x_step, "Y_STEP": y_step})
         return rsc_dict
 
 
@@ -646,10 +670,10 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     """
     indexes, new_starts = utils.find_bounding_idxs(
         bounds,
-        rsc_data['X_STEP'],
-        rsc_data['Y_STEP'],
-        rsc_data['X_FIRST'],
-        rsc_data['Y_FIRST'],
+        rsc_data["X_STEP"],
+        rsc_data["Y_STEP"],
+        rsc_data["X_FIRST"],
+        rsc_data["Y_FIRST"],
     )
     left_idx, bot_idx, right_idx, top_idx = indexes
     cropped_dem = stitched_dem[top_idx:bot_idx, left_idx:right_idx]
@@ -657,14 +681,16 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
-def main(left_lon=None,
-         top_lat=None,
-         dlon=None,
-         dlat=None,
-         geojson=None,
-         data_source=None,
-         rate=None,
-         output_name=None):
+def main(
+    left_lon=None,
+    top_lat=None,
+    dlon=None,
+    dlat=None,
+    geojson=None,
+    data_source=None,
+    rate=None,
+    output_name=None,
+):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
@@ -695,17 +721,19 @@ def main(left_lon=None,
 
     # Cropping: get very close to the bounds asked for:
     logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem, new_starts, new_sizes = crop_stitched_dem(bounds, stitched_dem, rsc_dict)
+    stitched_dem, new_starts, new_sizes = crop_stitched_dem(
+        bounds, stitched_dem, rsc_dict
+    )
     new_x_first, new_y_first = new_starts
     new_rows, new_cols = new_sizes
     # Now adjust the .dem.rsc data to reflect new top-left corner and new shape
-    rsc_dict['X_FIRST'] = new_x_first
-    rsc_dict['Y_FIRST'] = new_y_first
-    rsc_dict['FILE_LENGTH'] = new_rows
-    rsc_dict['WIDTH'] = new_cols
+    rsc_dict["X_FIRST"] = new_x_first
+    rsc_dict["Y_FIRST"] = new_y_first
+    rsc_dict["FILE_LENGTH"] = new_rows
+    rsc_dict["WIDTH"] = new_cols
 
     # Upsampling:
-    rsc_filename = output_name + '.rsc'
+    rsc_filename = output_name + ".rsc"
     if rate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
@@ -733,7 +761,9 @@ def main(left_lon=None,
 
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
-    upsample_cy.upsample_wrap(dem_filename_small.encode(), rate, ncols, nrows, output_name.encode())
+    upsample_cy.upsample_wrap(
+        dem_filename_small.encode(), rate, ncols, nrows, output_name.encode()
+    )
 
     # Clean up the _small versions of dem and dem.rsc
     logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
