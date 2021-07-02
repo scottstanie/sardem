@@ -29,7 +29,7 @@ setuptools.setup(
     install_requires=["numpy", "requests"],
     entry_points={
         "console_scripts": [
-            "createdem=sardem.cli:cli",
+            "sardem=sardem.cli:cli",
         ],
     },
     ext_modules=[

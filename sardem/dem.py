@@ -20,6 +20,8 @@ NASA MEaSUREs SRTM Version 3 (SRTMGL1) houses the data
     more info on SRTMGL1: https://cmr.earthdata.nasa.gov/search/concepts/C1000000240-LPDAAC_ECS.html
 
 Example url: "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001.SRTMGL1.hgt.zip"
+Example Water body url:
+    http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
 
 Other option is to download from Mapzen's tile set on AWS:
 
@@ -246,12 +248,21 @@ class Downloader:
 
     """
 
-    VALID_SOURCES = ("NASA", "AWS")
     DATA_URLS = {
         "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
+        "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
     }
-    COMPRESS_TYPES = {"NASA": "zip", "AWS": "gz"}
+    VALID_SOURCES = DATA_URLS.keys()
+    PRODUCT_NAMES = {
+        "NASA": "SRTMGL1.003",
+        "NASA_WATER": "SRTMSWBD.003",
+    }
+    TILE_ENDINGS = {
+        "NASA": ".SRTMGL1.hgt",
+        "NASA_WATER": ".SRTMSWBD.raw",
+    }
+    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz"}
     NASAHOST = "urs.earthdata.nasa.gov"
 
     def __init__(
@@ -329,6 +340,10 @@ class Downloader:
             >>> print(d._form_tile_url('N19W155.hgt'))
             http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
 
+            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='NASA_WATER')
+            >>> print(d._form_tile_url('N19W155.hgt'))
+            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
+
             >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='AWS')
             >>> print(d._form_tile_url('N19W155.hgt'))
             https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
@@ -341,10 +356,10 @@ class Downloader:
                 tile=tile_name,
                 ext=self.compress_type,
             )
-        elif self.data_source == "NASA":
+        elif self.data_source.startswith("NASA"):
             url = "{base}/{tile}.{ext}".format(
                 base=self.data_url,
-                tile=tile_name.replace(".hgt", ".SRTMGL1.hgt"),
+                tile=tile_name.replace(".hgt", self.TILE_ENDINGS[self.data_source]),
                 ext=self.compress_type,
             )
         return url
