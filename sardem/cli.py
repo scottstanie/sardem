@@ -84,11 +84,18 @@ def cli():
         "File containing the geojson object for DEM bounds",
     )
     parser.add_argument(
-        "--rate",
-        "-r",
+        "--xrate",
+        "-x",
         default=1,
         type=positive_small_int,
-        help="Rate at which to upsample DEM (default=1, no upsampling)",
+        help="Rate in x dir to upsample DEM (default=1, no upsampling)",
+    )
+    parser.add_argument(
+        "--yrate",
+        "-y",
+        default=1,
+        type=positive_small_int,
+        help="Rate in y dir to upsample DEM (default=1, no upsampling)",
     )
     parser.add_argument(
         "--output",
@@ -141,6 +148,7 @@ def cli():
         dlat,
         geojson_dict,
         args.data_source,
-        args.rate,
+        args.xrate,
+        args.yrate,
         output,
     )

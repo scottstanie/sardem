@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
     printf("Using %s as output file for upsampling.\n", outfileUp);
   } else {
     outfileUp = argv[6];
-    if (strcmp(getFileExt(outfileUp), ".dem") != 0) {
-      fprintf(stderr, "Error: Outfile name must be .dem: %s\n", outfileUp);
+    if ((strcmp(getFileExt(outfileUp), ".dem") != 0) || (strcmp(getFileExt(outfileUp), ".wbd") != 0)) {
+      fprintf(stderr, "Error: Outfile name must be .dem or .wbd: %s\n", outfileUp);
       return EXIT_FAILURE;
     }
   }

@@ -767,11 +767,14 @@ def main(
         return
 
     logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
-    dem_filename_small = output_name.replace(".dem", "_small.dem")
-    rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+    # dem_filename_small = output_name.replace(".dem", "_small.dem")
+    # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+    dem_filename_small = "small_" + output_name
+    rsc_filename_small = "small_" + rsc_filename
 
     logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-    stitched_dem.tofile(dem_filename_small)
+    # Note: forcing to uint16 to simplify c-program loading
+    stitched_dem.astype(np.uint16).tofile(dem_filename_small)
     logger.info("Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small)
     with open(rsc_filename_small, "w") as f:
         f.write(loading.format_dem_rsc(rsc_dict))
@@ -779,14 +782,28 @@ def main(
     # Redo a new .rsc file for it
     logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
     with open(rsc_filename, "w") as f:
-        upsampled_rsc = utils.upsample_dem_rsc(rate=rate, rsc_dict=rsc_dict)
+        upsampled_rsc = utils.upsample_dem_rsc(
+            xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+        )
         f.write(upsampled_rsc)
 
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
     upsample_cy.upsample_wrap(
-        dem_filename_small.encode("utf-8"), xrate, yrate, ncols, nrows, output_name.encode()
+        dem_filename_small.encode("utf-8"),
+        xrate,
+        yrate,
+        ncols,
+        nrows,
+        output_name.encode(),
     )
+
+    # Overwrite with smaller dtype for water mask
+    if data_source == "NASA_WATER":
+        upsampled_dict = loading.load_dem_rsc(rsc_filename)
+        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
+        mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
+        mask.astype(bool).tofile(output_name)
 
     # Clean up the _small versions of dem and dem.rsc
     logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
