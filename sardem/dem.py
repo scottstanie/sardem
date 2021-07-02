@@ -156,17 +156,17 @@ class Tile:
             ValueError: if regex match fails on tile_name
 
         Examples:
-            >>> Tile.get_tile_parts('N19W156.hgt')
+            >>> Tile.get_tile_parts('N19W156')
             ('N', 19, 'W', 156)
-            >>> Tile.get_tile_parts('S5E6.hgt')
+            >>> Tile.get_tile_parts('S5E6')
             ('S', 5, 'E', 6)
-            >>> Tile.get_tile_parts('Notrealname.hgt')
+            >>> Tile.get_tile_parts('Notrealname')
             Traceback (most recent call last):
                ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
-([NS])(\d{1,2})([EW])(\d{1,3}).[hgt|raw]
+            ValueError: Invalid SRTM1 tile name: Notrealname, must match \
+([NS])(\d{1,2})([EW])(\d{1,3})
         """
-        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).[hgt|raw]"
+        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3})"
         match = re.match(lon_lat_regex, tile_name)
         if not match:
             raise ValueError(
@@ -197,7 +197,7 @@ class Tile:
             None: bounds provided to Tile __init__()
 
         Yields:
-            str: .hgt tile names that cover all of bounding box
+            str: tile names that cover all of bounding box
                 yielded in order of top left to bottom right
 
         Examples:
@@ -207,10 +207,10 @@ class Tile:
             >>> type(d.srtm1_tile_names()) == GeneratorType
             True
             >>> list(d.srtm1_tile_names())
-            ['N19W156.hgt', 'N19W155.hgt']
+            ['N19W156', 'N19W155']
             >>> bounds = [-156.0, 19.0, -154.0, 20.0]  # Show int bounds
             >>> list(d.srtm1_tile_names())
-            ['N19W156.hgt', 'N19W155.hgt']
+            ['N19W156', 'N19W155']
         """
         left, bottom, right, top = self.bounds
         left_int, top_int = self.srtm1_tile_corner(left, top)
@@ -230,11 +230,7 @@ class Tile:
                 hemi_ew = "E" if ilon >= 0 else "W"
                 lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
 
-                yield "{lat_str}{lon_str}.hgt".format(lat_str=lat_str, lon_str=lon_str)
-
-    def wbd_tile_names(self):
-        for tile in self.srtm1_tile_names():
-            yield tile.replace(".hgt", ".raw")
+                yield "{lat_str}{lon_str}".format(lat_str=lat_str, lon_str=lon_str)
 
 
 class Downloader:
@@ -275,6 +271,7 @@ class Downloader:
                 "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
             )
         self.data_url = self.DATA_URLS[data_source]
+        self.ext_type = "raw" if data_source == "NASA_WATER" else "hgt"
         self.compress_type = self.COMPRESS_TYPES[data_source]
         self.netrc_file = os.path.expanduser(netrc_file)
         self.cache_dir = cache_dir or utils.get_cache_dir()
@@ -336,30 +333,31 @@ class Downloader:
             url: formatted url string with tile name
 
         Examples:
-            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='NASA')
-            >>> print(d._form_tile_url('N19W155.hgt'))
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
+            >>> print(d._form_tile_url('N19W155'))
             http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
 
-            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='NASA_WATER')
-            >>> print(d._form_tile_url('N19W155.hgt'))
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
+            >>> print(d._form_tile_url('N19W155'))
             http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
 
-            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='AWS')
-            >>> print(d._form_tile_url('N19W155.hgt'))
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='AWS')
+            >>> print(d._form_tile_url('N19W155'))
             https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
         """
         if self.data_source == "AWS":
             lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
-            url = "{base}/{lat}/{tile}.{ext}".format(
+            url = "{base}/{lat}/{tile}.{ext}.{comp}".format(
                 base=self.data_url,
                 lat=lat_str + str(lat_int),
                 tile=tile_name,
-                ext=self.compress_type,
+                ext=self.ext_type,
+                comp=self.compress_type,
             )
         elif self.data_source.startswith("NASA"):
             url = "{base}/{tile}.{ext}".format(
                 base=self.data_url,
-                tile=tile_name.replace(".hgt", self.TILE_ENDINGS[self.data_source]),
+                tile=tile_name + self.TILE_ENDINGS[self.data_source],
                 ext=self.compress_type,
             )
         return url
@@ -461,7 +459,7 @@ class Stitcher:
 
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
-            E.g.: ['N19W156.hgt', 'N19W155.hgt']
+            E.g.: ['N19W156', 'N19W155']
         failures (list[bool]): list of True (for successes) False
             (for failed downloads) matching tile_file_list
         num_pixels (int): size of the squares of the .hgt files
@@ -488,7 +486,7 @@ class Stitcher:
         Returned as a tuple
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s.shape
             (3601, 7201)
         """
@@ -511,7 +509,7 @@ class Stitcher:
         Note: This is not the total number of pixels, which can be found in .shape
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s._compute_shape()
             (1, 2)
         """
@@ -544,9 +542,9 @@ class Stitcher:
             ValueError: if regex match fails on tile_name
 
         Examples:
-            >>> Stitcher.start_lon_lat('N19W156.hgt')
+            >>> Stitcher.start_lon_lat('N19W156')
             (-156.0, 20.0)
-            >>> Stitcher.start_lon_lat('S5E6.hgt')
+            >>> Stitcher.start_lon_lat('S5E6')
             (6.0, -4.0)
         """
 
@@ -564,10 +562,10 @@ class Stitcher:
         """Finds filenames and reshapes into numpy.array matching DEM shape
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt', 'N18W156.hgt', 'N18W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155', 'N18W156', 'N18W155'])
             >>> print(s._create_file_array())
-            [['N19W156.hgt' 'N19W155.hgt']
-             ['N18W156.hgt' 'N18W155.hgt']]
+            [['N19W156' 'N19W155']
+             ['N18W156' 'N18W155']]
         """
         nrows, ncols = self.blockshape
         return np.array(self.tile_file_list).reshape((nrows, ncols))
@@ -620,7 +618,7 @@ class Stitcher:
             (float, float): x_step, y_step
 
         Example:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> print(s._find_step_sizes())
             (0.000277777777, -0.000277777777)
         """
@@ -641,7 +639,7 @@ class Stitcher:
             OrderedDict: key/value pairs in order to write to a .dem.rsc file
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s.create_dem_rsc()
             OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), \
 ('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), \
@@ -678,7 +676,7 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     Args:
         bounds (tuple[float]): (left, bot, right, top) lats and lons of
             desired bounding box for the DEM
-        stitched_dem (numpy.array, 2D): result from .hgt files
+        stitched_dem (numpy.array, 2D): result from files
             through Stitcher.load_and_stitch()
         rsc_data (dict): data from .dem.rsc file, from Stitcher.create_dem_rsc
 

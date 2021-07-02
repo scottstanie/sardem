@@ -34,11 +34,11 @@ class TestTile(unittest.TestCase):
 class TestDownload(unittest.TestCase):
     def setUp(self):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
-        self.test_tile = 'N19W156.hgt'
+        self.test_tile = 'N19W156'
         self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
-        sample_hgt_path = join(DATAPATH, self.test_tile + '.zip')
+        sample_hgt_path = join(DATAPATH, self.test_tile + '.hgt.zip')
         with open(sample_hgt_path, 'rb') as f:
             self.sample_hgt_zip = f.read()
 
@@ -56,7 +56,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         responses.add(responses.GET, self.hgt_url, body=self.sample_hgt_zip, status=200)
         d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir)
         d.download_all()
-        self.assertTrue(os.path.exists(join(d.cache_dir, self.test_tile)))
+        self.assertTrue(os.path.exists(join(d.cache_dir, self.test_tile + "." + d.ext_type)))
 
 
 class TestRsc(unittest.TestCase):

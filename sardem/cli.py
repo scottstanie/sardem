@@ -26,7 +26,7 @@ def positive_small_int(argstring):
 # Note: overriding this to show the positionals first
 USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
                  [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS}]
+                 [--data-source {NASA,AWS,NASA_WATER}]
                  """
 
 DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
