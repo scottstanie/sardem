@@ -8,14 +8,16 @@ import responses
 
 from sardem import dem, utils
 
-DATAPATH = join(dirname(__file__), 'data')
-NETRC_PATH = join(DATAPATH, 'netrc')
+DATAPATH = join(dirname(__file__), "data")
+NETRC_PATH = join(DATAPATH, "netrc")
 
 
 class TestNetrc(unittest.TestCase):
     def test_format(self):
         n = dem.Netrc(NETRC_PATH)
-        expected = "machine urs.earthdata.nasa.gov\n\tlogin testuser\n\tpassword testpass\n"
+        expected = (
+            "machine urs.earthdata.nasa.gov\n\tlogin testuser\n\tpassword testpass\n"
+        )
 
         self.assertEqual(n.format(), expected)
 
@@ -34,12 +36,12 @@ class TestTile(unittest.TestCase):
 class TestDownload(unittest.TestCase):
     def setUp(self):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
-        self.test_tile = 'N19W156'
+        self.test_tile = "N19W156"
         self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
-        sample_hgt_path = join(DATAPATH, self.test_tile + '.hgt.zip')
-        with open(sample_hgt_path, 'rb') as f:
+        sample_hgt_path = join(DATAPATH, self.test_tile + ".hgt.zip")
+        with open(sample_hgt_path, "rb") as f:
             self.sample_hgt_zip = f.read()
 
         self.cache_dir = tempfile.mkdtemp()
@@ -49,19 +51,25 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
     def test_init(self):
         d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH)
-        self.assertEqual(d.data_url, "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11")
+        self.assertEqual(
+            d.data_url, "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
+        )
 
     @responses.activate
     def test_download(self):
         responses.add(responses.GET, self.hgt_url, body=self.sample_hgt_zip, status=200)
-        d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir)
+        d = dem.Downloader(
+            [self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
+        )
         d.download_all()
-        self.assertTrue(os.path.exists(join(d.cache_dir, self.test_tile + "." + d.ext_type)))
+        self.assertTrue(
+            os.path.exists(join(d.cache_dir, self.test_tile + "." + d.ext_type))
+        )
 
 
 class TestRsc(unittest.TestCase):
     def setUp(self):
-        self.rsc_path = join(DATAPATH, 'elevation.dem.rsc')
+        self.rsc_path = join(DATAPATH, "elevation.dem.rsc")
 
     def test_upsample_dem_rsc(self):
         # Test input checking
@@ -69,11 +77,13 @@ class TestRsc(unittest.TestCase):
             ValueError,
             utils.upsample_dem_rsc,
             xrate=2,
-            rsc_dict={'something': 1},
-            rsc_filename=self.rsc_path)
+            rsc_dict={"something": 1},
+            rsc_filename=self.rsc_path,
+        )
         self.assertRaises(ValueError, utils.upsample_dem_rsc, xrate=2)
         self.assertRaises(
-            ValueError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path)  # Need rate
+            ValueError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path
+        )  # Need rate
 
         up_rsc = utils.upsample_dem_rsc(xrate=1, yrate=1, rsc_filename=self.rsc_path)
         expected = """\
@@ -123,8 +133,13 @@ PROJECTION    LL
 
 class TestBounds(unittest.TestCase):
     def setUp(self):
-        self.coords = [[-156.0, 18.7], [-154.6, 18.7], [-154.6, 20.3], [-156.0, 20.3],
-                       [-156.0, 18.7]]
+        self.coords = [
+            [-156.0, 18.7],
+            [-154.6, 18.7],
+            [-154.6, 20.3],
+            [-156.0, 20.3],
+            [-156.0, 18.7],
+        ]
         self.left_lon = -156.0
         self.top_lat = 20.3
         self.dlat = 1.6
@@ -132,12 +147,15 @@ class TestBounds(unittest.TestCase):
 
     def test_corner_input(self):
         result = utils.corner_coords(self.left_lon, self.top_lat, self.dlon, self.dlat)
-        self.assertEqual(set(tuple(c) for c in result), set(tuple(c) for c in self.coords))
+        self.assertEqual(
+            set(tuple(c) for c in result), set(tuple(c) for c in self.coords)
+        )
 
     def test_bounding_box(self):
         self.assertEqual(
             utils.bounding_box(self.left_lon, self.top_lat, self.dlon, self.dlat),
-            (-156.0, 18.7, -154.6, 20.3))
+            (-156.0, 18.7, -154.6, 20.3),
+        )
 
 
 """
