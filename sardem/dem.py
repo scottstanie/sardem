@@ -164,7 +164,7 @@ class Tile:
             Traceback (most recent call last):
                ...
             ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
-([NS])(\d{1,2})([EW])(\d{1,3}).hgt
+([NS])(\d{1,2})([EW])(\d{1,3}).[hgt|raw]
         """
         lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).[hgt|raw]"
         match = re.match(lon_lat_regex, tile_name)
@@ -548,11 +548,6 @@ class Stitcher:
             (-156.0, 20.0)
             >>> Stitcher.start_lon_lat('S5E6.hgt')
             (6.0, -4.0)
-            >>> Stitcher.start_lon_lat('Notrealname.hgt')
-            Traceback (most recent call last):
-               ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
-([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
 
         lat_str, lat, lon_str, lon = Tile.get_tile_parts(tile_name)
@@ -710,7 +705,8 @@ def main(
     dlat=None,
     geojson=None,
     data_source=None,
-    rate=None,
+    xrate=1,
+    yrate=1,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -722,7 +718,8 @@ def main(
         dlat (float): Height of box in latitude degrees
         geojson (dict): geojson object outlining DEM (alternative to lat/lon)
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
-        rate (int): rate to upsample DEM (positive int)
+        xrate (int): x-rate (columns) to upsample DEM (positive int)
+        yrate (int): y-rate (rows) to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -760,7 +757,7 @@ def main(
 
     # Upsampling:
     rsc_filename = output_name + ".rsc"
-    if rate == 1:
+    if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
         stitched_dem.tofile(output_name)
@@ -769,7 +766,7 @@ def main(
             f.write(loading.format_dem_rsc(rsc_dict))
         return
 
-    logger.info("Upsampling by {}".format(rate))
+    logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
     dem_filename_small = output_name.replace(".dem", "_small.dem")
     rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
 
@@ -788,7 +785,7 @@ def main(
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
     upsample_cy.upsample_wrap(
-        dem_filename_small.encode("utf-8"), rate, ncols, nrows, output_name.encode()
+        dem_filename_small.encode("utf-8"), xrate, yrate, ncols, nrows, output_name.encode()
     )
 
     # Clean up the _small versions of dem and dem.rsc

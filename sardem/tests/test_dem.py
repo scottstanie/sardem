@@ -62,29 +62,48 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 class TestRsc(unittest.TestCase):
     def setUp(self):
         self.rsc_path = join(DATAPATH, 'elevation.dem.rsc')
-        # Sample dict with only lat/lon info
-        self.test_rsc_data = {
-            "width": 4,
-            "file_length": 2,
-            "x_first": -10.0,
-            "y_first": 3.0,
-            "x_step": 0.25,
-            "y_step": -0.25
-        }
 
     def test_upsample_dem_rsc(self):
         # Test input checking
         self.assertRaises(
-            TypeError,
+            ValueError,
             utils.upsample_dem_rsc,
-            rate=2,
+            xrate=2,
             rsc_dict={'something': 1},
             rsc_filename=self.rsc_path)
-        self.assertRaises(TypeError, utils.upsample_dem_rsc, rate=2)
+        self.assertRaises(ValueError, utils.upsample_dem_rsc, rate=2)
         self.assertRaises(
-            TypeError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path)  # Need rate
+            ValueError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path)  # Need rate
 
-        up_rsc = utils.upsample_dem_rsc(rate=2, rsc_filename=self.rsc_path)
+        up_rsc = utils.upsample_dem_rsc(xrate=1, yrate=1, rsc_filename=self.rsc_path)
+        expected = """\
+WIDTH         2
+FILE_LENGTH   3
+X_FIRST       -155.676388889
+Y_FIRST       19.5755555567
+X_STEP        0.000138888888
+Y_STEP        -0.000138888888
+X_UNIT        degrees
+Y_UNIT        degrees
+Z_OFFSET      0
+Z_SCALE       1
+PROJECTION    LL
+"""
+        up_rsc = utils.upsample_dem_rsc(xrate=2, rsc_filename=self.rsc_path)
+        expected = """\
+WIDTH         3
+FILE_LENGTH   3
+X_FIRST       -155.676388889
+Y_FIRST       19.5755555567
+X_STEP        0.000069444444
+Y_STEP        -0.000138888888
+X_UNIT        degrees
+Y_UNIT        degrees
+Z_OFFSET      0
+Z_SCALE       1
+PROJECTION    LL
+"""
+        up_rsc = utils.upsample_dem_rsc(xrate=2, yrate=2, rsc_filename=self.rsc_path)
         expected = """\
 WIDTH         3
 FILE_LENGTH   5

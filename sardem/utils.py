@@ -158,9 +158,9 @@ def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
 
 def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
     if rsc_dict and rsc_filename:
-        raise TypeError("Can only give one of rsc_dict or rsc_filename")
+        raise ValueError("Can only give one of rsc_dict or rsc_filename")
     elif not rsc_dict and not rsc_filename:
-        raise TypeError("Must give at least one of rsc_dict or rsc_filename")
+        raise ValueError("Must give at least one of rsc_dict or rsc_filename")
 
     if rsc_filename:
         rsc_dict = loading.load_dem_rsc(rsc_filename)
@@ -188,7 +188,7 @@ def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
 
     """
     if not xrate and not yrate:
-        raise TypeError("Must supply either xrate or yrate for upsampling")
+        raise ValueError("Must supply either xrate or yrate for upsampling")
 
     rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
 
