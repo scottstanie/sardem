@@ -166,7 +166,7 @@ class Tile:
             ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
 ([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
-        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).hgt"
+        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).[hgt|raw]"
         match = re.match(lon_lat_regex, tile_name)
         if not match:
             raise ValueError(
@@ -231,6 +231,10 @@ class Tile:
                 lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
 
                 yield "{lat_str}{lon_str}.hgt".format(lat_str=lat_str, lon_str=lon_str)
+
+    def wbd_tile_names(self):
+        for tile in self.srtm1_tile_names():
+            yield tile.replace(".hgt", ".raw")
 
 
 class Downloader:
@@ -465,12 +469,16 @@ class Stitcher:
 
     """
 
-    def __init__(self, tile_names, failures=[], num_pixels=NUM_PIXELS):
+    def __init__(
+        self, tile_names, failures=[], data_source="NASA", num_pixels=NUM_PIXELS
+    ):
         """List should come from Tile.srtm1_tile_names()"""
         self.tile_file_list = list(tile_names)
         self.failures = failures
         # Assuming SRTMGL1: 3601 x 3601 squares
         self.num_pixels = num_pixels
+        self.data_source = data_source
+        self.dtype = np.uint8 if data_source == "NASA_WATER" else np.int16
 
     @property
     def shape(self):
@@ -573,9 +581,12 @@ class Stitcher:
         """Loads the tile, or returns a square of zeros if missing"""
         filename = os.path.join(utils.get_cache_dir(), tile_name)
         if os.path.exists(filename):
-            return loading.load_elevation(filename)
+            if self.data_source == "NASA_WATER":
+                return loading.load_watermask(filename)
+            else:
+                return loading.load_elevation(filename)
         else:
-            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=np.int16)
+            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=self.dtype)
 
     def load_and_stitch(self):
         """Function to load combine .hgt tiles
@@ -720,11 +731,15 @@ def main(
         bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
-    tile_names = list(Tile(*bounds).srtm1_tile_names())
+    if data_source == "NASA_WATER":
+        tile_names = list(Tile(*bounds).wbd_tile_names())
+    else:
+        tile_names = list(Tile(*bounds).srtm1_tile_names())
+
     d = Downloader(tile_names, data_source=data_source)
     d.download_all()
 
-    s = Stitcher(tile_names)
+    s = Stitcher(tile_names, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
     # Now create corresponding rsc file
@@ -773,7 +788,7 @@ def main(
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
     upsample_cy.upsample_wrap(
-        dem_filename_small.encode(), rate, ncols, nrows, output_name.encode()
+        dem_filename_small.encode("utf-8"), rate, ncols, nrows, output_name.encode()
     )
 
     # Clean up the _small versions of dem and dem.rsc
