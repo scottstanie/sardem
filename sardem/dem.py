@@ -726,10 +726,7 @@ def main(
         bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
-    if data_source == "NASA_WATER":
-        tile_names = list(Tile(*bounds).wbd_tile_names())
-    else:
-        tile_names = list(Tile(*bounds).srtm1_tile_names())
+    tile_names = list(Tile(*bounds).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source)
     d.download_all()
