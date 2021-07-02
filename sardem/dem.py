@@ -254,10 +254,6 @@ class Downloader:
         "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
     }
     VALID_SOURCES = DATA_URLS.keys()
-    PRODUCT_NAMES = {
-        "NASA": "SRTMGL1.003",
-        "NASA_WATER": "SRTMSWBD.003",
-    }
     TILE_ENDINGS = {
         "NASA": ".SRTMGL1.hgt",
         "NASA_WATER": ".SRTMSWBD.raw",
@@ -370,7 +366,7 @@ class Downloader:
         logger.info("Downloading {}".format(url))
         if self.data_source == "AWS":
             response = requests.get(url)
-        elif self.data_source == "NASA" and self._has_nasa_netrc():
+        elif self.data_source.startswith("NASA") and self._has_nasa_netrc():
             logger.info("Using netrc file: %s", self.netrc_file)
             response = requests.get(url)
         else:
@@ -440,7 +436,7 @@ class Downloader:
         # Only need to get credentials for this case:
         if (
             not self._all_files_exist()
-            and self.data_source == "NASA"
+            and self.data_source.startswith("NASA")
             and not self._has_nasa_netrc()
         ):
             self.handle_credentials()
