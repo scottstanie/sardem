@@ -24,7 +24,7 @@ def positive_small_int(argstring):
 
 
 # Note: overriding this to show the positionals first
-USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON }
+USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
                  [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
                  [--data-source {NASA,AWS}]
                  """
@@ -69,6 +69,14 @@ def cli():
         "dlat", nargs="?", type=float, help="Height of DEM box (degrees)"
     )
     parser.add_argument(
+        "--bbox",
+        nargs=4,
+        metavar=("left", "bottom", "right", "top"),
+        type=float,
+        help="Bounding box of area of interest "
+        " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). ",
+    )
+    parser.add_argument(
         "--geojson",
         "-g",
         type=FileType(),
@@ -85,41 +93,54 @@ def cli():
     parser.add_argument(
         "--output",
         "-o",
-        default="elevation.dem",
-        help="Name of output dem file (default=elevation.dem)",
+        help="Name of output dem file"
+        " (default=elevation.dem for DEM, watermask.wbd for water mask)",
     )
     parser.add_argument(
         "--data-source",
         "-d",
         choices=Downloader.VALID_SOURCES,
-        type=str.lower,
+        type=str.upper,
         default="NASA",
-        help="Source of SRTM data (default NASA). See README for more.",
+        help="Source of SRTM data (default %(default)s). See README for more.",
     )
 
     args = parser.parse_args()
-    if args.left_lon and args.geojson:
+    if args.left_lon and args.geojson or args.left_lon and args.bbox:
         raise ArgumentError(
             args.geojson,
-            "Can't use both positional arguments "
-            "(left_lon top_lat dlon dlat) and --geojson",
+            "Can only use one of positional arguments (left_lon top_lat dlon dlat) "
+            ", --geojson, or --bbox",
         )
     # Need all 4 positionals, or the --geosjon
     elif (
         any(a is None for a in (args.left_lon, args.top_lat, args.dlon, args.dlat))
         and not args.geojson
+        and not args.bbox
     ):
         parser.print_usage(sys.stderr)
         sys.exit(1)
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
+    if args.bbox:
+        left, bot, right, top = args.bbox
+        left_lon, top_lat = left, top
+        dlon = right - left
+        dlat = top - bot
+    elif args.left_lon:
+        left_lon, top_lat = args.left_lon, args.top_lat
+        dlon, dlat = args.dlon, args.dlat
+    
+    if not args.output:
+        output = "watermask.wbd" if args.data_source == "NASA_WATER" else "elevation.dem"
+
     sardem.dem.main(
-        args.left_lon,
-        args.top_lat,
-        args.dlon,
-        args.dlat,
+        left_lon,
+        top_lat,
+        dlon,
+        dlat,
         geojson_dict,
         args.data_source,
         args.rate,
-        args.output,
+        output,
     )
