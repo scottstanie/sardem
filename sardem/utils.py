@@ -201,7 +201,7 @@ def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
         if field.lower() == "width":
             new_size = up_size(value, xrate)
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        if field.lower() == "file_length":
+        elif field.lower() == "file_length":
             new_size = up_size(value, yrate)
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
         elif field.lower() == "x_step":

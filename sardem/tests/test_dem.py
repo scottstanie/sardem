@@ -71,7 +71,7 @@ class TestRsc(unittest.TestCase):
             xrate=2,
             rsc_dict={'something': 1},
             rsc_filename=self.rsc_path)
-        self.assertRaises(ValueError, utils.upsample_dem_rsc, rate=2)
+        self.assertRaises(ValueError, utils.upsample_dem_rsc, xrate=2)
         self.assertRaises(
             ValueError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path)  # Need rate
 
@@ -103,6 +103,7 @@ Z_OFFSET      0
 Z_SCALE       1
 PROJECTION    LL
 """
+
         up_rsc = utils.upsample_dem_rsc(xrate=2, yrate=2, rsc_filename=self.rsc_path)
         expected = """\
 WIDTH         3
@@ -117,7 +118,6 @@ Z_OFFSET      0
 Z_SCALE       1
 PROJECTION    LL
 """
-
         self.assertEqual(expected, up_rsc)
 
 

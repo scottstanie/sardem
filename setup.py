@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sardem",
-    version="0.4.5",
+    version="0.5.0",
     author="Scott Staniewicz",
     author_email="scott.stanie@utexas.com",
     description="Create upsampled DEMs for InSAR processing",
