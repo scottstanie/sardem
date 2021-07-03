@@ -18,7 +18,7 @@ def set_logger_handler(logger, level="INFO"):
 
 
 logger = logging.getLogger("sardem")
-set_logger_handler(logger)
+# set_logger_handler(logger)
 
 
 def get_cache_dir():
