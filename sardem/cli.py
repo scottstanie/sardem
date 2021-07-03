@@ -1,5 +1,5 @@
 """
-Command line interface for running createdem
+Command line interface for running sardem
 """
 from sardem.dem import Downloader
 import sys
@@ -25,7 +25,7 @@ def positive_small_int(argstring):
 
 # Note: overriding this to show the positionals first
 USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
-                 [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
+                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
                  [--data-source {NASA,AWS,NASA_WATER}]
                  """
 
@@ -35,9 +35,10 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     the necessary SRTM1 tiles, stitch together, then upsample.
 
     Usage Examples:
-        createdem -156.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
-        createdem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
-        createdem --geojson dem_area.geojson -r 10
+        sardem --bbox -156 18.8 -154.7 20.3  # bounding box: left  bottom  right top
+        sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
+        sardem --geojson dem_area.geojson -x 11 -y 3
+        sardem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA_WATER -o my_watermask.wbd # Water mask
 
     Default out is elevation.dem for the final upsampled DEM.
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
