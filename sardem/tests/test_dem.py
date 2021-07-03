@@ -62,9 +62,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
             [self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
         )
         d.download_all()
-        self.assertTrue(
-            os.path.exists(join(d.cache_dir, self.test_tile + "." + d.ext_type))
-        )
+        self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
 
 
 class TestRsc(unittest.TestCase):

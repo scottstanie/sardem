@@ -403,7 +403,7 @@ class Downloader:
             bool: True/False for Success/Failure of download
         """
         # keep all in one folder, compressed
-        local_filename = os.path.join(self.cache_dir, tile_name)
+        local_filename = self._filepath(tile_name)
         if os.path.exists(local_filename):
             logger.info("{} already exists, skipping.".format(local_filename))
         else:
@@ -418,19 +418,20 @@ class Downloader:
                     # Raise only if we want to kill everything
                     # response.raise_for_status()
                     # Return False so caller can track failed downloads
-                    return False
+                    return None
 
                 f.write(response.content)
                 logger.info("Writing to {}".format(local_filename))
             logger.info("Unzipping {}".format(local_filename))
             self._unzip_file(local_filename)
         # True indicates success for this tile_name
-        return True
+        return local_filename
+
+    def _filepath(self, tile_name):
+        return os.path.join(self.cache_dir, tile_name + "." + self.ext_type)
 
     def _all_files_exist(self):
-        filepaths = [
-            os.path.join(self.cache_dir, tile_name) for tile_name in self.tile_names
-        ]
+        filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
         return all(os.path.exists(f) for f in filepaths)
 
     def download_all(self):
@@ -444,14 +445,15 @@ class Downloader:
             self.handle_credentials()
 
         pool = ThreadPool(processes=5)
-        successes = pool.map(self.download_and_save, self.tile_names)
+        local_filenames = pool.map(self.download_and_save, self.tile_names)
         pool.close()
-        if not any(successes):
+        if not any(local_filenames):
             raise ValueError(
                 "No successful .hgt tiles found and downloaded:"
                 " check lats/ lons of DEM box for valid SRTM land area"
                 " (<60 deg latitude not open ocean)."
             )
+        return local_filenames
 
 
 class Stitcher:
@@ -460,19 +462,18 @@ class Stitcher:
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
             E.g.: ['N19W156', 'N19W155']
-        failures (list[bool]): list of True (for successes) False
-            (for failed downloads) matching tile_file_list
+        filenames (list[str]): locations of downloaded files
         num_pixels (int): size of the squares of the .hgt files
             Assumes 3601 for SRTM1 (SRTM3, 3 degree not implemented/tested)
 
     """
 
     def __init__(
-        self, tile_names, failures=[], data_source="NASA", num_pixels=NUM_PIXELS
+        self, tile_names, filenames=[], data_source="NASA", num_pixels=NUM_PIXELS
     ):
         """List should come from Tile.srtm1_tile_names()"""
         self.tile_file_list = list(tile_names)
-        self.failures = failures
+        self.filenames = filenames
         # Assuming SRTMGL1: 3601 x 3601 squares
         self.num_pixels = num_pixels
         self.data_source = data_source
@@ -572,13 +573,15 @@ class Stitcher:
 
     def _load_tile(self, tile_name):
         """Loads the tile, or returns a square of zeros if missing"""
-        filename = os.path.join(utils.get_cache_dir(), tile_name)
+        idx = self.tile_file_list.index(tile_name)
+        filename = self.filenames[idx]
         if os.path.exists(filename):
             if self.data_source == "NASA_WATER":
                 return loading.load_watermask(filename)
             else:
                 return loading.load_elevation(filename)
         else:
+            print("FAIL!!!")
             return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=self.dtype)
 
     def load_and_stitch(self):
@@ -729,9 +732,9 @@ def main(
     tile_names = list(Tile(*bounds).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source)
-    d.download_all()
+    local_filenames = d.download_all()
 
-    s = Stitcher(tile_names, data_source=data_source)
+    s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
     # Now create corresponding rsc file

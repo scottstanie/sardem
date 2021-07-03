@@ -82,7 +82,7 @@ def load_watermask(filename):
     Reference:
     https://lpdaac.usgs.gov/products/srtmswbdv003/
     """
-    return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601)).astype(bool)
+    return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601))
 
 
 def load_dem_rsc(filename, lower=False, **kwargs):
