@@ -3,31 +3,31 @@ import collections
 import os
 import numpy as np
 
-INT_16_LE = np.dtype('<i2')
-INT_16_BE = np.dtype('>i2')
+INT_16_LE = np.dtype("<i2")
+INT_16_BE = np.dtype(">i2")
 
 RSC_KEY_TYPES = [
-    ('width', int),
-    ('file_length', int),
-    ('x_first', float),
-    ('y_first', float),
-    ('x_step', float),
-    ('y_step', float),
-    ('x_unit', str),
-    ('y_unit', str),
-    ('z_offset', int),
-    ('z_scale', int),
-    ('projection', str),
+    ("width", int),
+    ("file_length", int),
+    ("x_first", float),
+    ("y_first", float),
+    ("x_step", float),
+    ("y_step", float),
+    ("x_unit", str),
+    ("y_unit", str),
+    ("z_offset", int),
+    ("z_scale", int),
+    ("projection", str),
 ]
 RSC_KEYS = [tup[0] for tup in RSC_KEY_TYPES]
 
 # in case only speciying rows/cols/steps, these always seem to be same
 DEFAULT_KEYS = {
-    'x_unit': 'degrees',
-    'y_unit': 'degrees',
-    'z_offset': 0,
-    'z_scale': 1,
-    'projection': 'LL',
+    "x_unit": "degrees",
+    "y_unit": "degrees",
+    "z_offset": 0,
+    "z_scale": 1,
+    "projection": "LL",
 }
 
 
@@ -46,7 +46,7 @@ def load_elevation(filename):
         data = np.clip(data, 0, None), or when plotting, plt.imshow(data, vmin=0)
     """
     ext = os.path.splitext(filename)[1]
-    data_type = INT_16_LE if ext == '.dem' else INT_16_BE
+    data_type = INT_16_LE if ext == ".dem" else INT_16_BE
     data = np.fromfile(filename, dtype=data_type)
     # Make sure we're working with little endian
     if data_type == INT_16_BE:
@@ -54,9 +54,9 @@ def load_elevation(filename):
 
     # Reshape to correct size.
     # Either get info from .dem.rsc
-    if ext == '.dem':
+    if ext == ".dem":
         info = load_dem_rsc(filename)
-        dem_img = data.reshape((info['file_length'], info['width']))
+        dem_img = data.reshape((info["file_length"], info["width"]))
 
     # Or check if we are using STRM1 (3601x3601) or SRTM3 (1201x1201)
     else:
@@ -67,13 +67,26 @@ def load_elevation(filename):
             # STRM3- 3 arc second data, 90 meter data
             dem_img = data.reshape((1201, 1201))
         else:
-            raise ValueError("Invalid .hgt data size: must be square size 1201 or 3601")
+            raise ValueError(
+                "Invalid .hgt in {} data size: must be square size 1201 or 3601".format(
+                    filename
+                )
+            )
         # TODO: Verify that the min real value will be above -1000
         min_valid = -1000
         # Set NaN values to 0
         dem_img[dem_img < min_valid] = 0
 
     return dem_img
+
+
+def load_watermask(filename):
+    """Loads a .raw waterbody data file mask
+
+    Reference:
+    https://lpdaac.usgs.gov/products/srtmswbdv003/
+    """
+    return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601))
 
 
 def load_dem_rsc(filename, lower=False, **kwargs):
@@ -105,8 +118,10 @@ def load_dem_rsc(filename, lower=False, **kwargs):
     output_data = collections.OrderedDict()
     # Second part in tuple is used to cast string to correct type
 
-    rsc_filename = '{}.rsc'.format(filename) if not filename.endswith('.rsc') else filename
-    with open(rsc_filename, 'r') as f:
+    rsc_filename = (
+        "{}.rsc".format(filename) if not filename.endswith(".rsc") else filename
+    )
+    with open(rsc_filename, "r") as f:
         for line in f.readlines():
             for field, num_type in RSC_KEY_TYPES:
                 if line.startswith(field.upper()):
@@ -146,9 +161,11 @@ def format_dem_rsc(rsc_dict):
 
         # Files seemed to be left justified with 14 spaces? Not sure why 14
         # Apparently it was an old fortran format, where they use "read(15)"
-        if field in ('x_step', 'y_step'):
+        if field in ("x_step", "y_step"):
             # give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
+            outstring += "{field:<14s}{val:0.12f}\n".format(
+                field=field.upper(), val=value
+            )
         else:
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 

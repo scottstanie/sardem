@@ -20,6 +20,8 @@ NASA MEaSUREs SRTM Version 3 (SRTMGL1) houses the data
     more info on SRTMGL1: https://cmr.earthdata.nasa.gov/search/concepts/C1000000240-LPDAAC_ECS.html
 
 Example url: "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001.SRTMGL1.hgt.zip"
+Example Water body url:
+    http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
 
 Other option is to download from Mapzen's tile set on AWS:
 
@@ -154,17 +156,17 @@ class Tile:
             ValueError: if regex match fails on tile_name
 
         Examples:
-            >>> Tile.get_tile_parts('N19W156.hgt')
+            >>> Tile.get_tile_parts('N19W156')
             ('N', 19, 'W', 156)
-            >>> Tile.get_tile_parts('S5E6.hgt')
+            >>> Tile.get_tile_parts('S5E6')
             ('S', 5, 'E', 6)
-            >>> Tile.get_tile_parts('Notrealname.hgt')
+            >>> Tile.get_tile_parts('Notrealname')
             Traceback (most recent call last):
                ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
-([NS])(\d{1,2})([EW])(\d{1,3}).hgt
+            ValueError: Invalid SRTM1 tile name: Notrealname, must match \
+([NS])(\d{1,2})([EW])(\d{1,3})
         """
-        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3}).hgt"
+        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3})"
         match = re.match(lon_lat_regex, tile_name)
         if not match:
             raise ValueError(
@@ -195,7 +197,7 @@ class Tile:
             None: bounds provided to Tile __init__()
 
         Yields:
-            str: .hgt tile names that cover all of bounding box
+            str: tile names that cover all of bounding box
                 yielded in order of top left to bottom right
 
         Examples:
@@ -205,10 +207,10 @@ class Tile:
             >>> type(d.srtm1_tile_names()) == GeneratorType
             True
             >>> list(d.srtm1_tile_names())
-            ['N19W156.hgt', 'N19W155.hgt']
+            ['N19W156', 'N19W155']
             >>> bounds = [-156.0, 19.0, -154.0, 20.0]  # Show int bounds
             >>> list(d.srtm1_tile_names())
-            ['N19W156.hgt', 'N19W155.hgt']
+            ['N19W156', 'N19W155']
         """
         left, bottom, right, top = self.bounds
         left_int, top_int = self.srtm1_tile_corner(left, top)
@@ -228,7 +230,7 @@ class Tile:
                 hemi_ew = "E" if ilon >= 0 else "W"
                 lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
 
-                yield "{lat_str}{lon_str}.hgt".format(lat_str=lat_str, lon_str=lon_str)
+                yield "{lat_str}{lon_str}".format(lat_str=lat_str, lon_str=lon_str)
 
 
 class Downloader:
@@ -246,12 +248,17 @@ class Downloader:
 
     """
 
-    VALID_SOURCES = ("NASA", "AWS")
     DATA_URLS = {
         "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
+        "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
     }
-    COMPRESS_TYPES = {"NASA": "zip", "AWS": "gz"}
+    VALID_SOURCES = DATA_URLS.keys()
+    TILE_ENDINGS = {
+        "NASA": ".SRTMGL1.hgt",
+        "NASA_WATER": ".SRTMSWBD.raw",
+    }
+    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz"}
     NASAHOST = "urs.earthdata.nasa.gov"
 
     def __init__(
@@ -264,6 +271,7 @@ class Downloader:
                 "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
             )
         self.data_url = self.DATA_URLS[data_source]
+        self.ext_type = "raw" if data_source == "NASA_WATER" else "hgt"
         self.compress_type = self.COMPRESS_TYPES[data_source]
         self.netrc_file = os.path.expanduser(netrc_file)
         self.cache_dir = cache_dir or utils.get_cache_dir()
@@ -325,26 +333,31 @@ class Downloader:
             url: formatted url string with tile name
 
         Examples:
-            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='NASA')
-            >>> print(d._form_tile_url('N19W155.hgt'))
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
+            >>> print(d._form_tile_url('N19W155'))
             http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
 
-            >>> d = Downloader(['N19W156.hgt', 'N19W155.hgt'], data_source='AWS')
-            >>> print(d._form_tile_url('N19W155.hgt'))
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
+            >>> print(d._form_tile_url('N19W155'))
+            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
+
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='AWS')
+            >>> print(d._form_tile_url('N19W155'))
             https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
         """
         if self.data_source == "AWS":
             lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
-            url = "{base}/{lat}/{tile}.{ext}".format(
+            url = "{base}/{lat}/{tile}.{ext}.{comp}".format(
                 base=self.data_url,
                 lat=lat_str + str(lat_int),
                 tile=tile_name,
-                ext=self.compress_type,
+                ext=self.ext_type,
+                comp=self.compress_type,
             )
-        elif self.data_source == "NASA":
+        elif self.data_source.startswith("NASA"):
             url = "{base}/{tile}.{ext}".format(
                 base=self.data_url,
-                tile=tile_name.replace(".hgt", ".SRTMGL1.hgt"),
+                tile=tile_name + self.TILE_ENDINGS[self.data_source],
                 ext=self.compress_type,
             )
         return url
@@ -355,7 +368,7 @@ class Downloader:
         logger.info("Downloading {}".format(url))
         if self.data_source == "AWS":
             response = requests.get(url)
-        elif self.data_source == "NASA" and self._has_nasa_netrc():
+        elif self.data_source.startswith("NASA") and self._has_nasa_netrc():
             logger.info("Using netrc file: %s", self.netrc_file)
             response = requests.get(url)
         else:
@@ -390,7 +403,7 @@ class Downloader:
             bool: True/False for Success/Failure of download
         """
         # keep all in one folder, compressed
-        local_filename = os.path.join(self.cache_dir, tile_name)
+        local_filename = self._filepath(tile_name)
         if os.path.exists(local_filename):
             logger.info("{} already exists, skipping.".format(local_filename))
         else:
@@ -405,19 +418,22 @@ class Downloader:
                     # Raise only if we want to kill everything
                     # response.raise_for_status()
                     # Return False so caller can track failed downloads
-                    return False
+                    return None
 
                 f.write(response.content)
                 logger.info("Writing to {}".format(local_filename))
             logger.info("Unzipping {}".format(local_filename))
             self._unzip_file(local_filename)
+            # Now get rid of the .zip again
+            local_filename = os.path.splitext(local_filename)[0]
         # True indicates success for this tile_name
-        return True
+        return local_filename
+
+    def _filepath(self, tile_name):
+        return os.path.join(self.cache_dir, tile_name + "." + self.ext_type)
 
     def _all_files_exist(self):
-        filepaths = [
-            os.path.join(self.cache_dir, tile_name) for tile_name in self.tile_names
-        ]
+        filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
         return all(os.path.exists(f) for f in filepaths)
 
     def download_all(self):
@@ -425,20 +441,21 @@ class Downloader:
         # Only need to get credentials for this case:
         if (
             not self._all_files_exist()
-            and self.data_source == "NASA"
+            and self.data_source.startswith("NASA")
             and not self._has_nasa_netrc()
         ):
             self.handle_credentials()
 
         pool = ThreadPool(processes=5)
-        successes = pool.map(self.download_and_save, self.tile_names)
+        local_filenames = pool.map(self.download_and_save, self.tile_names)
         pool.close()
-        if not any(successes):
+        if not any(local_filenames):
             raise ValueError(
                 "No successful .hgt tiles found and downloaded:"
                 " check lats/ lons of DEM box for valid SRTM land area"
                 " (<60 deg latitude not open ocean)."
             )
+        return local_filenames
 
 
 class Stitcher:
@@ -446,20 +463,23 @@ class Stitcher:
 
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
-            E.g.: ['N19W156.hgt', 'N19W155.hgt']
-        failures (list[bool]): list of True (for successes) False
-            (for failed downloads) matching tile_file_list
+            E.g.: ['N19W156', 'N19W155']
+        filenames (list[str]): locations of downloaded files
         num_pixels (int): size of the squares of the .hgt files
             Assumes 3601 for SRTM1 (SRTM3, 3 degree not implemented/tested)
 
     """
 
-    def __init__(self, tile_names, failures=[], num_pixels=NUM_PIXELS):
+    def __init__(
+        self, tile_names, filenames=[], data_source="NASA", num_pixels=NUM_PIXELS
+    ):
         """List should come from Tile.srtm1_tile_names()"""
         self.tile_file_list = list(tile_names)
-        self.failures = failures
+        self.filenames = filenames
         # Assuming SRTMGL1: 3601 x 3601 squares
         self.num_pixels = num_pixels
+        self.data_source = data_source
+        self.dtype = np.uint8 if data_source == "NASA_WATER" else np.int16
 
     @property
     def shape(self):
@@ -469,7 +489,7 @@ class Stitcher:
         Returned as a tuple
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s.shape
             (3601, 7201)
         """
@@ -492,7 +512,7 @@ class Stitcher:
         Note: This is not the total number of pixels, which can be found in .shape
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s._compute_shape()
             (1, 2)
         """
@@ -525,15 +545,10 @@ class Stitcher:
             ValueError: if regex match fails on tile_name
 
         Examples:
-            >>> Stitcher.start_lon_lat('N19W156.hgt')
+            >>> Stitcher.start_lon_lat('N19W156')
             (-156.0, 20.0)
-            >>> Stitcher.start_lon_lat('S5E6.hgt')
+            >>> Stitcher.start_lon_lat('S5E6')
             (6.0, -4.0)
-            >>> Stitcher.start_lon_lat('Notrealname.hgt')
-            Traceback (most recent call last):
-               ...
-            ValueError: Invalid SRTM1 tile name: Notrealname.hgt, must match \
-([NS])(\d{1,2})([EW])(\d{1,3}).hgt
         """
 
         lat_str, lat, lon_str, lon = Tile.get_tile_parts(tile_name)
@@ -550,21 +565,25 @@ class Stitcher:
         """Finds filenames and reshapes into numpy.array matching DEM shape
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt', 'N18W156.hgt', 'N18W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155', 'N18W156', 'N18W155'])
             >>> print(s._create_file_array())
-            [['N19W156.hgt' 'N19W155.hgt']
-             ['N18W156.hgt' 'N18W155.hgt']]
+            [['N19W156' 'N19W155']
+             ['N18W156' 'N18W155']]
         """
         nrows, ncols = self.blockshape
         return np.array(self.tile_file_list).reshape((nrows, ncols))
 
     def _load_tile(self, tile_name):
         """Loads the tile, or returns a square of zeros if missing"""
-        filename = os.path.join(utils.get_cache_dir(), tile_name)
-        if os.path.exists(filename):
-            return loading.load_elevation(filename)
+        idx = self.tile_file_list.index(tile_name)
+        filename = self.filenames[idx]
+        if filename and os.path.exists(filename):
+            if self.data_source == "NASA_WATER":
+                return loading.load_watermask(filename)
+            else:
+                return loading.load_elevation(filename)
         else:
-            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=np.int16)
+            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=self.dtype)
 
     def load_and_stitch(self):
         """Function to load combine .hgt tiles
@@ -603,7 +622,7 @@ class Stitcher:
             (float, float): x_step, y_step
 
         Example:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> print(s._find_step_sizes())
             (0.000277777777, -0.000277777777)
         """
@@ -624,7 +643,7 @@ class Stitcher:
             OrderedDict: key/value pairs in order to write to a .dem.rsc file
 
         Examples:
-            >>> s = Stitcher(['N19W156.hgt', 'N19W155.hgt'])
+            >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s.create_dem_rsc()
             OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), \
 ('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), \
@@ -661,7 +680,7 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     Args:
         bounds (tuple[float]): (left, bot, right, top) lats and lons of
             desired bounding box for the DEM
-        stitched_dem (numpy.array, 2D): result from .hgt files
+        stitched_dem (numpy.array, 2D): result from files
             through Stitcher.load_and_stitch()
         rsc_data (dict): data from .dem.rsc file, from Stitcher.create_dem_rsc
 
@@ -688,7 +707,8 @@ def main(
     dlat=None,
     geojson=None,
     data_source=None,
-    rate=None,
+    xrate=1,
+    yrate=1,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -700,7 +720,8 @@ def main(
         dlat (float): Height of box in latitude degrees
         geojson (dict): geojson object outlining DEM (alternative to lat/lon)
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
-        rate (int): rate to upsample DEM (positive int)
+        xrate (int): x-rate (columns) to upsample DEM (positive int)
+        yrate (int): y-rate (rows) to upsample DEM (positive int)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -710,10 +731,11 @@ def main(
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
-    d = Downloader(tile_names, data_source=data_source)
-    d.download_all()
 
-    s = Stitcher(tile_names)
+    d = Downloader(tile_names, data_source=data_source)
+    local_filenames = d.download_all()
+
+    s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
     # Now create corresponding rsc file
@@ -734,7 +756,7 @@ def main(
 
     # Upsampling:
     rsc_filename = output_name + ".rsc"
-    if rate == 1:
+    if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
         stitched_dem.tofile(output_name)
@@ -743,12 +765,15 @@ def main(
             f.write(loading.format_dem_rsc(rsc_dict))
         return
 
-    logger.info("Upsampling by {}".format(rate))
-    dem_filename_small = output_name.replace(".dem", "_small.dem")
-    rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+    logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
+    # dem_filename_small = output_name.replace(".dem", "_small.dem")
+    # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+    dem_filename_small = "small_" + output_name
+    rsc_filename_small = "small_" + rsc_filename
 
     logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-    stitched_dem.tofile(dem_filename_small)
+    # Note: forcing to uint16 to simplify c-program loading
+    stitched_dem.astype(np.uint16).tofile(dem_filename_small)
     logger.info("Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small)
     with open(rsc_filename_small, "w") as f:
         f.write(loading.format_dem_rsc(rsc_dict))
@@ -756,14 +781,28 @@ def main(
     # Redo a new .rsc file for it
     logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
     with open(rsc_filename, "w") as f:
-        upsampled_rsc = utils.upsample_dem_rsc(rate=rate, rsc_dict=rsc_dict)
+        upsampled_rsc = utils.upsample_dem_rsc(
+            xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+        )
         f.write(upsampled_rsc)
 
     # Now upsample this block
     nrows, ncols = stitched_dem.shape
     upsample_cy.upsample_wrap(
-        dem_filename_small.encode(), rate, ncols, nrows, output_name.encode()
+        dem_filename_small.encode("utf-8"),
+        xrate,
+        yrate,
+        ncols,
+        nrows,
+        output_name.encode(),
     )
+
+    # Overwrite with smaller dtype for water mask
+    if data_source == "NASA_WATER":
+        upsampled_dict = loading.load_dem_rsc(rsc_filename)
+        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
+        mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
+        mask.astype(bool).tofile(output_name)
 
     # Clean up the _small versions of dem and dem.rsc
     logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)

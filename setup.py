@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sardem",
-    version="0.4.5",
+    version="0.5.0",
     author="Scott Staniewicz",
     author_email="scott.stanie@utexas.com",
     description="Create upsampled DEMs for InSAR processing",
@@ -29,7 +29,7 @@ setuptools.setup(
     install_requires=["numpy", "requests"],
     entry_points={
         "console_scripts": [
-            "createdem=sardem.cli:cli",
+            "sardem=sardem.cli:cli",
         ],
     },
     ext_modules=[
