@@ -67,7 +67,11 @@ def load_elevation(filename):
             # STRM3- 3 arc second data, 90 meter data
             dem_img = data.reshape((1201, 1201))
         else:
-            raise ValueError("Invalid .hgt data size: must be square size 1201 or 3601")
+            raise ValueError(
+                "Invalid .hgt in {} data size: must be square size 1201 or 3601".format(
+                    filename
+                )
+            )
         # TODO: Verify that the min real value will be above -1000
         min_valid = -1000
         # Set NaN values to 0

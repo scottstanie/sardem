@@ -424,6 +424,8 @@ class Downloader:
                 logger.info("Writing to {}".format(local_filename))
             logger.info("Unzipping {}".format(local_filename))
             self._unzip_file(local_filename)
+            # Now get rid of the .zip again
+            local_filename = os.path.splitext(local_filename)[0]
         # True indicates success for this tile_name
         return local_filename
 
@@ -575,13 +577,12 @@ class Stitcher:
         """Loads the tile, or returns a square of zeros if missing"""
         idx = self.tile_file_list.index(tile_name)
         filename = self.filenames[idx]
-        if os.path.exists(filename):
+        if filename and os.path.exists(filename):
             if self.data_source == "NASA_WATER":
                 return loading.load_watermask(filename)
             else:
                 return loading.load_elevation(filename)
         else:
-            print("FAIL!!!")
             return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=self.dtype)
 
     def load_and_stitch(self):

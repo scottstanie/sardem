@@ -137,9 +137,13 @@ def cli():
     elif args.left_lon:
         left_lon, top_lat = args.left_lon, args.top_lat
         dlon, dlat = args.dlon, args.dlat
-    
+
     if not args.output:
-        output = "watermask.wbd" if args.data_source == "NASA_WATER" else "elevation.dem"
+        output = (
+            "watermask.wbd" if args.data_source == "NASA_WATER" else "elevation.dem"
+        )
+    else:
+        output = args.output
 
     sardem.dem.main(
         left_lon,
