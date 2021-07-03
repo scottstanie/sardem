@@ -5,12 +5,12 @@
 
 Tool for making Digital Elevation Maps (DEMs) in Roipac data format (16-bit integers, little endian) for use in Interferometric SAR (InSAR) processing
 
-`createdem` creates a cropped (and possibly upsampled) digital elevation map:
+`sardem` creates a cropped (and possibly upsampled) digital elevation map:
 
 ```bash
-usage: createdem left_lon top_lat dlon dlat
-                 [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS}]
+usage: sardem { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
+                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
+                 [--data-source {NASA,AWS,NASA_WATER}]
 ```
 
 ## Setup and installation
@@ -18,7 +18,7 @@ usage: createdem left_lon top_lat dlon dlat
 ```bash
 pip install sardem
 ```
-This creates the command line executable `createdem`
+This creates the command line executable `sardem`
 
 Alternatively, you can clone to build/install:
 
@@ -44,10 +44,10 @@ pip install sardem
 The full options for the command line tool in `sardem/cli.py` can be found using
 
 ```
-$ createdem --help
-usage: createdem left_lon top_lat dlon dlat
-                 [-h] [--rate RATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS}]
+$ sardem --help
+usage: sardem { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
+                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
+                 [--data-source {NASA,AWS,NASA_WATER}]
 
 
 Stiches SRTM .hgt files to make (upsampled) DEM
@@ -56,8 +56,10 @@ Stiches SRTM .hgt files to make (upsampled) DEM
     the necessary SRTM1 tiles, stitch together, then upsample.
 
     Usage Examples:
-        createdem -156.0 20.2 1 2 --rate 2  # Makes a box 1 degree wide, 2 deg high
-        createdem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA -o my_elevation.dem
+        sardem --bbox -156 18.8 -154.7 20.3  # bounding box: left  bottom  right top
+        sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
+        sardem --geojson dem_area.geojson -x 11 -y 3
+        sardem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA_WATER -o my_watermask.wbd # Water mask
 
     Default out is elevation.dem for the final upsampled DEM.
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info.
@@ -70,10 +72,18 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --rate RATE, -r RATE  Rate at which to upsample DEM (default=1, no upsampling)
+  --bbox left bottom right top
+                        Bounding box of area of interest  (e.g. --bbox -106.1 30.1 -103.1 33.1 ).
+  --geojson GEOJSON, -g GEOJSON
+                        Alternate to corner/dlon/dlat box specification:
+                        File containing the geojson object for DEM bounds
+  --xrate XRATE, -x XRATE
+                        Rate in x dir to upsample DEM (default=1, no upsampling)
+  --yrate YRATE, -y YRATE
+                        Rate in y dir to upsample DEM (default=1, no upsampling)
   --output OUTPUT, -o OUTPUT
-                        Name of output dem file (default=elevation.dem)
-  --data-source {NASA,AWS}, -d {NASA,AWS}
+                        Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
+  --data-source {NASA,NASA_WATER,AWS}, -d {NASA,NASA_WATER,AWS}
                         Source of SRTM data (default NASA). See README for more.
 
 ```

@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-static int upsample(const char *filename, const int rate, const long ncols,
-                    const long nrows, const char *outfileUp);
+static int upsample(const char *filename, const int xrate, const int yrate,
+                    const long ncols, const long nrows, const char *outfileUp);
 
 long getIdx(long r, long c, long ncols) { return ncols * r + c; }
 const char *getFileExt(const char *filename);
-int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int rate,
-                   int ncols);
+int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int xrate,
+                   int yrate, int ncols);
 int16_t interpRow(int16_t *demGrid, int i, int j, int bj, int rate, int ncols);
 int16_t interpCol(int16_t *demGrid, int i, int j, int bi, int rate, int ncols);
 
@@ -36,31 +36,32 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
   char *filename = argv[1];
-  int rate = atoi(argv[2]);
-  long ncols = atoi(argv[3]);
-  long nrows = atoi(argv[4]);
+  int xrate = atoi(argv[2]);
+  int yrate = atoi(argv[3]);
+  long ncols = atoi(argv[4]);
+  long nrows = atoi(argv[5]);
 
   // Optional input:
   const char *outfileUp;
-  if (argc < 6) {
+  if (argc <= 6) {
     outfileUp = defaultOutfile;
     printf("Using %s as output file for upsampling.\n", outfileUp);
   } else {
-    outfileUp = argv[5];
-    if (strcmp(getFileExt(outfileUp), ".dem") != 0) {
-      fprintf(stderr, "Error: Outfile name must be .dem: %s\n", outfileUp);
+    outfileUp = argv[6];
+    if ((strcmp(getFileExt(outfileUp), ".dem") != 0) || (strcmp(getFileExt(outfileUp), ".wbd") != 0)) {
+      fprintf(stderr, "Error: Outfile name must be .dem or .wbd: %s\n", outfileUp);
       return EXIT_FAILURE;
     }
   }
 
   printf("Reading from %s: %ld rows, %ld cols\n", filename, nrows, ncols);
-  printf("Upsampling by %d\n", rate);
+  printf("Upsampling by (%d, %d) in (x, y)\n", xrate, yrate);
 
-  return upsample(filename, rate, ncols, nrows, outfileUp);
+  return upsample(filename, xrate, yrate, ncols, nrows, outfileUp);
 }
 
-static int upsample(const char *filename, const int rate, const long ncols,
-                    const long nrows, const char *outfileUp) {
+static int upsample(const char *filename, const int xrate, const int yrate, 
+                    const long ncols, const long nrows, const char *outfileUp) {
 
   FILE *fp = fopen(filename, "r");
   if (fp == NULL) {
@@ -95,8 +96,8 @@ static int upsample(const char *filename, const int rate, const long ncols,
   // Size of one side for upsampled
   // Example: 3 points at x = (0, 1, 2), rate = 2 becomes 5 points:
   //    x = (0, .5, 1, 1.5, 2)
-  long upNrows = rate * (nrows - 1) + 1;
-  long upNcols = rate * (ncols - 1) + 1;
+  long upNcols = xrate * (ncols - 1) + 1;
+  long upNrows = yrate * (nrows - 1) + 1;
   int16_t *upDemGrid =
       (int16_t *)malloc(upNrows * upNcols * sizeof(*upDemGrid));
   if (upDemGrid == NULL) {
@@ -111,11 +112,11 @@ static int upsample(const char *filename, const int rate, const long ncols,
     for (int j = 0; j < ncols - 1; j++) {
       // At each point of the smaller DEM, walk bi, bj up to rate and find
       // interp value
-      while (bi < rate) {
-        int curBigi = rate * i + bi;
-        while (bj < rate) {
-          int16_t interpValue = calcInterp(demGrid, i, j, bi, bj, rate, ncols);
-          int curBigj = rate * j + bj;
+      while (bi < yrate) {
+        int curBigi = yrate * i + bi;
+        while (bj < xrate) {
+          int16_t interpValue = calcInterp(demGrid, i, j, bi, bj, yrate, xrate, ncols);
+          int curBigj = xrate * j + bj;
           upDemGrid[getIdx(curBigi, curBigj, upNcols)] = interpValue;
           ++bj;
         }
@@ -132,10 +133,10 @@ static int upsample(const char *filename, const int rate, const long ncols,
   for (i = 0; i < (nrows - 1); i++) {
     j = (ncols - 1); // Last col
     bj = 0;          // bj stays at 0 when j is max index
-    int curBigj = rate * j + bj;
-    while (bi < rate) {
-      int16_t interpValue = interpCol(demGrid, i, j, bi, rate, ncols);
-      int curBigi = rate * i + bi;
+    int curBigj = xrate * j + bj;
+    while (bi < yrate) {
+      int16_t interpValue = interpCol(demGrid, i, j, bi, xrate, ncols);
+      int curBigi = yrate * i + bi;
       upDemGrid[getIdx(curBigi, curBigj, upNcols)] = interpValue;
       ++bi;
     }
@@ -147,10 +148,10 @@ static int upsample(const char *filename, const int rate, const long ncols,
   for (j = 0; j < (ncols - 1); j++) {
     i = (nrows - 1); // Last row
     bi = 0;          // bi stays at 0 when i is max index
-    int curBigi = rate * i + bi;
-    while (bj < rate) {
-      int16_t interpValue = interpRow(demGrid, i, j, bj, rate, ncols);
-      int curBigj = rate * j + bj;
+    int curBigi = yrate * i + bi;
+    while (bj < xrate) {
+      int16_t interpValue = interpRow(demGrid, i, j, bj, yrate, ncols);
+      int curBigj = xrate * j + bj;
       upDemGrid[getIdx(curBigi, curBigj, upNcols)] = interpValue;
       ++bj;
     }
@@ -180,7 +181,7 @@ const char *getFileExt(const char *filename) {
   return dot;
 }
 
-int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int rate,
+int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int yrate, int xrate,
                    int ncols) {
   int16_t h1 = demGrid[getIdx(i, j, ncols)];
   int16_t h2 = demGrid[getIdx(i, j + 1, ncols)];
@@ -192,8 +193,8 @@ int16_t calcInterp(int16_t *demGrid, int i, int j, int bi, int bj, int rate,
   int a01 = h3 - h1;
   int a11 = h1 - h2 - h3 + h4;
   // x and y are between 0 and 1: how far in the 1x1 cell we are
-  float x = (float)bj / rate;
-  float y = (float)bi / rate;
+  float y = (float)bi / yrate;
+  float x = (float)bj / xrate;
   // Final result is cast back to int16_t by return type
   return a00 + (a10 * x) + (a01 * y) + (a11 * x * y);
 }

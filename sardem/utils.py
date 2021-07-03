@@ -7,12 +7,12 @@ import logging
 from sardem import loading
 
 
-def set_logger_handler(logger, level='INFO'):
+def set_logger_handler(logger, level="INFO"):
     logger.setLevel(level)
     h = logging.StreamHandler()
     h.setLevel(level)
-    format_ = '[%(asctime)s] [%(levelname)s %(filename)s] %(message)s'
-    fmt = logging.Formatter(format_, datefmt='%m/%d %H:%M:%S')
+    format_ = "[%(asctime)s] [%(levelname)s %(filename)s] %(message)s"
+    fmt = logging.Formatter(format_, datefmt="%m/%d %H:%M:%S")
     h.setFormatter(fmt)
     logger.addHandler(h)
 
@@ -23,8 +23,8 @@ def get_cache_dir():
     Assuming linux, uses ~/.cache/sardem/
 
     """
-    path = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
-    path = os.path.join(path, 'sardem')  # Make subfolder for our downloads
+    path = os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+    path = os.path.join(path, "sardem")  # Make subfolder for our downloads
     if not os.path.exists(path):
         os.makedirs(path)
     return path
@@ -53,12 +53,12 @@ def floor_float(num, ndigits):
         >>> floor_float(1/3600, 12)
         0.000277777777
     """
-    return floor((10**ndigits) * num) / (10**ndigits)
+    return floor((10 ** ndigits) * num) / (10 ** ndigits)
 
 
 def is_file(f):
     """python 2/3 compatible check for file object"""
-    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, 'read')
+    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, "read")
 
 
 def corner_coords(lon, lat, dlon, dlat):
@@ -117,13 +117,13 @@ def coords(geojson):
     """
     # First, if given a deeper object (e.g. from geojson.io), extract just polygon
     try:
-        if geojson.get('type') == 'FeatureCollection':
-            geojson = geojson['features'][0]['geometry']
-        elif geojson.get('type') == 'Feature':
-            geojson = geojson['geometry']
+        if geojson.get("type") == "FeatureCollection":
+            geojson = geojson["features"][0]["geometry"]
+        elif geojson.get("type") == "Feature":
+            geojson = geojson["geometry"]
     except KeyError:
         raise ValueError("Invalid geojson")
-    return geojson['coordinates'][0]
+    return geojson["coordinates"][0]
 
 
 def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
@@ -158,22 +158,23 @@ def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
 
 def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
     if rsc_dict and rsc_filename:
-        raise TypeError("Can only give one of rsc_dict or rsc_filename")
+        raise ValueError("Can only give one of rsc_dict or rsc_filename")
     elif not rsc_dict and not rsc_filename:
-        raise TypeError("Must give at least one of rsc_dict or rsc_filename")
+        raise ValueError("Must give at least one of rsc_dict or rsc_filename")
 
     if rsc_filename:
         rsc_dict = loading.load_dem_rsc(rsc_filename)
     return rsc_dict
 
 
-def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filename=None):
+def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
     """Creates a new .dem.rsc file for upsampled version
 
     Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
 
     Args:
-        rate (int): rate by which to upsample the DEM
+        xrate (int): rate in x direcion to upsample the DEM
+        yrate (int): rate in y direcion to upsample the DEM
         rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
         filepath (str): Optional, location of .dem.rsc file
 
@@ -186,23 +187,35 @@ def upsample_dem_rsc(rate=None, rsc_dict=None, rsc_filename=None):
         TypeError: if neither (or both) rsc_filename and rsc_dict are given
 
     """
-    if not rate:
-        raise TypeError("Must supply rate for upsampling")
+    if not xrate and not yrate:
+        raise ValueError("Must supply either xrate or yrate for upsampling")
 
     rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
 
+    xrate = xrate or 1
+    yrate = yrate or 1
     outstring = ""
     for field, value in rsc_dict.items():
         # Files seemed to be left justified with 13 spaces? Not sure why 13
         # TODO: its 14- but fix this and previous formatting to be DRY
-        if field.lower() in ('width', 'file_length'):
-            new_size = up_size(value, rate)
+        if field.lower() == "width":
+            new_size = up_size(value, xrate)
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() in ('x_step', 'y_step'):
+        elif field.lower() == "file_length":
+            new_size = up_size(value, yrate)
+            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
+        elif field.lower() == "x_step":
             # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
-            value /= rate
+            value /= xrate
             # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(field=field.upper(), val=value)
+            outstring += "{field:<14s}{val:0.12f}\n".format(
+                field=field.upper(), val=value
+            )
+        elif field.lower() == "y_step":
+            value /= yrate
+            outstring += "{field:<14s}{val:0.12f}\n".format(
+                field=field.upper(), val=value
+            )
         else:
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 
