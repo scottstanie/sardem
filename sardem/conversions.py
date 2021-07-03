@@ -4,7 +4,7 @@ from . import utils
 import logging
 
 logger = logging.getLogger("sardem")
-utils.set_logger_handler(logger)
+# utils.set_logger_handler(logger)
 
 EGM_FILE = os.path.join(utils.get_cache_dir(), "egm96_15.gtx")
 
