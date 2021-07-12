@@ -17,6 +17,10 @@ def set_logger_handler(logger, level="INFO"):
     logger.addHandler(h)
 
 
+logger = logging.getLogger("sardem")
+# set_logger_handler(logger)
+
+
 def get_cache_dir():
     """Find location of directory to store .hgt downloads
 

@@ -6,7 +6,7 @@ from os.path import join, dirname
 import os
 import responses
 
-from sardem import dem, utils
+from sardem import dem, utils, download
 
 DATAPATH = join(dirname(__file__), "data")
 NETRC_PATH = join(DATAPATH, "netrc")
@@ -14,7 +14,7 @@ NETRC_PATH = join(DATAPATH, "netrc")
 
 class TestNetrc(unittest.TestCase):
     def test_format(self):
-        n = dem.Netrc(NETRC_PATH)
+        n = download.Netrc(NETRC_PATH)
         expected = (
             "machine urs.earthdata.nasa.gov\n\tlogin testuser\n\tpassword testpass\n"
         )
@@ -27,7 +27,7 @@ class TestTile(unittest.TestCase):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
 
     def test_init(self):
-        t = dem.Tile(*self.bounds)
+        t = download.Tile(*self.bounds)
         expected = (-155.4, 19.749, -155.399, 19.75)
 
         self.assertEqual(expected, t.bounds)
@@ -50,7 +50,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         shutil.rmtree(self.cache_dir)
 
     def test_init(self):
-        d = dem.Downloader([self.test_tile], netrc_file=NETRC_PATH)
+        d = download.Downloader([self.test_tile], netrc_file=NETRC_PATH)
         self.assertEqual(
             d.data_url, "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
         )
@@ -58,7 +58,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
     @responses.activate
     def test_download(self):
         responses.add(responses.GET, self.hgt_url, body=self.sample_hgt_zip, status=200)
-        d = dem.Downloader(
+        d = download.Downloader(
             [self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
         )
         d.download_all()
