@@ -48,21 +48,11 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
 from __future__ import division, print_function
 import collections
 import logging
-import getpass
-import math
-from multiprocessing.pool import ThreadPool
-import netrc
 import os
-import re
-import subprocess
 import numpy as np
-import requests
-from sardem import utils, loading, upsample_cy
 
-try:
-    input = raw_input  # Check for python 2
-except NameError:
-    pass
+from sardem import utils, loading, upsample_cy, conversions
+from sardem.download import Tile, Downloader
 
 NUM_PIXELS = 3601  # For SRTM1
 RSC_KEYS = [
@@ -81,381 +71,6 @@ RSC_KEYS = [
 
 logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
-
-
-def _get_username_pass():
-    """If netrc is not set up, get command line username and password"""
-    print("====================================================================")
-    print("Please enter NASA Earthdata credentials to download NASA hosted STRM.")
-    print("See https://urs.earthdata.nasa.gov/users/new for signup info.")
-    print("Or choose data_source=AWS for Mapzen tiles.")
-    print("===========================================")
-    username = input("Username: ")
-    password = getpass.getpass(prompt="Password (will not be displayed): ")
-    save_to_netrc = input(
-        "Would you like to save these to ~/.netrc (machine={}) for future use (y/n)?  ".format(
-            Downloader.NASAHOST
-        )
-    )
-    return username, password, save_to_netrc.lower().startswith("y")
-
-
-class Netrc(netrc.netrc):
-    """Handles saving of .netrc file, fixes bug in stdlib older versions
-
-    https://bugs.python.org/issue30806
-    Uses ideas from tinynetrc
-    """
-
-    def format(self):
-        """Dump the class data in the format of a .netrc file.
-
-        Fixes issue of including single quotes for username and password"""
-        rep = ""
-        for host in self.hosts.keys():
-            attrs = self.hosts[host]
-            rep += "machine {host}\n\tlogin {attrs[0]}\n".format(host=host, attrs=attrs)
-            if attrs[1]:
-                rep += "\taccount {attrs[1]}\n".format(attrs=attrs)
-            rep += "\tpassword {attrs[2]}\n".format(attrs=attrs)
-        for macro in self.macros.keys():
-            rep += "macdef {macro}\n".format(macro=macro)
-            for line in self.macros[macro]:
-                rep += line
-            rep += "\n"
-
-        return rep
-
-    def __repr__(self):
-        return self.format()
-
-    def __str__(self):
-        return repr(self)
-
-
-class Tile:
-    """class to handle tile name formation and parsing"""
-
-    def __init__(self, left, bottom, right, top):
-        self.bounds = (left, bottom, right, top)
-
-    @staticmethod
-    def get_tile_parts(tile_name):
-        """Parses the lat/lon information of a .hgt tile
-
-        Validates that the string is an actual tile name
-
-        Args:
-            tile_name
-
-        Returns:
-            tuple: lat_str (either 'N' for north, 'S' for south), lat: int latitude from 0 to 90
-                lon_str (either 'W' for west, 'E' for east), lon: int longitude from 0 to 180
-
-        Raises:
-            ValueError: if regex match fails on tile_name
-
-        Examples:
-            >>> Tile.get_tile_parts('N19W156')
-            ('N', 19, 'W', 156)
-            >>> Tile.get_tile_parts('S5E6')
-            ('S', 5, 'E', 6)
-            >>> Tile.get_tile_parts('Notrealname')
-            Traceback (most recent call last):
-               ...
-            ValueError: Invalid SRTM1 tile name: Notrealname, must match \
-([NS])(\d{1,2})([EW])(\d{1,3})
-        """
-        lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3})"
-        match = re.match(lon_lat_regex, tile_name)
-        if not match:
-            raise ValueError(
-                "Invalid SRTM1 tile name: {}, must match {}".format(
-                    tile_name, lon_lat_regex
-                )
-            )
-
-        lat_str, lat, lon_str, lon = match.groups()
-        return lat_str, int(lat), lon_str, int(lon)
-
-    @staticmethod
-    def srtm1_tile_corner(lon, lat):
-        """Integers for the bottom right corner of requested lon/lat
-
-        Examples:
-            >>> Tile.srtm1_tile_corner(3.5, 5.6)
-            (3, 5)
-            >>> Tile.srtm1_tile_corner(-3.5, -5.6)
-            (-4, -6)
-        """
-        return int(math.floor(lon)), int(math.floor(lat))
-
-    def srtm1_tile_names(self):
-        """Iterator over all tiles needed to cover the requested bounds
-
-        Args:
-            None: bounds provided to Tile __init__()
-
-        Yields:
-            str: tile names that cover all of bounding box
-                yielded in order of top left to bottom right
-
-        Examples:
-            >>> bounds = (-155.7, 19.1, -154.7, 19.7)
-            >>> d = Tile(*bounds)
-            >>> from types import GeneratorType  # To check the type
-            >>> type(d.srtm1_tile_names()) == GeneratorType
-            True
-            >>> list(d.srtm1_tile_names())
-            ['N19W156', 'N19W155']
-            >>> bounds = [-156.0, 19.0, -154.0, 20.0]  # Show int bounds
-            >>> list(d.srtm1_tile_names())
-            ['N19W156', 'N19W155']
-        """
-        left, bottom, right, top = self.bounds
-        left_int, top_int = self.srtm1_tile_corner(left, top)
-        right_int, bot_int = self.srtm1_tile_corner(right, bottom)
-        # If exact integer was requested for top/right, assume tile with that number
-        # at the top/right is acceptable (dont download the one above that)
-        if isinstance(top, int) or int(top) == top:
-            top_int -= 1
-        if isinstance(right, int) or int(right) == right:
-            right_int -= 1
-
-        # Now iterate in same order in which they'll be stithced together
-        for ilat in range(top_int, bot_int - 1, -1):  # north to south
-            hemi_ns = "N" if ilat >= 0 else "S"
-            lat_str = "{}{:02d}".format(hemi_ns, abs(ilat))
-            for ilon in range(left_int, right_int + 1):  # West to east
-                hemi_ew = "E" if ilon >= 0 else "W"
-                lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
-
-                yield "{lat_str}{lon_str}".format(lat_str=lat_str, lon_str=lon_str)
-
-
-class Downloader:
-    """Class to download and save SRTM1 tiles to create DEMs
-
-    Attributes:
-        tile_names (iterator): strings of .hgt tiles (e.g. [N19W155.hgt])
-        data_url (str): Base url where .hgt tiles are stored
-        compress_type (str): format .hgt files are stored in online
-        data_source (str): choices: NASA, AWS. See module docstring for explanation of sources
-        cache_dir (str): explcitly specify where to store .hgt files
-
-    Raises:
-        ValueError: if data_source not a valid source string
-
-    """
-
-    DATA_URLS = {
-        "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
-        "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
-        "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
-    }
-    VALID_SOURCES = DATA_URLS.keys()
-    TILE_ENDINGS = {
-        "NASA": ".SRTMGL1.hgt",
-        "NASA_WATER": ".SRTMSWBD.raw",
-    }
-    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz"}
-    NASAHOST = "urs.earthdata.nasa.gov"
-
-    def __init__(
-        self, tile_names, data_source="NASA", netrc_file="~/.netrc", cache_dir=None
-    ):
-        self.tile_names = tile_names
-        self.data_source = data_source
-        if data_source not in self.VALID_SOURCES:
-            raise ValueError(
-                "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
-            )
-        self.data_url = self.DATA_URLS[data_source]
-        self.ext_type = "raw" if data_source == "NASA_WATER" else "hgt"
-        self.compress_type = self.COMPRESS_TYPES[data_source]
-        self.netrc_file = os.path.expanduser(netrc_file)
-        self.cache_dir = cache_dir or utils.get_cache_dir()
-
-    def _get_netrc_file(self):
-        return Netrc(self.netrc_file)
-
-    def _has_nasa_netrc(self):
-        try:
-            n = self._get_netrc_file()
-            # Check account exists, as well is having username and password
-            return (
-                self.NASAHOST in n.hosts
-                and n.authenticators(self.NASAHOST)[0]
-                and n.authenticators(self.NASAHOST)[2]
-            )
-        except (OSError, IOError):
-            return False
-
-    @staticmethod
-    def _nasa_netrc_entry(username, password):
-        """Create a string for a NASA urs account in .netrc format"""
-        outstring = "machine {}\n".format(Downloader.NASAHOST)
-        outstring += "\tlogin {}\n".format(username)
-        outstring += "\tpassword {}\n".format(password)
-        return outstring
-
-    def handle_credentials(self):
-        """Prompt user for NASA username/password, store as attribute or .netrc
-
-        If the user wants to save as .netrc, add to existing, or create new ~/.netrc
-        """
-        username, password, do_save = _get_username_pass()
-        if do_save:
-            try:
-                # If they have a netrc existing, add to it
-                n = self._get_netrc_file()
-                n.hosts[self.NASAHOST] = (username, None, password)
-                outstring = str(n)
-            except (OSError, IOError):
-                # Otherwise, make a fresh one to save
-                outstring = self._nasa_netrc_entry(username, password)
-
-            with open(self.netrc_file, "w") as f:
-                f.write(outstring)
-        else:
-            # Save these as attritubes for the NASA url request
-            self.username = username
-            self.password = password
-
-    def _form_tile_url(self, tile_name):
-        """Form the url for a .hgt tile from NASA or AWS
-
-        Args:
-            tile_name (str): string name of tile
-            e.g. N06W001.SRTMGL1.hgt.zip (usgs) or N19/N19W156.hgt.gz (aws)
-
-        Returns:
-            url: formatted url string with tile name
-
-        Examples:
-            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
-            >>> print(d._form_tile_url('N19W155'))
-            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
-
-            >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
-            >>> print(d._form_tile_url('N19W155'))
-            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
-
-            >>> d = Downloader(['N19W156', 'N19W155'], data_source='AWS')
-            >>> print(d._form_tile_url('N19W155'))
-            https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
-        """
-        if self.data_source == "AWS":
-            lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
-            url = "{base}/{lat}/{tile}.{ext}.{comp}".format(
-                base=self.data_url,
-                lat=lat_str + str(lat_int),
-                tile=tile_name,
-                ext=self.ext_type,
-                comp=self.compress_type,
-            )
-        elif self.data_source.startswith("NASA"):
-            url = "{base}/{tile}.{ext}".format(
-                base=self.data_url,
-                tile=tile_name + self.TILE_ENDINGS[self.data_source],
-                ext=self.compress_type,
-            )
-        return url
-
-    def _download_hgt_tile(self, url):
-        """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips" """
-        # Using AWS or a netrc file are the easy cases
-        logger.info("Downloading {}".format(url))
-        if self.data_source == "AWS":
-            response = requests.get(url)
-        elif self.data_source.startswith("NASA") and self._has_nasa_netrc():
-            logger.info("Using netrc file: %s", self.netrc_file)
-            response = requests.get(url)
-        else:
-            # NASA without a netrc file needs special auth session handling
-            with requests.Session() as session:
-                session.auth = (self.username, self.password)
-                r1 = session.request("get", url)
-                # NASA then redirects to
-                # urs.earthdata.nasa.gov/oauth/authorize?scope=uid&app_type=401&client_id=...
-                response = session.get(r1.url, auth=(self.username, self.password))
-
-        return response
-
-    def _unzip_file(self, filepath):
-        """Unzips in place the .hgt files downloaded"""
-        ext = os.path.splitext(filepath)[1]
-        if ext == ".gz":
-            unzip_cmd = ["gunzip"]
-        elif ext == ".zip":
-            # -o forces overwrite without prompt, -d specifices unzip directory
-            unzip_cmd = "unzip -o -d {}".format(self.cache_dir).split(" ")
-        subprocess.check_call(unzip_cmd + [filepath])
-
-    def download_and_save(self, tile_name):
-        """Download and save one single tile
-
-        Args:
-            tile_name (str): string name of tile
-            e.g. N06W001.SRTMGL1.hgt.zip (usgs) or N19/N19W156.gz (aws)
-
-        Returns:
-            bool: True/False for Success/Failure of download
-        """
-        # keep all in one folder, compressed
-        local_filename = self._filepath(tile_name)
-        if os.path.exists(local_filename):
-            logger.info("{} already exists, skipping.".format(local_filename))
-        else:
-            # On AWS these are gzipped: download, then unzip
-            local_filename += ".{}".format(self.compress_type)
-            with open(local_filename, "wb") as f:
-                url = self._form_tile_url(tile_name)
-                response = self._download_hgt_tile(url)
-                # Now check response for auth issues/ errors
-                if response.status_code == 404:
-                    logger.warning("Cannot find url %s, using zeros for tile." % url)
-                    # Raise only if we want to kill everything
-                    # response.raise_for_status()
-                    # Return False so caller can track failed downloads
-                    return None
-
-                f.write(response.content)
-                logger.info("Writing to {}".format(local_filename))
-            logger.info("Unzipping {}".format(local_filename))
-            self._unzip_file(local_filename)
-            # Now get rid of the .zip again
-            local_filename = os.path.splitext(local_filename)[0]
-        # True indicates success for this tile_name
-        return local_filename
-
-    def _filepath(self, tile_name):
-        return os.path.join(self.cache_dir, tile_name + "." + self.ext_type)
-
-    def _all_files_exist(self):
-        filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
-        return all(os.path.exists(f) for f in filepaths)
-
-    def download_all(self):
-        """Downloads and saves all tiles from tile list"""
-        # Only need to get credentials for this case:
-        if (
-            not self._all_files_exist()
-            and self.data_source.startswith("NASA")
-            and not self._has_nasa_netrc()
-        ):
-            self.handle_credentials()
-
-        pool = ThreadPool(processes=5)
-        local_filenames = pool.map(self.download_and_save, self.tile_names)
-        pool.close()
-        if not any(local_filenames):
-            raise ValueError(
-                "No successful .hgt tiles found and downloaded:"
-                " check lats/ lons of DEM box for valid SRTM land area"
-                " (<60 deg latitude not open ocean)."
-            )
-        return local_filenames
 
 
 class Stitcher:
@@ -665,7 +280,6 @@ class Stitcher:
         # Remove paths from tile filenames, if they exist
         x_first, y_first = self.start_lon_lat(self.tile_file_list[0])
         nrows, ncols = self.shape
-        # TODO: figure out where to generalize for SRTM3
         rsc_dict.update({"WIDTH": ncols, "FILE_LENGTH": nrows})
         rsc_dict.update({"X_FIRST": x_first, "Y_FIRST": y_first})
 
@@ -709,6 +323,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
+    convert_to_wgs84=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -722,6 +337,8 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
+        convert_to_wgs84 (bool): Convert the DEM heights from geoid heights
+            above EGM96 to heights above WGS84 ellipsoid
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -753,49 +370,61 @@ def main(
     rsc_dict["Y_FIRST"] = new_y_first
     rsc_dict["FILE_LENGTH"] = new_rows
     rsc_dict["WIDTH"] = new_cols
+    rsc_filename = output_name + ".rsc"
 
     # Upsampling:
-    rsc_filename = output_name + ".rsc"
     if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
-        stitched_dem.tofile(output_name)
+        stitched_dem.astype(np.uint16).tofile(output_name)
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
-        return
 
-    logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
-    # dem_filename_small = output_name.replace(".dem", "_small.dem")
-    # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
-    dem_filename_small = "small_" + output_name
-    rsc_filename_small = "small_" + rsc_filename
+    else:
+        logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
+        # dem_filename_small = output_name.replace(".dem", "_small.dem")
+        # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+        dem_filename_small = "small_" + output_name
+        rsc_filename_small = "small_" + rsc_filename
 
-    logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-    # Note: forcing to uint16 to simplify c-program loading
-    stitched_dem.astype(np.uint16).tofile(dem_filename_small)
-    logger.info("Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small)
-    with open(rsc_filename_small, "w") as f:
-        f.write(loading.format_dem_rsc(rsc_dict))
-
-    # Redo a new .rsc file for it
-    logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
-    with open(rsc_filename, "w") as f:
-        upsampled_rsc = utils.upsample_dem_rsc(
-            xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+        logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
+        # Note: forcing to uint16 to simplify c-program loading
+        stitched_dem.astype(np.uint16).tofile(dem_filename_small)
+        logger.info(
+            "Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small
         )
-        f.write(upsampled_rsc)
+        with open(rsc_filename_small, "w") as f:
+            f.write(loading.format_dem_rsc(rsc_dict))
 
-    # Now upsample this block
-    nrows, ncols = stitched_dem.shape
-    upsample_cy.upsample_wrap(
-        dem_filename_small.encode("utf-8"),
-        xrate,
-        yrate,
-        ncols,
-        nrows,
-        output_name.encode(),
-    )
+        # Redo a new .rsc file for it
+        logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
+        with open(rsc_filename, "w") as f:
+            upsampled_rsc = utils.upsample_dem_rsc(
+                xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+            )
+            f.write(upsampled_rsc)
+
+        # Now upsample this block
+        nrows, ncols = stitched_dem.shape
+        upsample_cy.upsample_wrap(
+            dem_filename_small.encode("utf-8"),
+            xrate,
+            yrate,
+            ncols,
+            nrows,
+            output_name.encode(),
+        )
+        # Clean up the _small versions of dem and dem.rsc
+        logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
+        os.remove(dem_filename_small)
+        os.remove(rsc_filename_small)
+
+    if convert_to_wgs84:
+        logger.info("Correcting DEM to heights above WGS84 ellipsoid")
+        conversions.convert_dem_to_wgs84(output_name)
+    else:
+        logger.info("Keeping DEM as EGM96 geoid heights")
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":
@@ -803,8 +432,3 @@ def main(
         rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
         mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
         mask.astype(bool).tofile(output_name)
-
-    # Clean up the _small versions of dem and dem.rsc
-    logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
-    os.remove(dem_filename_small)
-    os.remove(rsc_filename_small)
