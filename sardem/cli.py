@@ -17,17 +17,11 @@ import sardem
 def positive_small_int(argstring):
     try:
         intval = int(argstring)
-        assert intval > 0 and intval < 50
+        assert 0 < intval < 50
     except (ValueError, AssertionError):
         raise ArgumentTypeError("--rate must be positive integer < 50")
     return intval
 
-
-# Note: overriding this to show the positionals first
-USAGE = """%(prog)s { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
-                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS,NASA_WATER}]
-                 """
 
 DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
 
@@ -48,7 +42,6 @@ def cli():
     parser = ArgumentParser(
         prog="sardem",
         description=DESCRIPTION,
-        usage=USAGE,
         formatter_class=RawTextHelpFormatter,
     )
     parser.add_argument(
