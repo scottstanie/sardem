@@ -43,10 +43,9 @@ The full options for the command line tool in `sardem/cli.py` can be found using
 
 ```
 $ sardem --help
-usage: sardem { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
-                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS,NASA_WATER}]
-
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,AWS}]
+              [--convert-to-wgs84]
+              [left_lon] [top_lat] [dlon] [dlat]
 
 Stiches SRTM .hgt files to make (upsampled) DEM
 
@@ -83,13 +82,14 @@ optional arguments:
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
   --data-source {NASA,NASA_WATER,AWS}, -d {NASA,NASA_WATER,AWS}
                         Source of SRTM data (default NASA). See README for more.
-
+  --convert-to-wgs84, -c
+                        Convert the DEM heights from geoid heights above EGM96 to heights above WGS84 ellipsoid
 ```
 
 The code used for bilinear interpolation in the upsampling routine is in `cython/upsample.c`, and is wrapped in [cython](http://docs.cython.org/en/latest/) to allow easier installation and ability to call the function from Python.
 The installation is handled through `pip install`, or by running `make build`.
 
-Functions for working with digital elevation maps (DEMs) are mostly contained in the `Downloader` and `Stitcher` classes within `sardem/dem.py`.
+Functions for working with digital elevation maps (DEMs) are mostly contained in the `Downloader` and `Stitcher` classes within `sardem/dem.py` and `sardem/download.py`.
 
 
 ### NASA SRTM Data access
