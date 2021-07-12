@@ -709,6 +709,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
+    keep_egm=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -722,6 +723,8 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
+        keep_egm (bool): Keep the DEM heights in EGM96
+            default corrects to heights above WGS84 ellipsoid
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -753,49 +756,63 @@ def main(
     rsc_dict["Y_FIRST"] = new_y_first
     rsc_dict["FILE_LENGTH"] = new_rows
     rsc_dict["WIDTH"] = new_cols
+    rsc_filename = output_name + ".rsc"
 
     # Upsampling:
-    rsc_filename = output_name + ".rsc"
     if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
-        stitched_dem.tofile(output_name)
+        stitched_dem.astype(np.uint16).tofile(output_name)
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
-        return
 
-    logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
-    # dem_filename_small = output_name.replace(".dem", "_small.dem")
-    # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
-    dem_filename_small = "small_" + output_name
-    rsc_filename_small = "small_" + rsc_filename
+    else:
+        logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
+        # dem_filename_small = output_name.replace(".dem", "_small.dem")
+        # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
+        dem_filename_small = "small_" + output_name
+        rsc_filename_small = "small_" + rsc_filename
 
-    logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-    # Note: forcing to uint16 to simplify c-program loading
-    stitched_dem.astype(np.uint16).tofile(dem_filename_small)
-    logger.info("Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small)
-    with open(rsc_filename_small, "w") as f:
-        f.write(loading.format_dem_rsc(rsc_dict))
-
-    # Redo a new .rsc file for it
-    logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
-    with open(rsc_filename, "w") as f:
-        upsampled_rsc = utils.upsample_dem_rsc(
-            xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+        logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
+        # Note: forcing to uint16 to simplify c-program loading
+        stitched_dem.astype(np.uint16).tofile(dem_filename_small)
+        logger.info(
+            "Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small
         )
-        f.write(upsampled_rsc)
+        with open(rsc_filename_small, "w") as f:
+            f.write(loading.format_dem_rsc(rsc_dict))
 
-    # Now upsample this block
-    nrows, ncols = stitched_dem.shape
-    upsample_cy.upsample_wrap(
-        dem_filename_small.encode("utf-8"),
-        xrate,
-        yrate,
-        ncols,
-        nrows,
-        output_name.encode(),
-    )
+        # Redo a new .rsc file for it
+        logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
+        with open(rsc_filename, "w") as f:
+            upsampled_rsc = utils.upsample_dem_rsc(
+                xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
+            )
+            f.write(upsampled_rsc)
+
+        # Now upsample this block
+        nrows, ncols = stitched_dem.shape
+        upsample_cy.upsample_wrap(
+            dem_filename_small.encode("utf-8"),
+            xrate,
+            yrate,
+            ncols,
+            nrows,
+            output_name.encode(),
+        )
+        # Clean up the _small versions of dem and dem.rsc
+        logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
+        os.remove(dem_filename_small)
+        os.remove(rsc_filename_small)
+
+    if not keep_egm:
+        from . import conversions
+
+        logger.info("Correcting DEM to heights above WGS84 ellipsoid")
+        conversions.convert_dem_to_wgs84(output_name)
+    else:
+        logger.info("Keeping DEM as EGM96 geoid heights")
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":
@@ -803,8 +820,3 @@ def main(
         rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
         mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
         mask.astype(bool).tofile(output_name)
-
-    # Clean up the _small versions of dem and dem.rsc
-    logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
-    os.remove(dem_filename_small)
-    os.remove(rsc_filename_small)
