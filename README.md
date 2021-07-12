@@ -1,14 +1,14 @@
 
 # DEM creator
 
-Tool for making Digital Elevation Maps (DEMs) in Roipac data format (16-bit integers, little endian) for use in Interferometric SAR (InSAR) processing
+Tool for making Digital Elevation Maps (DEMs) in binary data format (16-bit integers, little endian) for use in Interferometric SAR (InSAR) processing
 
 `sardem` creates a cropped (and possibly upsampled) digital elevation map:
 
 ```bash
-usage: sardem { left_lon top_lat dlon dlat | --geojson GEOJSON | --bbox left bot right top }
-                 [-h] [--xrate XRATE=1] [--yrate YRATE=1] [--output OUTPUT=elevation.dem]
-                 [--data-source {NASA,AWS,NASA_WATER}]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,AWS}]
+              [--convert-to-wgs84]
+              [left_lon] [top_lat] [dlon] [dlat]
 ```
 
 ## Setup and installation
