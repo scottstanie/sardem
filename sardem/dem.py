@@ -54,6 +54,7 @@ from multiprocessing.pool import ThreadPool
 import netrc
 import os
 import re
+from sardem.conversions import convert_dem_to_wgs84
 import subprocess
 import numpy as np
 import requests
@@ -709,7 +710,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
-    keep_egm=False,
+    convert_to_wgs84=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -723,8 +724,8 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
-        keep_egm (bool): Keep the DEM heights in EGM96
-            default corrects to heights above WGS84 ellipsoid
+        convert_to_wgs84 (bool): Convert the DEM heights from geoid heights
+            above EGM96 to heights above WGS84 ellipsoid
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -806,7 +807,7 @@ def main(
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
 
-    if not keep_egm:
+    if convert_dem_to_wgs84:
         from . import conversions
 
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")

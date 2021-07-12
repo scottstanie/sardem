@@ -113,11 +113,11 @@ def cli():
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
-        "--keep-egm",
+        "--convert-to-wgs84",
         action="store_true",
         help=(
-            "Keep the DEM heights in EGM96 (default corrects "
-            "to heights above WGS84 ellipsoid)"
+            "Convert the DEM heights from geoid heights above EGM96 "
+            "to heights above WGS84 ellipsoid"
         ),
     )
 
@@ -163,6 +163,6 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
-        args.keep_egm,
+        args.convert_to_wgs84,
         output,
     )
