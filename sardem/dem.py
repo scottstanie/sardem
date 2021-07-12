@@ -49,10 +49,9 @@ from __future__ import division, print_function
 import collections
 import logging
 import os
-from sardem.conversions import convert_dem_to_wgs84
 import numpy as np
 
-from sardem import utils, loading, upsample_cy
+from sardem import utils, loading, upsample_cy, conversions
 from sardem.download import Tile, Downloader
 
 NUM_PIXELS = 3601  # For SRTM1
@@ -281,7 +280,6 @@ class Stitcher:
         # Remove paths from tile filenames, if they exist
         x_first, y_first = self.start_lon_lat(self.tile_file_list[0])
         nrows, ncols = self.shape
-        # TODO: figure out where to generalize for SRTM3
         rsc_dict.update({"WIDTH": ncols, "FILE_LENGTH": nrows})
         rsc_dict.update({"X_FIRST": x_first, "Y_FIRST": y_first})
 
@@ -422,9 +420,7 @@ def main(
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
 
-    if convert_dem_to_wgs84:
-        from . import conversions
-
+    if convert_to_wgs84:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
         conversions.convert_dem_to_wgs84(output_name)
     else:
