@@ -2,11 +2,10 @@ import os
 import subprocess
 import shutil
 import requests
-from . import utils
+from . import utils, loading
 import logging
 
 logger = logging.getLogger("sardem")
-# utils.set_logger_handler(logger)
 
 EGM_FILE = os.path.join(utils.get_cache_dir(), "egm96_15.gtx")
 
@@ -52,6 +51,7 @@ def convert_dem_to_wgs84(dem_filename):
 
     path_, fname = os.path.split(dem_filename)
     rsc_filename = os.path.join(path_, fname + ".rsc")
+    shift_dem_rsc(rsc_filename, to_gdal=True)
 
     output_egm = os.path.join(path_, "egm_" + fname)
     # output_wgs = dem_filename.replace(ext, ".wgs84" + ext)
@@ -68,6 +68,9 @@ def convert_dem_to_wgs84(dem_filename):
         os.rename(output_egm, dem_filename)
         os.rename(rsc_filename_egm, rsc_filename)
 
+    # Now shift back to the .rsc is pointing to the middle of the pixel
+    shift_dem_rsc(rsc_filename, to_gdal=False)
+
 
 def download_egm96_grid():
     url = "http://download.osgeo.org/proj/vdatum/egm96_15/egm96_15.gtx"
@@ -79,6 +82,39 @@ def download_egm96_grid():
     with open(EGM_FILE, "wb") as f:
         resp = requests.get(url)
         f.write(resp.content)
+
+
+def shift_dem_rsc(rsc_filename, outname=None, to_gdal=True):
+    """Shift the top-left of a .rsc file by half pixel
+
+    See here for geotransform info
+    https://gdal.org/user/raster_data_model.html#affine-geotransform
+    GDAL standard is to reference a raster by its top left edges,
+    while often the .rsc for SAR focusing is using the middle of a pixel.
+    `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
+    `to_gdal`=False does the reverse, back to the middle of the top left pixel
+    """
+    logger.info("Shifting %s by half pixel for GDAL conversion", rsc_filename)
+    if outname is None:
+        outname = rsc_filename
+    rsc_dict = loading.load_dem_rsc(rsc_filename)
+
+    rsc_dict["x_step"]
+    x_first, y_first = rsc_dict["x_first"], rsc_dict["y_first"]
+    x_step, y_step = rsc_dict["x_step"], rsc_dict["y_step"]
+    if to_gdal:
+        new_first = {
+            "x_first": x_first - 0.5 * x_step,
+            "y_first": y_first - 0.5 * y_step,
+        }
+    else:
+        new_first = {
+            "x_first": x_first + 0.5 * x_step,
+            "y_first": y_first + 0.5 * y_step,
+        }
+    rsc_dict.update(new_first)
+    with open(outname, "w") as f:
+        f.write(loading.format_dem_rsc(rsc_dict))
 
 
 def _gdal_installed_correctly():

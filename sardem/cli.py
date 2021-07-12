@@ -114,6 +114,7 @@ def cli():
     )
     parser.add_argument(
         "--convert-to-wgs84",
+        "-c",
         action="store_true",
         help=(
             "Convert the DEM heights from geoid heights above EGM96 "

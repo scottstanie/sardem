@@ -15,7 +15,6 @@ except NameError:
     pass
 
 logger = logging.getLogger("sardem")
-utils.set_logger_handler(logger)
 
 
 def _get_username_pass():
@@ -391,4 +390,3 @@ class Downloader:
                 " (<60 deg latitude not open ocean)."
             )
         return local_filenames
-
