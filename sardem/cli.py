@@ -112,6 +112,14 @@ def cli():
         default="NASA",
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
+    parser.add_argument(
+        "--keep-egm",
+        action="store_true",
+        help=(
+            "Keep the DEM heights in EGM96 (default corrects "
+            "to heights above WGS84 ellipsoid)"
+        ),
+    )
 
     args = parser.parse_args()
     if args.left_lon and args.geojson or args.left_lon and args.bbox:
@@ -155,5 +163,6 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
+        args.keep_egm,
         output,
     )
