@@ -94,7 +94,9 @@ def shift_dem_rsc(rsc_filename, outname=None, to_gdal=True):
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
     `to_gdal`=False does the reverse, back to the middle of the top left pixel
     """
-    logger.info("Shifting %s by half pixel for GDAL conversion", rsc_filename)
+    msg = "Shifting %s for GDAL conversion by half pixel "
+    msg += "to edges" if to_gdal else "back to center"
+    logger.info(msg, rsc_filename)
     if outname is None:
         outname = rsc_filename
     rsc_dict = loading.load_dem_rsc(rsc_filename)
