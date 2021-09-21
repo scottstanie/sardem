@@ -20,6 +20,9 @@ def egm96_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True):
     if not os.path.exists(EGM_FILE):
         download_egm96_grid()
 
+    # Note: https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-tr
+    # If not specified, gdalwarp will generate an output raster with xres=yres
+    # We want it to match the input file
     xres, yres = _get_resolution(filename)
     cmd = (
         'gdalwarp {overwrite} -s_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids={egm_file}" '
@@ -44,6 +47,7 @@ def egm96_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True):
 
 
 def _get_resolution(filename):
+    """Retrieve the pixel resolution from a gdal-readable file"""
     from osgeo import gdal
 
     ds = gdal.Open(filename)
