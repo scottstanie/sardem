@@ -20,14 +20,17 @@ def egm96_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True):
     if not os.path.exists(EGM_FILE):
         download_egm96_grid()
 
+    xres, yres = _get_resolution(filename)
     cmd = (
         'gdalwarp {overwrite} -s_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids={egm_file}" '
-        '-t_srs "+proj=longlat +datum=WGS84 +no_defs" -of ENVI {inp} {out}'
+        '-t_srs "+proj=longlat +datum=WGS84 +no_defs" -of ENVI -tr {xres} {yres} {inp} {out}'
     )
     cmd = cmd.format(
         inp=filename,
         out=output,
         overwrite="-overwrite" if overwrite else "",
+        xres=xres,
+        yres=yres,
         egm_file=EGM_FILE,
     )
     logger.info(cmd)
@@ -38,6 +41,15 @@ def egm96_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True):
         logger.info("Copying {} to {}".format(rsc_file, output + ".rsc"))
         shutil.copyfile(rsc_file, output + ".rsc")
     return output
+
+
+def _get_resolution(filename):
+    from osgeo import gdal
+
+    ds = gdal.Open(filename)
+    gt = ds.GetGeoTransform()
+    xres, yres = gt[1], gt[5]
+    return xres, yres
 
 
 def convert_dem_to_wgs84(dem_filename):
@@ -123,7 +135,6 @@ def _gdal_installed_correctly():
     cmd = "gdalinfo --help-general"
     # cmd = "gdalinfo -h"
     try:
-        print("out")
         subprocess.check_output(cmd, shell=True)
         return True
     except subprocess.CalledProcessError:
