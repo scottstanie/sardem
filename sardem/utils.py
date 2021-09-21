@@ -224,3 +224,15 @@ def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
             outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
 
     return outstring
+
+
+def get_wkt_bbox(fname):
+    try:
+        from shapely import wkt
+    except ImportError:
+        logger.error("Need shapely installed to load from .wkt file")
+        raise
+
+    return wkt.load(fname).bounds
+    # with open(fname) as f:
+        # return wkt.load(f).bounds

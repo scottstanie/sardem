@@ -320,6 +320,7 @@ def main(
     dlon=None,
     dlat=None,
     geojson=None,
+    wkt_file=None,
     data_source=None,
     xrate=1,
     yrate=1,
@@ -343,6 +344,8 @@ def main(
     """
     if geojson:
         bounds = utils.bounding_box(geojson=geojson)
+    elif wkt_file:
+        bounds = utils.get_wkt_bbox(wkt_file)
     else:
         bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))

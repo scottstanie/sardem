@@ -78,6 +78,12 @@ def cli():
         "File containing the geojson object for DEM bounds",
     )
     parser.add_argument(
+        "--wkt-file",
+        type=FileType(),
+        help="Alternate to corner/dlon/dlat box specification: \n"
+        "File containing the WKT string for DEM bounds",
+    )
+    parser.add_argument(
         "--xrate",
         "-x",
         default=1,
@@ -127,6 +133,7 @@ def cli():
         any(a is None for a in (args.left_lon, args.top_lat, args.dlon, args.dlat))
         and not args.geojson
         and not args.bbox
+        and not args.wkt_file
     ):
         parser.print_usage(sys.stderr)
         sys.exit(1)
@@ -137,6 +144,8 @@ def cli():
         left_lon, top_lat = left, top
         dlon = right - left
         dlat = top - bot
+    elif args.wkt_file:
+        left_lon, top_lat, dlon, dlat = None, None, None, None
     elif args.left_lon:
         left_lon, top_lat = args.left_lon, args.top_lat
         dlon, dlat = args.dlon, args.dlat
@@ -154,6 +163,7 @@ def cli():
         dlon,
         dlat,
         geojson_dict,
+        args.wkt_file,
         args.data_source,
         args.xrate,
         args.yrate,
