@@ -324,7 +324,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
-    convert_to_wgs84=False,
+    keep_egm96=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -338,8 +338,8 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
-        convert_to_wgs84 (bool): Convert the DEM heights from geoid heights
-            above EGM96 to heights above WGS84 ellipsoid
+        keep_egm96 (bool): Don't convert the DEM heights from geoid heights
+            above EGM96 to heights above WGS84 ellipsoid (default = False)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -423,11 +423,11 @@ def main(
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
 
-    if convert_to_wgs84:
+    if keep_egm96:
+        logger.info("Keeping DEM as EGM96 geoid heights")
+    else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
         conversions.convert_dem_to_wgs84(output_name)
-    else:
-        logger.info("Keeping DEM as EGM96 geoid heights")
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":
