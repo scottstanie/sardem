@@ -116,8 +116,8 @@ def cli():
         "-c",
         action="store_true",
         help=(
-            "Convert the DEM heights from geoid heights above EGM96 "
-            "to heights above WGS84 ellipsoid"
+            "Keep the DEM heights as geoid heights above EGM96. "
+            "Default is to convert to WGS84 for InSAR processing."
         ),
     )
 
