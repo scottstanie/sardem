@@ -17,10 +17,12 @@ EGM_FILES = {
     "egm96": os.path.join(utils.get_cache_dir(), "egm96_15.gtx"),
     "egm08": os.path.join(utils.get_cache_dir(), "egm08_25.gtx"),
 }
+# Make option for more specific naming
+EGM_FILES["egm2008"] = EGM_FILES["egm08"]
 
 
 def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="egm96"):
-    """Convert a DEM with a EGM96 vertical datum to WGS84 heights above ellipsoid"""
+    """Convert a DEM with a EGM96/EGM2008 vertical datum to WGS84 heights above ellipsoid"""
 
     if output is None:
         ext = os.path.splitext(filename)[1]

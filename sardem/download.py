@@ -186,13 +186,14 @@ class Downloader:
         "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
         "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
+        "COP": "https://copernicus-dem-30m.s3-eu-central-1.amazonaws.com",
     }
     VALID_SOURCES = DATA_URLS.keys()
     TILE_ENDINGS = {
         "NASA": ".SRTMGL1.hgt",
         "NASA_WATER": ".SRTMSWBD.raw",
     }
-    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz"}
+    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz", "COP": None}
     NASAHOST = "urs.earthdata.nasa.gov"
 
     def __init__(
@@ -278,6 +279,10 @@ class Downloader:
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='AWS')
             >>> print(d._form_tile_url('N19W155'))
             https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
+
+            >>> d = Downloader(['N19W156', 'N19W155'], data_source='COP')
+            >>> print(d._form_tile_url('N19W155'))
+            https://copernicus-dem-30m.s3-eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N19_00_W155_00_DEM/Copernicus_DSM_COG_10_N19_00_W155_00_DEM.tif
         """
         if self.data_source == "AWS":
             lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
@@ -293,6 +298,17 @@ class Downloader:
                 base=self.data_url,
                 tile=tile_name + self.TILE_ENDINGS[self.data_source],
                 ext=self.compress_type,
+            )
+        # /Copernicus_DSM_COG_10_N32_00_W104_00_DEM/Copernicus_DSM_COG_10_N32_00_W104_00_DEM.tif
+        elif self.data_source == "COP":
+            lat_str, lat_int, lon_str, lon_int = Tile.get_tile_parts(tile_name)
+            itempath = "Copernicus_DSM_COG_10_{lat}_00_{lon}_00_DEM".format(
+                lat=lat_str + str(lat_int),
+                lon=lon_str + str(lon_int),
+            )
+            url = "{base}/{path}/{path}.tif".format(
+                base=self.data_url,
+                path=itempath,
             )
         return url
 

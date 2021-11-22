@@ -54,7 +54,7 @@ import numpy as np
 from sardem import utils, loading, upsample_cy, conversions
 from sardem.download import Tile, Downloader
 
-NUM_PIXELS = 3601  # For SRTM1
+NUM_PIXELS = 3601  # For SRTM1, per tile
 RSC_KEYS = [
     "WIDTH",
     "FILE_LENGTH",
@@ -74,7 +74,7 @@ utils.set_logger_handler(logger)
 
 
 class Stitcher:
-    """Class to combine separate .hgt tiles into one .dem file
+    """Class to combine separate .hgt/.tif tiles into one .dem file
 
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
@@ -113,7 +113,12 @@ class Stitcher:
 
     def _total_length(self, numblocks):
         """Computes the total number of pixels in one dem from numblocks"""
-        return numblocks * (self.num_pixels - 1) + 1
+        length = numblocks * (self.num_pixels - 1) + 1
+        # Only COP DEM on AWS has 3600 per tile
+        # https://copernicus-dem-30m.s3.amazonaws.com/readme.html
+        # "We removed these shared rows and columns on east and south edges to
+        # get the dimensions that are nicely divisible by two"
+        return length if self.data_source != "COP" else length - 1
 
     @property
     def blockshape(self):
@@ -216,12 +221,13 @@ class Stitcher:
         tile_grid = self._create_file_array()
         for idx, row in enumerate(tile_grid):
             cur_row = np.hstack([self._load_tile(tile_name) for tile_name in row])
-            # Delete columns: 3601*[1, 2,... not-including last column]
-            delete_cols = self.num_pixels * np.arange(1, ncols)
-            cur_row = np.delete(cur_row, delete_cols, axis=1)
-            if idx > 0:
-                # For all except first block-row, delete repeated first row of data
-                cur_row = np.delete(cur_row, 0, axis=0)
+            if self.data_source != "COP":
+                # Delete columns: 3601*[1, 2,... not-including last column]
+                delete_cols = self.num_pixels * np.arange(1, ncols)
+                cur_row = np.delete(cur_row, delete_cols, axis=1)
+                if idx > 0:
+                    # For all except first block-row, delete repeated first row of data
+                    cur_row = np.delete(cur_row, 0, axis=0)
             row_list.append(cur_row)
         return np.vstack(row_list)
 
