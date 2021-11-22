@@ -1,7 +1,7 @@
 """
 Command line interface for running sardem
 """
-from sardem.dem import Downloader
+from sardem.download import Downloader
 import sys
 import json
 from argparse import (
@@ -11,7 +11,6 @@ from argparse import (
     FileType,
     RawTextHelpFormatter,
 )
-import sardem
 
 
 def positive_small_int(argstring):
@@ -38,7 +37,7 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
 
 
-def cli():
+def get_cli_args():
     parser = ArgumentParser(
         prog="sardem",
         description=DESCRIPTION,
@@ -121,7 +120,13 @@ def cli():
         ),
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def cli():
+    args = get_cli_args()
+    import sardem.dem
+
     if args.left_lon and args.geojson or args.left_lon and args.bbox:
         raise ArgumentError(
             args.geojson,

@@ -1,10 +1,6 @@
 from __future__ import division
 import collections
 import os
-import numpy as np
-
-INT_16_LE = np.dtype("<i2")
-INT_16_BE = np.dtype(">i2")
 
 RSC_KEY_TYPES = [
     ("width", int),
@@ -45,6 +41,10 @@ def load_elevation(filename):
     so either manually set data(data == np.min(data)) = 0,
         data = np.clip(data, 0, None), or when plotting, plt.imshow(data, vmin=0)
     """
+    import numpy as np
+
+    INT_16_LE = np.dtype("<i2")
+    INT_16_BE = np.dtype(">i2")
     ext = os.path.splitext(filename)[1]
     data_type = INT_16_LE if ext == ".dem" else INT_16_BE
     data = np.fromfile(filename, dtype=data_type)
@@ -86,6 +86,7 @@ def load_watermask(filename):
     Reference:
     https://lpdaac.usgs.gov/products/srtmswbdv003/
     """
+    import numpy as np
     return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601))
 
 
