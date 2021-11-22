@@ -7,18 +7,28 @@ import logging
 
 logger = logging.getLogger("sardem")
 
-EGM_FILE = os.path.join(utils.get_cache_dir(), "egm96_15.gtx")
+URL_EGM08 = "http://download.osgeo.org/proj/vdatum/egm08_25/egm08_25.gtx"
+URL_EGM96 = "http://download.osgeo.org/proj/vdatum/egm96_15/egm96_15.gtx"
+EGM_URLS = {
+    "egm96": URL_EGM96,
+    "egm08": URL_EGM08,
+}
+EGM_FILES = {
+    "egm96": os.path.join(utils.get_cache_dir(), "egm96_15.gtx"),
+    "egm08": os.path.join(utils.get_cache_dir(), "egm08_25.gtx"),
+}
 
 
-def egm96_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True):
+def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="egm96"):
     """Convert a DEM with a EGM96 vertical datum to WGS84 heights above ellipsoid"""
 
     if output is None:
         ext = os.path.splitext(filename)[1]
         output = filename.replace(ext, ".wgs84" + ext)
 
-    if not os.path.exists(EGM_FILE):
-        download_egm96_grid()
+    egm_file = EGM_FILES[geoid]
+    if not os.path.exists(egm_file):
+        download_egm_grid(geoid=geoid)
 
     # Note: https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-tr
     # If not specified, gdalwarp will generate an output raster with xres=yres
@@ -56,7 +66,7 @@ def _get_resolution(filename):
     return xres, yres
 
 
-def convert_dem_to_wgs84(dem_filename):
+def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
     """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights
 
     Overwrites file, requires GDAL to be installed
@@ -75,7 +85,7 @@ def convert_dem_to_wgs84(dem_filename):
     os.rename(dem_filename, output_egm)
     os.rename(rsc_filename, rsc_filename_egm)
     try:
-        egm96_to_wgs84(output_egm, output=dem_filename, overwrite=True, copy_rsc=True)
+        egm_to_wgs84(output_egm, output=dem_filename, overwrite=True, copy_rsc=True, geod=geoid)
         os.remove(output_egm)
         os.remove(rsc_filename_egm)
     except Exception:
@@ -88,14 +98,21 @@ def convert_dem_to_wgs84(dem_filename):
     shift_dem_rsc(rsc_filename, to_gdal=False)
 
 
-def download_egm96_grid():
-    url = "http://download.osgeo.org/proj/vdatum/egm96_15/egm96_15.gtx"
-    if os.path.exists(EGM_FILE):
-        logger.info("{} already exists, skipping.".format(EGM_FILE))
+def download_egm_grid(geoid="egm96"):
+    if geoid == "egm96":
+        url = URL_EGM96
+    elif geoid in ("egm08", "egm2008"):
+        url = URL_EGM08
+    else:
+        raise ValueError("Unknown geoid: {}".format(geoid))
+
+    egm_file = EGM_FILES[geoid]
+    if os.path.exists(egm_file):
+        logger.info("{} already exists, skipping.".format(egm_file))
         return
 
-    logger.info("Downloading from {} to {}".format(url, EGM_FILE))
-    with open(EGM_FILE, "wb") as f:
+    logger.info("Downloading from {} to {}".format(url, egm_file))
+    with open(egm_file, "wb") as f:
         resp = requests.get(url)
         f.write(resp.content)
 
