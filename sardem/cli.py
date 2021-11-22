@@ -111,8 +111,7 @@ def get_cli_args():
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
-        "--convert-to-wgs84",
-        "-c",
+        "--keep-egm96",
         action="store_true",
         help=(
             "Keep the DEM heights as geoid heights above EGM96. "
@@ -140,8 +139,7 @@ def cli():
         and not args.bbox
         and not args.wkt_file
     ):
-        parser.print_usage(sys.stderr)
-        sys.exit(1)
+        raise ValueError("Need --bbox, --geojoin, or --wkt-file")
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
     if args.bbox:
@@ -172,6 +170,6 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
-        args.convert_to_wgs84,
+        args.keep_egm96,
         output,
     )
