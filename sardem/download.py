@@ -1,12 +1,15 @@
-import logging
 import getpass
+import logging
 import math
-from multiprocessing.pool import ThreadPool
 import netrc
 import os
 import re
 import subprocess
+from multiprocessing.pool import ThreadPool
+
+import numpy as np
 import requests
+
 from . import utils
 
 try:
@@ -351,8 +354,9 @@ class Downloader:
                     logger.warning("Cannot find url %s, using zeros for tile." % url)
                     # Raise only if we want to kill everything
                     # response.raise_for_status()
-                    # Return False so caller can track failed downloads
-                    return None
+                    local_filename = os.path.splitext(local_filename)[0]
+                    self._write_zeros(local_filename)
+                    return local_filename
 
                 f.write(response.content)
                 logger.info("Writing to {}".format(local_filename))
@@ -369,6 +373,9 @@ class Downloader:
     def _all_files_exist(self):
         filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
         return all(os.path.exists(f) for f in filepaths)
+    
+    def _write_zeros(self, local_filename):
+        np.zeros((self.tile_size, self.tile_size), dtype=np.int16).tofile(local_filename)
 
     def download_all(self):
         """Downloads and saves all tiles from tile list"""
