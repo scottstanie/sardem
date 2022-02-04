@@ -44,7 +44,7 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
         overwrite="-overwrite" if overwrite else "",
         xres=xres,
         yres=yres,
-        egm_file=EGM_FILE,
+        egm_file=egm_file,
     )
     logger.info(cmd)
     subprocess.run(cmd, check=True, shell=True)
@@ -85,7 +85,7 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
     os.rename(dem_filename, output_egm)
     os.rename(rsc_filename, rsc_filename_egm)
     try:
-        egm_to_wgs84(output_egm, output=dem_filename, overwrite=True, copy_rsc=True, geod=geoid)
+        egm_to_wgs84(output_egm, output=dem_filename, overwrite=True, copy_rsc=True, geoid=geoid)
         os.remove(output_egm)
         os.remove(rsc_filename_egm)
     except Exception:
