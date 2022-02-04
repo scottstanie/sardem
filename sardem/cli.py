@@ -1,7 +1,7 @@
 """
 Command line interface for running sardem
 """
-from sardem.dem import Downloader
+from sardem.download import Downloader
 import sys
 import json
 from argparse import (
@@ -11,7 +11,6 @@ from argparse import (
     FileType,
     RawTextHelpFormatter,
 )
-import sardem
 
 
 def positive_small_int(argstring):
@@ -38,7 +37,7 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
 
 
-def cli():
+def get_cli_args():
     parser = ArgumentParser(
         prog="sardem",
         description=DESCRIPTION,
@@ -112,16 +111,21 @@ def cli():
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
-        "--convert-to-wgs84",
-        "-c",
+        "--keep-egm96",
         action="store_true",
         help=(
-            "Convert the DEM heights from geoid heights above EGM96 "
-            "to heights above WGS84 ellipsoid"
+            "Keep the DEM heights as geoid heights above EGM96. "
+            "Default is to convert to WGS84 for InSAR processing."
         ),
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def cli():
+    args = get_cli_args()
+    import sardem.dem
+
     if args.left_lon and args.geojson or args.left_lon and args.bbox:
         raise ArgumentError(
             args.geojson,
@@ -135,8 +139,7 @@ def cli():
         and not args.bbox
         and not args.wkt_file
     ):
-        parser.print_usage(sys.stderr)
-        sys.exit(1)
+        raise ValueError("Need --bbox, --geojoin, or --wkt-file")
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
     if args.bbox:
@@ -167,6 +170,6 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
-        args.convert_to_wgs84,
+        args.keep_egm96,
         output,
     )

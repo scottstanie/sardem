@@ -1,0 +1,15 @@
+ENVI
+description = {
+elevation_wgs84.dem}
+samples = 5761
+lines   = 5761
+bands   = 1
+header offset = 0
+file type = ENVI Standard
+data type = 2
+interleave = bsq
+byte order = 0
+map info = {Geographic Lat/Lon, 1, 1, -156.300138890849, 20.3001388908485, 0.000277777777, 0.000277777777,WGS-84}
+coordinate system string = {GEOGCS["GCS_unknown",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]}
+band names = {
+Band 1}
