@@ -373,9 +373,9 @@ class Downloader:
     def _all_files_exist(self):
         filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
         return all(os.path.exists(f) for f in filepaths)
-    
+
     def _write_zeros(self, local_filename):
-        np.zeros((self.tile_size, self.tile_size), dtype=np.int16).tofile(local_filename)
+        np.zeros((3601, 3601), dtype=np.int16).tofile(local_filename)
 
     def download_all(self):
         """Downloads and saves all tiles from tile list"""
