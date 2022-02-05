@@ -31,19 +31,19 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
         download_egm_grid(geoid=geoid)
 
     # Note: https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-tr
-    # If not specified, gdalwarp will generate an output raster with xres=yres
+    # If not specified, gdalwarp will generate an output raster with xsize=ysize
     # We want it to match the input file
-    xres, yres = _get_resolution(filename)
+    xsize, ysize = _get_size(filename)
     cmd = (
         'gdalwarp {overwrite} -s_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids={egm_file}" '
-        '-t_srs "+proj=longlat +datum=WGS84 +no_defs" -of ENVI -tr {xres} {yres} {inp} {out}'
+        '-t_srs "+proj=longlat +datum=WGS84 +no_defs" -of ENVI -ts {xsize} {ysize} {inp} {out}'
     )
     cmd = cmd.format(
         inp=filename,
         out=output,
         overwrite="-overwrite" if overwrite else "",
-        xres=xres,
-        yres=yres,
+        xsize=xsize,
+        ysize=ysize,
         egm_file=egm_file,
     )
     logger.info(cmd)
@@ -56,14 +56,14 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
     return output
 
 
-def _get_resolution(filename):
-    """Retrieve the pixel resolution from a gdal-readable file"""
+def _get_size(filename):
+    """Retrieve the raster size from a gdal-readable file"""
     from osgeo import gdal
 
     ds = gdal.Open(filename)
-    gt = ds.GetGeoTransform()
-    xres, yres = gt[1], gt[5]
-    return xres, yres
+    xsize, ysize = ds.RasterXSize, ds.RasterYSize
+    ds = None
+    return xsize, ysize
 
 
 def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
