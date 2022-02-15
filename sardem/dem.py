@@ -423,7 +423,7 @@ def main(
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
 
-    if keep_egm96:
+    if keep_egm96 or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
