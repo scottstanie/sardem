@@ -374,7 +374,7 @@ class Downloader:
         filepaths = [self._filepath(tile_name) for tile_name in self.tile_names]
         return all(os.path.exists(f) for f in filepaths)
 
-     def _write_zeros(self, local_filename):
+    def _write_zeros(self, local_filename):
         shape = (3601, 3601)
         if self.data_source == "NASA_WATER":
             dtype = np.uint8
