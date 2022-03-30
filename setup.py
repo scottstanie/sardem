@@ -7,7 +7,7 @@ setuptools.setup(
     name="sardem",
     version="0.8.1",
     author="Scott Staniewicz",
-    author_email="scott.stanie@utexas.com",
+    author_email="scott.stanie@gmail.com",
     description="Create upsampled DEMs for InSAR processing",
     long_description=long_description,
     long_description_content_type="text/markdown",
