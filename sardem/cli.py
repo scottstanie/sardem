@@ -111,10 +111,10 @@ def get_cli_args():
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
-        "--keep-egm96",
+        "--keep-egm",
         action="store_true",
         help=(
-            "Keep the DEM heights as geoid heights above EGM96. "
+            "Keep the DEM heights as geoid heights above EGM96 or EGM2008. "
             "Default is to convert to WGS84 for InSAR processing."
         ),
     )
@@ -170,6 +170,6 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
-        args.keep_egm96,
+        args.keep_egm,
         output,
     )

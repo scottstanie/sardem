@@ -71,7 +71,7 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
 
     Overwrites file, requires GDAL to be installed
     """
-    if not _gdal_installed_correctly():
+    if not utils._gdal_installed_correctly():
         logger.error("GDAL required to convert DEM to WGS84")
         return
 
@@ -111,10 +111,16 @@ def download_egm_grid(geoid="egm96"):
         logger.info("{} already exists, skipping.".format(egm_file))
         return
 
-    logger.info("Downloading from {} to {}".format(url, egm_file))
+    size = _get_file_size_mb(url)
+    logger.info("Performing 1-time download {} ({:d} MB file), saving to {}".format(url, size, egm_file))
     with open(egm_file, "wb") as f:
         resp = requests.get(url)
         f.write(resp.content)
+
+
+def _get_file_size_mb(url):
+    # https://stackoverflow.com/a/44299915/4174466
+    return int(requests.get(url, stream=True).headers['Content-length']) / 1e6
 
 
 def shift_dem_rsc(rsc_filename, outname=None, to_gdal=True):
@@ -123,7 +129,7 @@ def shift_dem_rsc(rsc_filename, outname=None, to_gdal=True):
     See here for geotransform info
     https://gdal.org/user/raster_data_model.html#affine-geotransform
     GDAL standard is to reference a raster by its top left edges,
-    while often the .rsc for SAR focusing is using the middle of a pixel.
+    while the .rsc for SAR focusing might use the middle of a pixel.
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
     `to_gdal`=False does the reverse, back to the middle of the top left pixel
     """
@@ -152,13 +158,3 @@ def shift_dem_rsc(rsc_filename, outname=None, to_gdal=True):
         f.write(loading.format_dem_rsc(rsc_dict))
 
 
-def _gdal_installed_correctly():
-    cmd = "gdalinfo --help-general"
-    # cmd = "gdalinfo -h"
-    try:
-        subprocess.check_output(cmd, shell=True)
-        return True
-    except subprocess.CalledProcessError:
-        logger.error("GDAL command failed to run.", exc_info=True)
-        logger.error("Check GDAL installation.")
-        return False
