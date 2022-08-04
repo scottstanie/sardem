@@ -112,7 +112,7 @@ def download_egm_grid(geoid="egm96"):
         return
 
     size = _get_file_size_mb(url)
-    logger.info("Performing 1-time download {} ({:d} MB file), saving to {}".format(url, size, egm_file))
+    logger.info("Performing 1-time download {} ({:.0f} MB file), saving to {}".format(url, size, egm_file))
     with open(egm_file, "wb") as f:
         resp = requests.get(url)
         f.write(resp.content)
