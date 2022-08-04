@@ -324,7 +324,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
-    keep_egm96=False,
+    keep_egm=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -338,8 +338,8 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
-        keep_egm96 (bool): Don't convert the DEM heights from geoid heights
-            above EGM96 to heights above WGS84 ellipsoid (default = False)
+        keep_egm (bool): Don't convert the DEM heights from geoid heights
+            above EGM96 or EGM2008 to heights above WGS84 ellipsoid (default = False)
         output_name (str): name of file to save final DEM (usually elevation.dem)
     """
     if geojson:
@@ -349,6 +349,13 @@ def main(
     else:
         bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
+    if data_source == "COP":
+        utils._gdal_installed_correctly()
+        from sardem import cop_dem
+
+        return cop_dem.download_and_stitch(
+            output_name, bounds, keep_egm=keep_egm, xrate=xrate, yrate=yrate,
+        )
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
 
@@ -423,7 +430,7 @@ def main(
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
 
-    if keep_egm96 or data_source == "NASA_WATER":
+    if keep_egm or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")

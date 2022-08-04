@@ -1,14 +1,20 @@
 """utils.py: extra helper functions"""
 from __future__ import division, print_function
-import os
-import sys
-from math import floor, ceil
+
 import logging
+import os
+import subprocess
+import sys
+from math import ceil, floor
+
 from sardem import loading
 
 
 def set_logger_handler(logger, level="INFO"):
     logger.setLevel(level)
+    if logger.hasHandlers():
+        # logger.handlers.clear()
+        return
     h = logging.StreamHandler()
     h.setLevel(level)
     format_ = "[%(asctime)s] [%(levelname)s %(filename)s] %(message)s"
@@ -236,3 +242,15 @@ def get_wkt_bbox(fname):
     return wkt.load(fname).bounds
     # with open(fname) as f:
         # return wkt.load(f).bounds
+
+
+def _gdal_installed_correctly():
+    cmd = "gdalinfo --help-general"
+    # cmd = "gdalinfo -h"
+    try:
+        subprocess.check_output(cmd, shell=True)
+        return True
+    except subprocess.CalledProcessError:
+        logger.error("GDAL command failed to run.", exc_info=True)
+        logger.error("Check GDAL installation.")
+        return False
