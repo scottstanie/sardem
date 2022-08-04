@@ -37,7 +37,7 @@ def download_and_stitch(
         if not os.path.exists(vrt_filename):
             make_cop_vrt(vrt_filename)
     else:
-        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/copernicus_GLO_30_dem.vrt"  # noqa
+        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/vrt-cop-dem/sardem/data/copernicus_GLO_30_dem.vrt"  # noqa
     egm_file = conversions.EGM_FILES[geoid]
     if not os.path.exists(egm_file):
         conversions.download_egm_grid(geoid=geoid)
