@@ -59,6 +59,7 @@ def download_and_stitch(
     )
     print("Creating {}".format(output_name))
     gdal.Warp(output_name, vrt_filename, options=options)
+    return
 
 
 def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
@@ -76,7 +77,7 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
         outputBounds=[-180, -90, 180, 90],
         resolution="highest",
     )
-    print("Building VRT ".format(outname))
+    print("Building VRT {}".format(outname))
     vrt_file = gdal.BuildVRT(outname, url_list, options=vrt_options)
     vrt_file.FlushCache()
     vrt_file = None
