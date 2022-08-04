@@ -189,6 +189,7 @@ class Downloader:
         "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
         "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
+        "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
     }
     VALID_SOURCES = DATA_URLS.keys()
     TILE_ENDINGS = {

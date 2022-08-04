@@ -12,6 +12,9 @@ from sardem import loading
 
 def set_logger_handler(logger, level="INFO"):
     logger.setLevel(level)
+    if logger.hasHandlers():
+        # logger.handlers.clear()
+        return
     h = logging.StreamHandler()
     h.setLevel(level)
     format_ = "[%(asctime)s] [%(levelname)s %(filename)s] %(message)s"

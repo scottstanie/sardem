@@ -351,9 +351,9 @@ def main(
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
     if data_source == "COP":
         utils._gdal_installed_correctly()
-        from sardem import cop
+        from sardem import cop_dem
 
-        return cop.download_and_stitch(
+        return cop_dem.download_and_stitch(
             output_name, bounds, keep_egm=keep_egm, xrate=xrate, yrate=yrate,
         )
 
