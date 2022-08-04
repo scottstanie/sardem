@@ -99,6 +99,7 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
         resampleAlg=gdal.GRIORA_NearestNeighbour,
         outputBounds=[-180, -90, 180, 90],
         resolution="highest",
+        outputSRS="EPSG:4326+3855"
     )
     logger.info("Building VRT {}".format(outname))
     vrt_file = gdal.BuildVRT(outname, url_list, options=vrt_options)
