@@ -249,10 +249,8 @@ class Stitcher:
 
         See module docstring for example .dem.rsc file.
 
-        Args:
-            srtm1_tile_list (list[str]): names of tiles (e.g. N19W156)
-                must be sorted with top-left tile first, as in from
-                output of Tile.srtm1_tile_names
+        Note: the X_FIRST and Y_FIRST are set to the top left *center*.
+            Use utils.shift_rsc_dict(to_gdal=True) to shift to top left edge
 
         Returns:
             OrderedDict: key/value pairs in order to write to a .dem.rsc file
@@ -325,6 +323,7 @@ def main(
     xrate=1,
     yrate=1,
     keep_egm=False,
+    shift_rsc=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -340,7 +339,10 @@ def main(
         yrate (int): y-rate (rows) to upsample DEM (positive int)
         keep_egm (bool): Don't convert the DEM heights from geoid heights
             above EGM96 or EGM2008 to heights above WGS84 ellipsoid (default = False)
-        output_name (str): name of file to save final DEM (usually elevation.dem)
+        shift_rsc (bool): Shift the .dem.rsc file down/right so that the
+            X_FIRST and Y_FIRST values represent the pixel *center* (instead of
+            GDAL's convention of pixel edge). Default = False.
+        output_name (str): name of file to save final DEM (default = elevation.dem)
     """
     if geojson:
         bounds = utils.bounding_box(geojson=geojson)
@@ -380,6 +382,9 @@ def main(
     rsc_dict["Y_FIRST"] = new_y_first
     rsc_dict["FILE_LENGTH"] = new_rows
     rsc_dict["WIDTH"] = new_cols
+    if shift_rsc:
+        rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
+
     rsc_filename = output_name + ".rsc"
 
     # Upsampling:
@@ -434,7 +439,8 @@ def main(
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
-        conversions.convert_dem_to_wgs84(output_name)
+        using_gdal_rsc = not shift_rsc
+        conversions.convert_dem_to_wgs84(output_name, using_gdal_rsc=using_gdal_rsc)
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":

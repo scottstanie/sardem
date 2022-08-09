@@ -118,6 +118,15 @@ def get_cli_args():
             "Default is to convert to WGS84 for InSAR processing."
         ),
     )
+    parser.add_argument(
+        "--shift-rsc",
+        action="store_true",
+        help=(
+            "Shift the .rsc file by half a pixel so that X_FIRST and Y_FIRST "
+            "are at the pixel center (instead of GDAL's convention of the top left edge)."
+            " Default is GDAL's top-left edge convention."
+        ),
+    )
 
     return parser.parse_args()
 
@@ -171,5 +180,6 @@ def cli():
         args.xrate,
         args.yrate,
         args.keep_egm,
+        args.shift_rsc,
         output,
     )

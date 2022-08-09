@@ -244,6 +244,74 @@ def get_wkt_bbox(fname):
         # return wkt.load(f).bounds
 
 
+def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
+    """Shift the top-left of a .rsc file by half pixel
+
+    The SRTM tiles are named such that the number represents the 
+    lon/lat of the lower left corner *center* of the tile, so a shift
+    is needed to create a .rsc file in GDAL convention.
+    
+    See here for geotransform info
+    https://gdal.org/user/raster_data_model.html#affine-geotransform
+    GDAL standard is to reference a raster by its top left edges,
+    while some SAR processors use the middle of a pixel.
+
+    `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
+    `to_gdal`=False does the reverse, back to the middle of the top left pixel
+    """
+    msg = "Shifting %s for GDAL conversion by half pixel "
+    msg += "to edges" if to_gdal else "back to center"
+    logger.info(msg, rsc_filename)
+    if outname is None:
+        outname = rsc_filename
+    rsc_dict = loading.load_dem_rsc(rsc_filename)
+
+    rsc_dict = shift_rsc_dict(rsc_dict, to_gdal=to_gdal)
+    with open(outname, "w") as f:
+        f.write(loading.format_dem_rsc(rsc_dict))
+
+
+def shift_rsc_dict(rsc_dict, to_gdal=True):
+    """Shift the top-left of the rsc data dictionary  by half pixel
+
+    The SRTM tiles are named such that the number represents the 
+    lon/lat of the lower left corner *center* of the tile, so a shift
+    is needed to create a .rsc file in GDAL convention.
+    
+    See here for geotransform info
+    https://gdal.org/user/raster_data_model.html#affine-geotransform
+    GDAL standard is to reference a raster by its top left edges,
+    while some SAR processors use the middle of a pixel.
+
+    `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
+    `to_gdal`=False does the reverse, back to the middle of the top left pixel
+    """
+    is_lowercase = "x_first" in rsc_dict
+    if is_lowercase:
+        rsc_dict = {k.upper(): v for k, v in rsc_dict.items()}
+
+    x_first, y_first = rsc_dict["X_FIRST"], rsc_dict["Y_FIRST"]
+    x_step, y_step = rsc_dict["X_STEP"], rsc_dict["Y_STEP"]
+    if to_gdal:
+        # Move up+left half a pixel to represent the top left *edge* of the image
+        new_first = {
+            "X_FIRST": x_first - 0.5 * x_step,
+            "Y_FIRST": y_first - 0.5 * y_step,
+        }
+    else:
+        # Move down+right half a pixel to represent the *center* of top left pixel
+        new_first = {
+            "X_FIRST": x_first + 0.5 * x_step,
+            "Y_FIRST": y_first + 0.5 * y_step,
+        }
+    rsc_dict.update(new_first)
+
+    # return to lowercase if necessary
+    if is_lowercase:
+        rsc_dict = {k.lower(): v for k, v in rsc_dict.items()}
+    return rsc_dict
+
+
 def _gdal_installed_correctly():
     cmd = "gdalinfo --help-general"
     # cmd = "gdalinfo -h"
