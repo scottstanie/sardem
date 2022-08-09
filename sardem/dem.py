@@ -68,6 +68,7 @@ RSC_KEYS = [
     "Z_SCALE",
     "PROJECTION",
 ]
+WARN_LIMIT = 20000 * 20000
 
 logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
@@ -322,6 +323,7 @@ def main(
     data_source=None,
     xrate=1,
     yrate=1,
+    make_isce_xml=False,
     keep_egm=False,
     shift_rsc=False,
     output_name=None,
@@ -337,6 +339,7 @@ def main(
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
+        make_isce_xml (bool): whether to make an isce2-compatible XML file
         keep_egm (bool): Don't convert the DEM heights from geoid heights
             above EGM96 or EGM2008 to heights above WGS84 ellipsoid (default = False)
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
@@ -351,6 +354,11 @@ def main(
     else:
         bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
+    outrows, outcols = utils.get_output_size(bounds, xrate, yrate)
+    if outrows * outcols > WARN_LIMIT:
+        logger.warning( "Caution: Output size is {} x {} pixels.".format(outrows, outcols))
+        logger.warning("Are the bounds correct?")
+
     if data_source == "COP":
         utils._gdal_installed_correctly()
         from sardem import cop_dem
@@ -395,6 +403,8 @@ def main(
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
+        
+
 
     else:
         logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
@@ -434,6 +444,11 @@ def main(
         logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
         os.remove(dem_filename_small)
         os.remove(rsc_filename_small)
+
+    if make_isce_xml:
+        logger.info("Creating ISCE2 XML file")
+        xml_filename = output_name + ".xml"
+        utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
     if keep_egm or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")

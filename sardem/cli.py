@@ -111,6 +111,12 @@ def get_cli_args():
         help="Source of SRTM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
+        "-isce",
+        "--make-isce-xml",
+        action="store_true",
+        help="Make an isce2 XML file for the DEM.",
+    )
+    parser.add_argument(
         "--keep-egm",
         action="store_true",
         help=(
@@ -179,6 +185,7 @@ def cli():
         args.data_source,
         args.xrate,
         args.yrate,
+        args.make_isce_xml,
         args.keep_egm,
         args.shift_rsc,
         output,

@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 import sys
-from math import ceil, floor
+from math import floor
 
 from sardem import loading
 
@@ -63,7 +63,7 @@ def floor_float(num, ndigits):
         >>> floor_float(1/3600, 12)
         0.000277777777
     """
-    return floor((10 ** ndigits) * num) / (10 ** ndigits)
+    return floor((10**ndigits) * num) / (10**ndigits)
 
 
 def is_file(f):
@@ -244,16 +244,16 @@ def get_wkt_bbox(fname):
 
     return wkt.load(fname).bounds
     # with open(fname) as f:
-        # return wkt.load(f).bounds
+    # return wkt.load(f).bounds
 
 
 def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
     """Shift the top-left of a .rsc file by half pixel
 
-    The SRTM tiles are named such that the number represents the 
+    The SRTM tiles are named such that the number represents the
     lon/lat of the lower left corner *center* of the tile, so a shift
     is needed to create a .rsc file in GDAL convention.
-    
+
     See here for geotransform info
     https://gdal.org/user/raster_data_model.html#affine-geotransform
     GDAL standard is to reference a raster by its top left edges,
@@ -277,10 +277,10 @@ def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
 def shift_rsc_dict(rsc_dict, to_gdal=True):
     """Shift the top-left of the rsc data dictionary  by half pixel
 
-    The SRTM tiles are named such that the number represents the 
+    The SRTM tiles are named such that the number represents the
     lon/lat of the lower left corner *center* of the tile, so a shift
     is needed to create a .rsc file in GDAL convention.
-    
+
     See here for geotransform info
     https://gdal.org/user/raster_data_model.html#affine-geotransform
     GDAL standard is to reference a raster by its top left edges,
@@ -315,6 +315,17 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
     return rsc_dict
 
 
+def get_output_size(bounds, xrate, yrate):
+    """Calculate the output size of a raster given the bounds and rates"""
+    default_spacing = 0.0002777777777777778
+    left, bottom, right, top = bounds
+    width = right - left
+    height = top - bottom
+    rows = int(round(width / default_spacing * xrate))
+    cols = int(round(height / default_spacing * yrate))
+    return rows, cols
+
+
 def _gdal_installed_correctly():
     cmd = "gdalinfo --help-general"
     # cmd = "gdalinfo -h"
@@ -325,3 +336,136 @@ def _gdal_installed_correctly():
         logger.error("GDAL command failed to run.", exc_info=True)
         logger.error("Check GDAL installation.")
         return False
+
+
+def gdal2isce_xml(fname, keep_egm=False):
+    """
+    Generate ISCE xml file from gdal supported file
+
+    Example: import isce
+             from applications.gdal2isce_xml import gdal2isce_xml
+             xml_file = gdal2isce_xml(fname+'.vrt')
+    """
+    _gdal_installed_correctly()
+    from osgeo import gdal
+    try:
+        import isce  # noqa
+        import isceobj
+    except ImportError:
+        logger.error("isce2 not installed. Cannot generate xml file.")
+        raise
+
+    # open the GDAL file and get typical data informationi
+    GDAL2ISCE_DATATYPE = {
+        1: "BYTE",
+        2: "uint16",
+        3: "SHORT",
+        4: "uint32",
+        5: "INT",
+        6: "FLOAT",
+        7: "DOUBLE",
+        10: "CFLOAT",
+        11: "complex128",
+    }
+
+    # check if the input file is a vrt
+    fbase, fext = os.path.splitext(fname)
+    if fext == ".vrt":
+        outname = fbase
+    else:
+        outname = fname
+    logger.info("Writing to %s", outname)
+
+    # open the GDAL file and get typical ds information
+    ds = gdal.Open(fname, gdal.GA_ReadOnly)
+    width = ds.RasterXSize
+    length = ds.RasterYSize
+    bands = ds.RasterCount
+    logger.info("width:       " + "\t" + str(width))
+    logger.info("length:      " + "\t" + str(length))
+    logger.info("num of bands:" + "\t" + str(bands))
+
+    # getting the datatype information
+    raster = ds.GetRasterBand(1)
+    dataTypeGdal = raster.DataType
+
+    # user look-up dictionary from gdal to isce format
+    dataType = GDAL2ISCE_DATATYPE[dataTypeGdal]
+    logger.info("dataType: " + "\t" + str(dataType))
+
+    # transformation contains gridcorners (lines/pixels or lonlat and the spacing 1/-1 or deltalon/deltalat)
+    transform = ds.GetGeoTransform()
+    # if a complex data type, then create complex image
+    # if a real data type, then create a regular image
+
+    img = isceobj.createImage()
+    img.setFilename(os.path.abspath(outname))
+    img.setWidth(width)
+    img.setLength(length)
+    img.setAccessMode("READ")
+    img.bands = bands
+    img.dataType = dataType
+
+    # interleave
+    md = ds.GetMetadata("IMAGE_STRUCTURE")
+    sch = md.get("INTERLEAVE", None)
+    if sch == "LINE":
+        img.scheme = "BIL"
+    elif sch == "PIXEL":
+        img.scheme = "BIP"
+    elif sch == "BAND":
+        img.scheme = "BSQ"
+    else:
+        logger.info("Unrecognized interleaving scheme, {}".format(sch))
+        if bands < 2:
+            logger.info("Assuming default, BIP")
+            img.scheme = "BIP"
+        else:
+            logger.info("Assuming default, BSQ")
+            img.scheme = "BSQ"
+
+    img.firstLongitude = transform[0]
+    img.firstLatitude = transform[3]
+    img.deltaLatitude = transform[5]
+    img.deltaLongitude = transform[1]
+
+    xml_file = outname + ".xml"
+    img.dump(xml_file)
+
+    _add_reference_datum(xml_file, keep_egm=keep_egm)
+
+    return xml_file
+
+
+def _add_reference_datum(xml_file, keep_egm=False):
+    """
+    Example of modifying an existing XML file
+    """
+
+    import xml.etree.ElementTree as ET
+    from xml.dom import minidom
+
+    logger.info("add <reference> info to xml file: {}".format(os.path.basename(xml_file)))
+
+    # get property element for reference
+    ref = ET.Element("property", attrib={"name": "reference"})
+
+    val = ET.SubElement(ref, "value")
+    if keep_egm:
+        val.text = "EGM2008"
+    else:
+        val.text = "WGS84"
+
+    doc = ET.SubElement(ref, "doc")
+    doc.text = "Geodetic datum"
+
+    # pretty xml
+    ref_str = minidom.parseString(ET.tostring(ref)).toprettyxml(indent="    ")
+    ref = ET.fromstring(ref_str)
+
+    # write back to xml file
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    root.append(ref)
+    tree.write(xml_file)
+    return xml_file
