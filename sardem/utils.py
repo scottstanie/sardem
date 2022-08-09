@@ -146,21 +146,24 @@ def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
 
     Takes the desired bounds, .rsc data from stitched dem,
     Examples:
-        >>> bounds = (-155.49, 19.0, -154.5, 19.51)
+        >>> bounds = [-155.49, 19.0, -154.5, 19.5]
         >>> x_step = 0.1
         >>> y_step = -0.1
         >>> x_first = -156
         >>> y_first = 20.0
         >>> print(find_bounding_idxs(bounds, x_step, y_step, x_first, y_first))
+        ((5, 10, 15, 5), (-155.5, 19.5))
+        >>> bounds[-1] += 0.06
+        >>> print(find_bounding_idxs(bounds, x_step, y_step, x_first, y_first))
         ((5, 10, 15, 4), (-155.5, 19.6))
     """
 
     left, bot, right, top = bounds
-    left_idx = int(floor((left - x_first) / x_step))
-    right_idx = int(ceil((right - x_first) / x_step))
+    left_idx = int(round((left - x_first) / x_step))
+    right_idx = int(round((right - x_first) / x_step))
     # Note: y_step will be negative for these
-    top_idx = int(floor((top - y_first) / y_step))
-    bot_idx = int(ceil((bot - y_first) / y_step))
+    top_idx = int(round((top - y_first) / y_step))
+    bot_idx = int(round((bot - y_first) / y_step))
     new_x_first = x_first + x_step * left_idx
     new_y_first = y_first + y_step * top_idx  # Again: y_step negative
     return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
