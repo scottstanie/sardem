@@ -363,9 +363,12 @@ def main(
         utils._gdal_installed_correctly()
         from sardem import cop_dem
 
-        return cop_dem.download_and_stitch(
+        cop_dem.download_and_stitch(
             output_name, bounds, keep_egm=keep_egm, xrate=xrate, yrate=yrate,
         )
+        if make_isce_xml:
+            logger.info("Creating ISCE2 XML file")
+            utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
 
@@ -403,9 +406,6 @@ def main(
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
-        
-
-
     else:
         logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
         # dem_filename_small = output_name.replace(".dem", "_small.dem")
@@ -447,7 +447,6 @@ def main(
 
     if make_isce_xml:
         logger.info("Creating ISCE2 XML file")
-        xml_filename = output_name + ".xml"
         utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
     if keep_egm or data_source == "NASA_WATER":
