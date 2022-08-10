@@ -1,0 +1,574 @@
+<VRTDataset rasterXSize="648000" rasterYSize="324000">
+  <SRS dataAxisToSRSAxisMapping="2,1">GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -1.3888888888890000e-04,  2.7777777777780000e-04,  0.0000000000000000e+00,  9.0000138888888884e+01,  0.0000000000000000e+00, -2.7777777777780000e-04</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N00_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N10_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N20_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N30_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N40_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="72000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0.16666666666704" yOff="0" xSize="47999.8333333333" ySize="36000" />
+      <DstRect xOff="0" yOff="108000" xSize="71999.7499999942" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="71999.7499999942" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="143999.749999988" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="215999.749999983" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="287999.749999977" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="359999.749999971" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="431999.749999965" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="503999.74999996" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N50_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="575999.749999954" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0.25000000000038" yOff="0" xSize="35999.75" ySize="36000" />
+      <DstRect xOff="0" yOff="72000" xSize="71999.4999999942" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="71999.4999999942" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="143999.499999989" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="215999.499999983" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="287999.499999977" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="359999.499999971" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="431999.499999965" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="503999.49999996" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N60_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="36000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="575999.499999954" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0.33333333333372" yOff="0" xSize="23999.6666666667" ySize="36000" />
+      <DstRect xOff="0" yOff="36000" xSize="71999" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="71999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="143999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="215999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="287999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="359999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="431999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="503999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N70_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="24000" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="575999" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14401" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0.900000000000792" yOff="0" xSize="14400.1" ySize="36000" />
+      <DstRect xOff="0" yOff="0" xSize="72000.4999999942" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14401" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="71995.4999999942" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14401" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="143995.499999988" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14401" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="215995.499999983" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14401" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="287995.499999977" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14400" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="359995.499999971" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14400" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="431995.499999965" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14400" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="503995.49999996" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFiename relativeToVRT="1">N80_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14400" RasterYSize="36000" DataType="Float32" BlockXSize="128" BlockYSize="128" />
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="575995.499999954" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>

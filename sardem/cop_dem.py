@@ -117,7 +117,7 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
 
 def get_tile_list():
     """Get the list of tiles from the Copernicus DEM 30m tile list"""
-    logger.info("Getting list of COP tiles from ", TILE_LIST_URL)
+    logger.info("Getting list of COP tiles from %s", TILE_LIST_URL)
     r = requests.get(TILE_LIST_URL)
     return r.text.splitlines()
 

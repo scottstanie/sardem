@@ -1,0 +1,493 @@
+<VRTDataset rasterXSize="644400" rasterYSize="324000">
+  <SRS dataAxisToSRSAxisMapping="2,1,3">COMPD_CS["WGS 84 + EGM2008 height",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]],VERT_CS["EGM2008 height",VERT_DATUM["EGM2008 geoid",2005,AUTHORITY["EPSG","1027"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Gravity-related height",UP],AUTHORITY["EPSG","3855"]]]</SRS>
+  <GeoTransform> -1.7900013888888890e+02,  2.7777777777780000e-04,  0.0000000000000000e+00,  9.0000138888888884e+01,  0.0000000000000000e+00, -2.7777777777780000e-04</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="572400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="500400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="428400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="356400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="284400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="212400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="140400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N00_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="3600" yOff="0" xSize="68400" ySize="36000" />
+      <DstRect xOff="0" yOff="288000" xSize="68400" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="572400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="500400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="428400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="356400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="284400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="212400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="140400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="3600" yOff="0" xSize="68400" ySize="36000" />
+      <DstRect xOff="0" yOff="252000" xSize="68400" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="572400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="500400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="428400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="356400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="284400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="212400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="140400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N20_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="3600" yOff="0" xSize="68400" ySize="36000" />
+      <DstRect xOff="0" yOff="216000" xSize="68400" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="572400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="500400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="428400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="356400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="284400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="212400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="140400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N30_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="3600" yOff="0" xSize="68400" ySize="36000" />
+      <DstRect xOff="0" yOff="180000" xSize="68400" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="572400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="500400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="428400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="356400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="284400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="212400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="140400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N40_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="3600" yOff="0" xSize="68400" ySize="36000" />
+      <DstRect xOff="0" yOff="144000" xSize="68400" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="572399.749999954" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="500399.74999996" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="428399.749999966" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="356399.749999972" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="284399.749999977" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="212399.749999983" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="140399.749999989" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="68399.7499999945" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N50_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="2400.16666666668" yOff="0" xSize="45599.8333333333" ySize="36000" />
+      <DstRect xOff="0" yOff="108000" xSize="68399.7499999945" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="572399.499999954" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="500399.49999996" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="428399.499999966" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="356399.499999971" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="284399.499999977" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="212399.499999983" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="140399.499999989" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="68399.4999999946" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N60_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="1800.24999999997" yOff="0" xSize="34199.75" ySize="36000" />
+      <DstRect xOff="0" yOff="72000" xSize="68399.4999999946" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="572399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="500399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="428399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="356399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="284399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="212399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="140399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="68399" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N70_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="1200.33333333332" yOff="0" xSize="22799.6666666667" ySize="36000" />
+      <DstRect xOff="0" yOff="36000" xSize="68399" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400.9000000103" ySize="36000" />
+      <DstRect xOff="572395.499999954" yOff="0" xSize="72004.5000000458" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="500395.49999996" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="428395.499999966" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="356395.499999971" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="284395.499999977" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="212395.499999983" yOff="0" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="140395.499999989" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="68395.4999999945" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N80_W180.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="720.899999999422" yOff="0" xSize="13679.1000000006" ySize="36000" />
+      <DstRect xOff="0" yOff="0" xSize="68395.5000000521" ySize="36000" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>

@@ -1,0 +1,1207 @@
+<VRTDataset rasterXSize="14401" rasterYSize="36000">
+  <SRS dataAxisToSRSAxisMapping="2,1,3">COMPD_CS["WGS 84 + EGM2008 height",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]],VERT_CS["EGM2008 height",VERT_DATUM["EGM2008 geoid",2005,AUTHORITY["EPSG","1027"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Gravity-related height",UP],AUTHORITY["EPSG","3855"]]]</SRS>
+  <GeoTransform>  1.9998611111111110e+01,  1.3888888888888889e-03,  0.0000000000000000e+00, -7.9999861111111116e+01,  0.0000000000000000e+00, -2.7777777777777778e-04</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E020_00_DEM/Copernicus_DSM_COG_10_S90_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="0" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E021_00_DEM/Copernicus_DSM_COG_10_S90_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="720" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E022_00_DEM/Copernicus_DSM_COG_10_S90_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="1440" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E023_00_DEM/Copernicus_DSM_COG_10_S90_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2160" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E024_00_DEM/Copernicus_DSM_COG_10_S90_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2880" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E025_00_DEM/Copernicus_DSM_COG_10_S90_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="3600" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E026_00_DEM/Copernicus_DSM_COG_10_S90_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="4320" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E027_00_DEM/Copernicus_DSM_COG_10_S90_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5040" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E028_00_DEM/Copernicus_DSM_COG_10_S90_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5760" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E029_00_DEM/Copernicus_DSM_COG_10_S90_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="6480" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E020_00_DEM/Copernicus_DSM_COG_10_S89_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="0" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E021_00_DEM/Copernicus_DSM_COG_10_S89_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="720" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E022_00_DEM/Copernicus_DSM_COG_10_S89_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="1440" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E023_00_DEM/Copernicus_DSM_COG_10_S89_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2160" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E024_00_DEM/Copernicus_DSM_COG_10_S89_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2880" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E025_00_DEM/Copernicus_DSM_COG_10_S89_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="3600" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E026_00_DEM/Copernicus_DSM_COG_10_S89_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="4320" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E027_00_DEM/Copernicus_DSM_COG_10_S89_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5040" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E028_00_DEM/Copernicus_DSM_COG_10_S89_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5760" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E029_00_DEM/Copernicus_DSM_COG_10_S89_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="6480" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E020_00_DEM/Copernicus_DSM_COG_10_S88_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="0" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E021_00_DEM/Copernicus_DSM_COG_10_S88_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="720" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E022_00_DEM/Copernicus_DSM_COG_10_S88_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="1440" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E023_00_DEM/Copernicus_DSM_COG_10_S88_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2160" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E024_00_DEM/Copernicus_DSM_COG_10_S88_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2880" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E025_00_DEM/Copernicus_DSM_COG_10_S88_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="3600" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E026_00_DEM/Copernicus_DSM_COG_10_S88_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="4320" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E027_00_DEM/Copernicus_DSM_COG_10_S88_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5040" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E028_00_DEM/Copernicus_DSM_COG_10_S88_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5760" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E029_00_DEM/Copernicus_DSM_COG_10_S88_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="6480" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E020_00_DEM/Copernicus_DSM_COG_10_S87_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="0" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E021_00_DEM/Copernicus_DSM_COG_10_S87_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="720" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E022_00_DEM/Copernicus_DSM_COG_10_S87_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="1440" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E023_00_DEM/Copernicus_DSM_COG_10_S87_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2160" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E024_00_DEM/Copernicus_DSM_COG_10_S87_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2880" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E025_00_DEM/Copernicus_DSM_COG_10_S87_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="3600" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E026_00_DEM/Copernicus_DSM_COG_10_S87_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="4320" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E027_00_DEM/Copernicus_DSM_COG_10_S87_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5040" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E028_00_DEM/Copernicus_DSM_COG_10_S87_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5760" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E029_00_DEM/Copernicus_DSM_COG_10_S87_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="6480" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E020_00_DEM/Copernicus_DSM_COG_10_S86_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="0" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E021_00_DEM/Copernicus_DSM_COG_10_S86_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="720" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E022_00_DEM/Copernicus_DSM_COG_10_S86_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="1440" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E023_00_DEM/Copernicus_DSM_COG_10_S86_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2160" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E024_00_DEM/Copernicus_DSM_COG_10_S86_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="2880" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E025_00_DEM/Copernicus_DSM_COG_10_S86_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="3600" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E026_00_DEM/Copernicus_DSM_COG_10_S86_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="4320" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E027_00_DEM/Copernicus_DSM_COG_10_S86_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5040" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E028_00_DEM/Copernicus_DSM_COG_10_S86_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="5760" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E029_00_DEM/Copernicus_DSM_COG_10_S86_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="6480" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E020_00_DEM/Copernicus_DSM_COG_10_S85_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="0.500000000000398" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E021_00_DEM/Copernicus_DSM_COG_10_S85_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="720.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E022_00_DEM/Copernicus_DSM_COG_10_S85_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="1440.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E023_00_DEM/Copernicus_DSM_COG_10_S85_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2160.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E024_00_DEM/Copernicus_DSM_COG_10_S85_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2880.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E025_00_DEM/Copernicus_DSM_COG_10_S85_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="3600.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E026_00_DEM/Copernicus_DSM_COG_10_S85_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="4320.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E027_00_DEM/Copernicus_DSM_COG_10_S85_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5040.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E028_00_DEM/Copernicus_DSM_COG_10_S85_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5760.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E029_00_DEM/Copernicus_DSM_COG_10_S85_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="6480.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E020_00_DEM/Copernicus_DSM_COG_10_S84_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="0.500000000000398" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E021_00_DEM/Copernicus_DSM_COG_10_S84_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="720.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E022_00_DEM/Copernicus_DSM_COG_10_S84_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="1440.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E023_00_DEM/Copernicus_DSM_COG_10_S84_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2160.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E024_00_DEM/Copernicus_DSM_COG_10_S84_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2880.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E025_00_DEM/Copernicus_DSM_COG_10_S84_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="3600.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E026_00_DEM/Copernicus_DSM_COG_10_S84_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="4320.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E027_00_DEM/Copernicus_DSM_COG_10_S84_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5040.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E028_00_DEM/Copernicus_DSM_COG_10_S84_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5760.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E029_00_DEM/Copernicus_DSM_COG_10_S84_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="6480.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E020_00_DEM/Copernicus_DSM_COG_10_S83_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="0.500000000000398" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E021_00_DEM/Copernicus_DSM_COG_10_S83_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="720.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E022_00_DEM/Copernicus_DSM_COG_10_S83_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="1440.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E023_00_DEM/Copernicus_DSM_COG_10_S83_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2160.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E024_00_DEM/Copernicus_DSM_COG_10_S83_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2880.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E025_00_DEM/Copernicus_DSM_COG_10_S83_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="3600.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E026_00_DEM/Copernicus_DSM_COG_10_S83_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="4320.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E027_00_DEM/Copernicus_DSM_COG_10_S83_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5040.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E028_00_DEM/Copernicus_DSM_COG_10_S83_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5760.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E029_00_DEM/Copernicus_DSM_COG_10_S83_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="6480.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E020_00_DEM/Copernicus_DSM_COG_10_S82_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="0.500000000000398" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E021_00_DEM/Copernicus_DSM_COG_10_S82_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="720.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E022_00_DEM/Copernicus_DSM_COG_10_S82_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="1440.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E023_00_DEM/Copernicus_DSM_COG_10_S82_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2160.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E024_00_DEM/Copernicus_DSM_COG_10_S82_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2880.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E025_00_DEM/Copernicus_DSM_COG_10_S82_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="3600.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E026_00_DEM/Copernicus_DSM_COG_10_S82_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="4320.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E027_00_DEM/Copernicus_DSM_COG_10_S82_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5040.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E028_00_DEM/Copernicus_DSM_COG_10_S82_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5760.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E029_00_DEM/Copernicus_DSM_COG_10_S82_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="6480.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E020_00_DEM/Copernicus_DSM_COG_10_S81_00_E020_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="0.500000000000398" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E021_00_DEM/Copernicus_DSM_COG_10_S81_00_E021_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="720.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E022_00_DEM/Copernicus_DSM_COG_10_S81_00_E022_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="1440.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E023_00_DEM/Copernicus_DSM_COG_10_S81_00_E023_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2160.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E024_00_DEM/Copernicus_DSM_COG_10_S81_00_E024_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="2880.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E025_00_DEM/Copernicus_DSM_COG_10_S81_00_E025_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="3600.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E026_00_DEM/Copernicus_DSM_COG_10_S81_00_E026_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="4320.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E027_00_DEM/Copernicus_DSM_COG_10_S81_00_E027_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5040.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E028_00_DEM/Copernicus_DSM_COG_10_S81_00_E028_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="5760.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E029_00_DEM/Copernicus_DSM_COG_10_S81_00_E029_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="6480.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E030_00_DEM/Copernicus_DSM_COG_10_S90_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7200" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E031_00_DEM/Copernicus_DSM_COG_10_S90_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7920" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E032_00_DEM/Copernicus_DSM_COG_10_S90_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="8640" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E033_00_DEM/Copernicus_DSM_COG_10_S90_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="9360" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E034_00_DEM/Copernicus_DSM_COG_10_S90_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10080" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E035_00_DEM/Copernicus_DSM_COG_10_S90_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10800" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E036_00_DEM/Copernicus_DSM_COG_10_S90_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="11520" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E037_00_DEM/Copernicus_DSM_COG_10_S90_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12240" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E038_00_DEM/Copernicus_DSM_COG_10_S90_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12960" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S90_00_E039_00_DEM/Copernicus_DSM_COG_10_S90_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="13680" yOff="32400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E030_00_DEM/Copernicus_DSM_COG_10_S89_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7200" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E031_00_DEM/Copernicus_DSM_COG_10_S89_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7920" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E032_00_DEM/Copernicus_DSM_COG_10_S89_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="8640" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E033_00_DEM/Copernicus_DSM_COG_10_S89_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="9360" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E034_00_DEM/Copernicus_DSM_COG_10_S89_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10080" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E035_00_DEM/Copernicus_DSM_COG_10_S89_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10800" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E036_00_DEM/Copernicus_DSM_COG_10_S89_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="11520" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E037_00_DEM/Copernicus_DSM_COG_10_S89_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12240" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E038_00_DEM/Copernicus_DSM_COG_10_S89_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12960" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S89_00_E039_00_DEM/Copernicus_DSM_COG_10_S89_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="13680" yOff="28800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E030_00_DEM/Copernicus_DSM_COG_10_S88_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7200" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E031_00_DEM/Copernicus_DSM_COG_10_S88_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7920" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E032_00_DEM/Copernicus_DSM_COG_10_S88_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="8640" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E033_00_DEM/Copernicus_DSM_COG_10_S88_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="9360" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E034_00_DEM/Copernicus_DSM_COG_10_S88_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10080" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E035_00_DEM/Copernicus_DSM_COG_10_S88_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10800" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E036_00_DEM/Copernicus_DSM_COG_10_S88_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="11520" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E037_00_DEM/Copernicus_DSM_COG_10_S88_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12240" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E038_00_DEM/Copernicus_DSM_COG_10_S88_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12960" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S88_00_E039_00_DEM/Copernicus_DSM_COG_10_S88_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="13680" yOff="25200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E030_00_DEM/Copernicus_DSM_COG_10_S87_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7200" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E031_00_DEM/Copernicus_DSM_COG_10_S87_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7920" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E032_00_DEM/Copernicus_DSM_COG_10_S87_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="8640" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E033_00_DEM/Copernicus_DSM_COG_10_S87_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="9360" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E034_00_DEM/Copernicus_DSM_COG_10_S87_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10080" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E035_00_DEM/Copernicus_DSM_COG_10_S87_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10800" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E036_00_DEM/Copernicus_DSM_COG_10_S87_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="11520" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E037_00_DEM/Copernicus_DSM_COG_10_S87_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12240" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E038_00_DEM/Copernicus_DSM_COG_10_S87_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12960" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S87_00_E039_00_DEM/Copernicus_DSM_COG_10_S87_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="13680" yOff="21600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E030_00_DEM/Copernicus_DSM_COG_10_S86_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7200" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E031_00_DEM/Copernicus_DSM_COG_10_S86_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="7920" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E032_00_DEM/Copernicus_DSM_COG_10_S86_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="8640" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E033_00_DEM/Copernicus_DSM_COG_10_S86_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="9360" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E034_00_DEM/Copernicus_DSM_COG_10_S86_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10080" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E035_00_DEM/Copernicus_DSM_COG_10_S86_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="10800" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E036_00_DEM/Copernicus_DSM_COG_10_S86_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="11520" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E037_00_DEM/Copernicus_DSM_COG_10_S86_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12240" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E038_00_DEM/Copernicus_DSM_COG_10_S86_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="12960" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S86_00_E039_00_DEM/Copernicus_DSM_COG_10_S86_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="360" ySize="3600" />
+      <DstRect xOff="13680" yOff="18000" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E030_00_DEM/Copernicus_DSM_COG_10_S85_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7200.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E031_00_DEM/Copernicus_DSM_COG_10_S85_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7920.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E032_00_DEM/Copernicus_DSM_COG_10_S85_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="8640.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E033_00_DEM/Copernicus_DSM_COG_10_S85_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="9360.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E034_00_DEM/Copernicus_DSM_COG_10_S85_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10080.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E035_00_DEM/Copernicus_DSM_COG_10_S85_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10800.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E036_00_DEM/Copernicus_DSM_COG_10_S85_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="11520.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E037_00_DEM/Copernicus_DSM_COG_10_S85_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12240.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E038_00_DEM/Copernicus_DSM_COG_10_S85_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12960.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S85_00_E039_00_DEM/Copernicus_DSM_COG_10_S85_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="13680.5" yOff="14400" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E030_00_DEM/Copernicus_DSM_COG_10_S84_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7200.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E031_00_DEM/Copernicus_DSM_COG_10_S84_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7920.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E032_00_DEM/Copernicus_DSM_COG_10_S84_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="8640.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E033_00_DEM/Copernicus_DSM_COG_10_S84_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="9360.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E034_00_DEM/Copernicus_DSM_COG_10_S84_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10080.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E035_00_DEM/Copernicus_DSM_COG_10_S84_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10800.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E036_00_DEM/Copernicus_DSM_COG_10_S84_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="11520.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E037_00_DEM/Copernicus_DSM_COG_10_S84_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12240.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E038_00_DEM/Copernicus_DSM_COG_10_S84_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12960.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S84_00_E039_00_DEM/Copernicus_DSM_COG_10_S84_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="13680.5" yOff="10800" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E030_00_DEM/Copernicus_DSM_COG_10_S83_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7200.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E031_00_DEM/Copernicus_DSM_COG_10_S83_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7920.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E032_00_DEM/Copernicus_DSM_COG_10_S83_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="8640.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E033_00_DEM/Copernicus_DSM_COG_10_S83_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="9360.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E034_00_DEM/Copernicus_DSM_COG_10_S83_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10080.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E035_00_DEM/Copernicus_DSM_COG_10_S83_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10800.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E036_00_DEM/Copernicus_DSM_COG_10_S83_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="11520.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E037_00_DEM/Copernicus_DSM_COG_10_S83_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12240.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E038_00_DEM/Copernicus_DSM_COG_10_S83_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12960.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S83_00_E039_00_DEM/Copernicus_DSM_COG_10_S83_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="13680.5" yOff="7200" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E030_00_DEM/Copernicus_DSM_COG_10_S82_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7200.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E031_00_DEM/Copernicus_DSM_COG_10_S82_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7920.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E032_00_DEM/Copernicus_DSM_COG_10_S82_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="8640.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E033_00_DEM/Copernicus_DSM_COG_10_S82_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="9360.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E034_00_DEM/Copernicus_DSM_COG_10_S82_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10080.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E035_00_DEM/Copernicus_DSM_COG_10_S82_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10800.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E036_00_DEM/Copernicus_DSM_COG_10_S82_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="11520.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E037_00_DEM/Copernicus_DSM_COG_10_S82_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12240.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E038_00_DEM/Copernicus_DSM_COG_10_S82_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12960.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S82_00_E039_00_DEM/Copernicus_DSM_COG_10_S82_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="13680.5" yOff="3600" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E030_00_DEM/Copernicus_DSM_COG_10_S81_00_E030_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7200.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E031_00_DEM/Copernicus_DSM_COG_10_S81_00_E031_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="7920.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E032_00_DEM/Copernicus_DSM_COG_10_S81_00_E032_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="8640.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E033_00_DEM/Copernicus_DSM_COG_10_S81_00_E033_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="9360.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E034_00_DEM/Copernicus_DSM_COG_10_S81_00_E034_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10080.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E035_00_DEM/Copernicus_DSM_COG_10_S81_00_E035_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="10800.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E036_00_DEM/Copernicus_DSM_COG_10_S81_00_E036_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="11520.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E037_00_DEM/Copernicus_DSM_COG_10_S81_00_E037_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12240.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E038_00_DEM/Copernicus_DSM_COG_10_S81_00_E038_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="12960.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="0">/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S81_00_E039_00_DEM/Copernicus_DSM_COG_10_S81_00_E039_00_DEM.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="720" ySize="3600" />
+      <DstRect xOff="13680.5" yOff="0" xSize="720" ySize="3600" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>

@@ -1,0 +1,493 @@
+<VRTDataset rasterXSize="648000" rasterYSize="324000">
+  <SRS dataAxisToSRSAxisMapping="2,1,3">COMPD_CS["WGS 84 + EGM2008 height",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]],VERT_CS["EGM2008 height",VERT_DATUM["EGM2008 geoid",2005,AUTHORITY["EPSG","1027"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Gravity-related height",UP],AUTHORITY["EPSG","3855"]]]</SRS>
+  <GeoTransform> -1.3888888888890000e-04,  2.7777777777780000e-04,  0.0000000000000000e+00,  1.3888888888890000e-04,  0.0000000000000000e+00, -2.7777777777780000e-04</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S10_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="0" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S20_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="36000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S30_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="72000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S40_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="108000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="0" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="72000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="144000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="216000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="288000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="360000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="432000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="504000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S50_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="576000" yOff="144000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0.16666666666704" yOff="0" xSize="47999.8333333333" ySize="36000" />
+      <DstRect xOff="0" yOff="180000" xSize="71999.7499999942" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="71999.7499999942" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="143999.749999988" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="215999.749999983" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="287999.749999977" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="359999.749999971" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="431999.749999965" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="503999.74999996" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S60_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="48000" ySize="36000" />
+      <DstRect xOff="575999.749999954" yOff="180000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0.25000000000038" yOff="0" xSize="35999.75" ySize="36000" />
+      <DstRect xOff="0" yOff="216000" xSize="71999.4999999942" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="71999.4999999942" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="143999.499999989" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="215999.499999983" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="287999.499999977" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="359999.499999971" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="431999.499999965" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="503999.49999996" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S70_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="36000" ySize="36000" />
+      <DstRect xOff="575999.499999954" yOff="216000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0.33333333333332" yOff="0" xSize="23999.6666666667" ySize="36000" />
+      <DstRect xOff="0" yOff="252000" xSize="71999" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="71999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="143999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="215999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="287999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="359999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="431999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="503999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S80_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="24000" ySize="36000" />
+      <DstRect xOff="575999" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E000.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0.899999999999992" yOff="0" xSize="14400.1" ySize="36000" />
+      <DstRect xOff="0" yOff="288000" xSize="72000.4999999943" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E020.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="71995.4999999942" yOff="288000" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E040.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="143995.499999988" yOff="288000" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E060.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="215995.499999983" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E080.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="287995.499999977" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E100.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400" ySize="36000" />
+      <DstRect xOff="359995.499999971" yOff="288000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E120.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="431995.499999965" yOff="288000" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E140.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14401" ySize="36000" />
+      <DstRect xOff="503995.49999996" yOff="288000" xSize="72005" ySize="36000" />
+    </SimpleSource>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">S90_E160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="14400.9000000104" ySize="36000" />
+      <DstRect xOff="575995.499999954" yOff="288000" xSize="72004.5000000461" ySize="36000" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>
