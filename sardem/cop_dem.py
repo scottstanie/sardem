@@ -1,4 +1,3 @@
-# Based on https://github.com/MarcYin/Copernicus_GLO_30_DEM_VRT
 import logging
 import os
 from copy import deepcopy
