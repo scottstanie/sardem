@@ -23,14 +23,6 @@ Example url: "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001
 Example Water body url:
     http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
 
-Other option is to download from Mapzen's tile set on AWS:
-
-    https://mapzen.com/documentation/terrain-tiles/formats/#skadi
-
-These do not require a username and password.
-They use the SRTM dataset within the US, but combine other sources to produce
-1 arcsecond (30 m) resolution world wide.
-    Example url: https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W156.hgt
 
 Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
         WIDTH         7201

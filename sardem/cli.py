@@ -2,7 +2,6 @@
 Command line interface for running sardem
 """
 from sardem.download import Downloader
-import sys
 import json
 from argparse import (
     ArgumentError,

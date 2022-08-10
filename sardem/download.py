@@ -177,7 +177,7 @@ class Downloader:
         tile_names (iterator): strings of .hgt tiles (e.g. [N19W155.hgt])
         data_url (str): Base url where .hgt tiles are stored
         compress_type (str): format .hgt files are stored in online
-        data_source (str): choices: NASA, AWS. See module docstring for explanation of sources
+        data_source (str): choices: NASA, NASA_WATER, . See module docstring for explanation of sources
         cache_dir (str): explcitly specify where to store .hgt files
 
     Raises:
@@ -188,7 +188,6 @@ class Downloader:
     DATA_URLS = {
         "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
         "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
-        "AWS": "https://s3.amazonaws.com/elevation-tiles-prod/skadi",
         "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
     }
     VALID_SOURCES = DATA_URLS.keys()
@@ -196,7 +195,7 @@ class Downloader:
         "NASA": ".SRTMGL1.hgt",
         "NASA_WATER": ".SRTMSWBD.raw",
     }
-    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip", "AWS": "gz"}
+    COMPRESS_TYPES = {"NASA": "zip", "NASA_WATER": "zip"}
     NASAHOST = "urs.earthdata.nasa.gov"
 
     def __init__(
@@ -261,11 +260,11 @@ class Downloader:
             self.password = password
 
     def _form_tile_url(self, tile_name):
-        """Form the url for a .hgt tile from NASA or AWS
+        """Form the url for a .hgt tile
 
         Args:
             tile_name (str): string name of tile
-            e.g. N06W001.SRTMGL1.hgt.zip (usgs) or N19/N19W156.hgt.gz (aws)
+            e.g. N06W001.SRTMGL1.hgt.zip (usgs)
 
         Returns:
             url: formatted url string with tile name
@@ -279,20 +278,8 @@ class Downloader:
             >>> print(d._form_tile_url('N19W155'))
             http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
 
-            >>> d = Downloader(['N19W156', 'N19W155'], data_source='AWS')
-            >>> print(d._form_tile_url('N19W155'))
-            https://s3.amazonaws.com/elevation-tiles-prod/skadi/N19/N19W155.hgt.gz
         """
-        if self.data_source == "AWS":
-            lat_str, lat_int, _, _ = Tile.get_tile_parts(tile_name)
-            url = "{base}/{lat}/{tile}.{ext}.{comp}".format(
-                base=self.data_url,
-                lat=lat_str + str(lat_int),
-                tile=tile_name,
-                ext=self.ext_type,
-                comp=self.compress_type,
-            )
-        elif self.data_source.startswith("NASA"):
+        if self.data_source.startswith("NASA"):
             url = "{base}/{tile}.{ext}".format(
                 base=self.data_url,
                 tile=tile_name + self.TILE_ENDINGS[self.data_source],
@@ -302,11 +289,9 @@ class Downloader:
 
     def _download_hgt_tile(self, url):
         """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips" """
-        # Using AWS or a netrc file are the easy cases
+        # Using a netrc file is the easy cases
         logger.info("Downloading {}".format(url))
-        if self.data_source == "AWS":
-            response = requests.get(url)
-        elif self.data_source.startswith("NASA") and self._has_nasa_netrc():
+        if self.data_source.startswith("NASA") and self._has_nasa_netrc():
             logger.info("Using netrc file: %s", self.netrc_file)
             response = requests.get(url)
         else:
@@ -322,12 +307,8 @@ class Downloader:
 
     def _unzip_file(self, filepath):
         """Unzips in place the .hgt files downloaded"""
-        ext = os.path.splitext(filepath)[1]
-        if ext == ".gz":
-            unzip_cmd = ["gunzip"]
-        elif ext == ".zip":
-            # -o forces overwrite without prompt, -d specifices unzip directory
-            unzip_cmd = "unzip -o -d {}".format(self.cache_dir).split(" ")
+        # -o forces overwrite without prompt, -d specifices unzip directory
+        unzip_cmd = "unzip -o -d {}".format(self.cache_dir).split(" ")
         subprocess.check_call(unzip_cmd + [filepath])
 
     def download_and_save(self, tile_name):
@@ -335,7 +316,7 @@ class Downloader:
 
         Args:
             tile_name (str): string name of tile
-            e.g. N06W001.SRTMGL1.hgt.zip (usgs) or N19/N19W156.gz (aws)
+            e.g. N06W001.SRTMGL1.hgt.zip (usgs)
 
         Returns:
             bool: True/False for Success/Failure of download
@@ -345,7 +326,7 @@ class Downloader:
         if os.path.exists(local_filename):
             logger.info("{} already exists, skipping.".format(local_filename))
         else:
-            # On AWS these are gzipped: download, then unzip
+            # download, then unzip
             local_filename += ".{}".format(self.compress_type)
             with open(local_filename, "wb") as f:
                 url = self._form_tile_url(tile_name)
