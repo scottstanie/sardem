@@ -338,7 +338,7 @@ def _gdal_installed_correctly():
         return False
 
 
-def gdal2isce_xml(fname, keep_egm=False):
+def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
     """
     Generate ISCE xml file from gdal supported file
 
@@ -424,10 +424,19 @@ def gdal2isce_xml(fname, keep_egm=False):
             logger.info("Assuming default, BSQ")
             img.scheme = "BSQ"
 
-    img.firstLongitude = transform[0]
-    img.firstLatitude = transform[3]
-    img.deltaLatitude = transform[5]
-    img.deltaLongitude = transform[1]
+    first_lon = transform[0]
+    first_lat = transform[3]
+    delta_lat = transform[5]
+    delta_lon = transform[1]
+    if using_gdal_bounds:
+        # We need to shift the `first________` values to the middle of the top left pixel
+        first_lon += 0.5 * delta_lon
+        first_lat += 0.5 * delta_lat
+
+    img.firstLongitude = first_lon
+    img.firstLatitude = first_lat
+    img.deltaLongitude = delta_lon
+    img.deltaLatitude = delta_lat
 
     xml_file = outname + ".xml"
     img.dump(xml_file)

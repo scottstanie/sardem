@@ -348,19 +348,31 @@ def main(
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
     outrows, outcols = utils.get_output_size(bounds, xrate, yrate)
     if outrows * outcols > WARN_LIMIT:
-        logger.warning("Caution: Output size is {} x {} pixels.".format(outrows, outcols))
+        logger.warning(
+            "Caution: Output size is {} x {} pixels.".format(outrows, outcols)
+        )
         logger.warning("Are the bounds correct?")
+
+    # Are we using GDAL's convention (pixel edge) or the center?
+    # i.e. if `shift_rsc` is False, then we are `using_gdal_bounds`
+    using_gdal_bounds = not shift_rsc
 
     if data_source == "COP":
         utils._gdal_installed_correctly()
         from sardem import cop_dem
 
         cop_dem.download_and_stitch(
-            output_name, bounds, keep_egm=keep_egm, xrate=xrate, yrate=yrate,
+            output_name,
+            bounds,
+            keep_egm=keep_egm,
+            xrate=xrate,
+            yrate=yrate,
         )
         if make_isce_xml:
             logger.info("Creating ISCE2 XML file")
-            utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
+            utils.gdal2isce_xml(
+                output_name, keep_egm=keep_egm, using_gdal_bounds=using_gdal_bounds
+            )
         return
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
@@ -440,14 +452,15 @@ def main(
 
     if make_isce_xml:
         logger.info("Creating ISCE2 XML file")
-        utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
+        utils.gdal2isce_xml(output_name, keep_egm=keep_egm, shift_rsc=using_gdal_bounds)
 
     if keep_egm or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
-        using_gdal_rsc = not shift_rsc
-        conversions.convert_dem_to_wgs84(output_name, using_gdal_rsc=using_gdal_rsc)
+        conversions.convert_dem_to_wgs84(
+            output_name, using_gdal_bounds=using_gdal_bounds
+        )
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":
