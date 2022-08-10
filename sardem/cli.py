@@ -29,8 +29,11 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     Usage Examples:
         sardem --bbox -156 18.8 -154.7 20.3  # bounding box: left  bottom  right top
         sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
-        sardem --geojson dem_area.geojson -x 11 -y 3
-        sardem -156.0 20.2 0.5 0.5 -r 10 --data-source NASA_WATER -o my_watermask.wbd # Water mask
+        sardem --bbox -156 18.8 -154.7 20.3 --data-source COP  # Copernicus DEM
+        sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
+        sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
+        sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
+
 
     Default out is elevation.dem for the final upsampled DEM.
     Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
@@ -107,7 +110,7 @@ def get_cli_args():
         choices=Downloader.VALID_SOURCES,
         type=str.upper,
         default="NASA",
-        help="Source of SRTM data (default %(default)s). See README for more.",
+        help="Source of DEM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
         "-isce",

@@ -31,13 +31,14 @@ def download_and_stitch(
 
     gdal.UseExceptions()
     geoid = "egm08"
-    if download_vrt:
-        cache_dir = utils.get_cache_dir()
-        vrt_filename = os.path.join(cache_dir, "copernicus_GLO_30_dem.vrt")
-        if not os.path.exists(vrt_filename):
-            make_cop_vrt(vrt_filename)
-    else:
-        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/copernicus_GLO_30_dem.vrt"  # noqa
+    # TODO: does downloading make it run any faster?
+    # if download_vrt:
+    #     cache_dir = utils.get_cache_dir()
+    #     vrt_filename = os.path.join(cache_dir, "cop_global.vrt")
+    #     if not os.path.exists(vrt_filename):
+    #         make_cop_vrt(vrt_filename)
+    # else:
+    vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
     egm_file = conversions.EGM_FILES[geoid]
     if not os.path.exists(egm_file):
         conversions.download_egm_grid(geoid=geoid)
