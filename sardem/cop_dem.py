@@ -52,7 +52,7 @@ def download_and_stitch(
     yres = DEFAULT_RES / yrate
 
     # access_mode = "overwrite" if overwrite else None
-    option_list = gdal.WarpOptions(
+    option_dict = dict(
         format="ENVI",
         outputBounds=bounds,
         dstSRS=t_srs,
@@ -64,24 +64,30 @@ def download_and_stitch(
         multithread=True,
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
-        options='__RETURN_OPTION_LIST__'  # To see what the list of cli options are
     )
     
+    # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
-    cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_list)
+    cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
     logger.info("Running GDAL command:")
+    option_dict['callback']=gdal.TermProgress
     logger.info(cmd)
-    gdal.Warp(output_name, vrt_filename, options=option_list)
+    # Now convert to something GDAL can actuall use
+    gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
     return
 
 
-def _gdal_cmd_from_options(src, dst, options):
-    opts = deepcopy(options)
-    for idx, o in enumerate(opts):
+def _gdal_cmd_from_options(src, dst, option_dict):
+    from osgeo import gdal
+    opts = deepcopy(option_dict)
+    opts['options'] = '__RETURN_OPTION_LIST__'  # To see what the list of cli options are
+    opt_list = gdal.WarpOptions(**opts)
+    out_opt_list = deepcopy(opt_list)
+    for idx, o in enumerate(opt_list):
         # Wrap the srs option in quotes
         if o.endswith("srs"):
-            opts[idx + 1] = '"{}"'.format(opts[idx + 1])
-    return "gdalwarp {} {} {}".format(src, dst, ' '.join(opts))
+            out_opt_list[idx + 1] = '"{}"'.format(out_opt_list[idx + 1])
+    return "gdalwarp {} {} {}".format(src, dst, ' '.join(out_opt_list))
 
 
 def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):

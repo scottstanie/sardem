@@ -356,7 +356,7 @@ def main(
     logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
     outrows, outcols = utils.get_output_size(bounds, xrate, yrate)
     if outrows * outcols > WARN_LIMIT:
-        logger.warning( "Caution: Output size is {} x {} pixels.".format(outrows, outcols))
+        logger.warning("Caution: Output size is {} x {} pixels.".format(outrows, outcols))
         logger.warning("Are the bounds correct?")
 
     if data_source == "COP":
@@ -369,6 +369,7 @@ def main(
         if make_isce_xml:
             logger.info("Creating ISCE2 XML file")
             utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
+        return
 
     tile_names = list(Tile(*bounds).srtm1_tile_names())
 
