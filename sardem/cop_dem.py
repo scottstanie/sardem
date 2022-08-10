@@ -65,12 +65,12 @@ def download_and_stitch(
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
     )
-    
+
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
     cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
     logger.info("Running GDAL command:")
-    option_dict['callback']=gdal.TermProgress
+    option_dict["callback"] = gdal.TermProgress
     logger.info(cmd)
     # Now convert to something GDAL can actuall use
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
@@ -79,21 +79,23 @@ def download_and_stitch(
 
 def _gdal_cmd_from_options(src, dst, option_dict):
     from osgeo import gdal
+
     opts = deepcopy(option_dict)
-    opts['options'] = '__RETURN_OPTION_LIST__'  # To see what the list of cli options are
+    # To see what the list of cli options are
+    opts["options"] = "__RETURN_OPTION_LIST__"
     opt_list = gdal.WarpOptions(**opts)
     out_opt_list = deepcopy(opt_list)
     for idx, o in enumerate(opt_list):
         # Wrap the srs option in quotes
         if o.endswith("srs"):
             out_opt_list[idx + 1] = '"{}"'.format(out_opt_list[idx + 1])
-    return "gdalwarp {} {} {}".format(src, dst, ' '.join(out_opt_list))
+    return "gdalwarp {} {} {}".format(src, dst, " ".join(out_opt_list))
 
 
 def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
     """Build a VRT from the Copernicus GLO 30m DEM COG dataset
 
-    Note: this is a large VRT file, ~15MB, so it can take >30 minutes to build.
+    Note: this is a large VRT file, ~15MB, so it can many hours to build.
     """
     from osgeo import gdal
 
@@ -105,7 +107,7 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
         resampleAlg=gdal.GRIORA_NearestNeighbour,
         outputBounds=[-180, -90, 180, 90],
         resolution="highest",
-        outputSRS="EPSG:4326+3855"
+        outputSRS="EPSG:4326+3855",
     )
     logger.info("Building VRT {}".format(outname))
     vrt_file = gdal.BuildVRT(outname, url_list, options=vrt_options)
