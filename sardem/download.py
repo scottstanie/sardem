@@ -177,7 +177,8 @@ class Downloader:
         tile_names (iterator): strings of .hgt tiles (e.g. [N19W155.hgt])
         data_url (str): Base url where .hgt tiles are stored
         compress_type (str): format .hgt files are stored in online
-        data_source (str): choices: NASA, NASA_WATER, . See module docstring for explanation of sources
+        data_source (str): choices: NASA, NASA_WATER, COP
+            See module docstring for explanation of sources
         cache_dir (str): explcitly specify where to store .hgt files
 
     Raises:
@@ -186,8 +187,8 @@ class Downloader:
     """
 
     DATA_URLS = {
-        "NASA": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
-        "NASA_WATER": "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
+        "NASA": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
+        "NASA_WATER": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
     }
     VALID_SOURCES = DATA_URLS.keys()
@@ -272,11 +273,11 @@ class Downloader:
         Examples:
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
             >>> print(d._form_tile_url('N19W155'))
-            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
+            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
 
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
             >>> print(d._form_tile_url('N19W155'))
-            http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
+            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
 
         """
         if self.data_source.startswith("NASA"):

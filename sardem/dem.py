@@ -19,9 +19,9 @@ NASA MEaSUREs SRTM Version 3 (SRTMGL1) houses the data
     See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003
     more info on SRTMGL1: https://cmr.earthdata.nasa.gov/search/concepts/C1000000240-LPDAAC_ECS.html
 
-Example url: "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001.SRTMGL1.hgt.zip"
+Example url: "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001.SRTMGL1.hgt.zip"
 Example Water body url:
-    http://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
+    https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
 
 
 Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
