@@ -1,5 +1,4 @@
 import logging
-import os
 from copy import deepcopy
 
 import requests
@@ -9,7 +8,6 @@ from sardem import conversions, utils
 TILE_LIST_URL = "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt"
 URL_TEMPLATE = "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
 DEFAULT_RES = 1 / 3600
-
 logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
 
@@ -29,7 +27,6 @@ def download_and_stitch(
     from osgeo import gdal
 
     gdal.UseExceptions()
-    geoid = "egm08"
     # TODO: does downloading make it run any faster?
     # if download_vrt:
     #     cache_dir = utils.get_cache_dir()
@@ -38,16 +35,13 @@ def download_and_stitch(
     #         make_cop_vrt(vrt_filename)
     # else:
     vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
-    egm_file = conversions.EGM_FILES[geoid]
-    if not os.path.exists(egm_file):
-        conversions.download_egm_grid(geoid=geoid)
 
     if keep_egm:
         t_srs = s_srs = None
     else:
-        s_srs = "+proj=longlat +datum=WGS84 +no_defs +geoidgrids={}".format(egm_file)
-        t_srs = "+proj=longlat +datum=WGS84 +no_defs"
-
+        code = conversions.EPSG_CODES["egm08"]
+        s_srs = '"epsg:4326+{}"'.format(code)
+        t_srs = '"epsg:4326"'
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
 
@@ -68,6 +62,7 @@ def download_and_stitch(
 
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
+    logger.info("Fetching remote tiles...")
     cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
     logger.info("Running GDAL command:")
     option_dict["callback"] = gdal.TermProgress
