@@ -3,17 +3,13 @@ import os
 import shutil
 import subprocess
 
-import requests
-
 from . import utils
 
 logger = logging.getLogger("sardem")
 
-URL_EGM08 = "http://download.osgeo.org/proj/vdatum/egm08_25/egm08_25.gtx"
-URL_EGM96 = "http://download.osgeo.org/proj/vdatum/egm96_15/egm96_15.gtx"
-EGM_URLS = {
-    "egm96": URL_EGM96,
-    "egm08": URL_EGM08,
+EPSG_CODES = {
+    "egm96": "5773",  # https://epsg.io/5773
+    "egm08": "3855",  # https://epsg.io/3855
 }
 EGM_FILES = {
     "egm96": os.path.join(utils.get_cache_dir(), "egm96_15.gtx"),
@@ -22,23 +18,25 @@ EGM_FILES = {
 
 
 def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="egm96"):
-    """Convert a DEM with a EGM96 vertical datum to WGS84 heights above ellipsoid"""
+    """Convert a DEM with a EGM96/2008 vertical datum to WGS84 heights above ellipsoid"""
 
     if output is None:
         ext = os.path.splitext(filename)[1]
         output = filename.replace(ext, ".wgs84" + ext)
 
-    egm_file = EGM_FILES[geoid]
-    if not os.path.exists(egm_file):
-        download_egm_grid(geoid=geoid)
+    code = EPSG_CODES[geoid]
+    # Source srs: WGS84 ellipsoidal horizontal, EGM geoid vertical
+    s_srs = '"epsg:4326+{}"'.format(code)
+    # Target srs: WGS84 horizontal/vertical
+    t_srs = '"epsg:4326"'
 
     # Note: https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-tr
     # If not specified, gdalwarp will generate an output raster with xsize=ysize
     # We want it to match the input file
     xsize, ysize = _get_size(filename)
     cmd = (
-        'gdalwarp {overwrite} -s_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids={egm_file}" '
-        '-t_srs "+proj=longlat +datum=WGS84 +no_defs" -of ENVI -ts {xsize} {ysize} '
+        'gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}'
+        ' -of ENVI -ts {xsize} {ysize} '
         ' -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}'
     )
     cmd = cmd.format(
@@ -47,7 +45,8 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
         overwrite="-overwrite" if overwrite else "",
         xsize=xsize,
         ysize=ysize,
-        egm_file=egm_file,
+        s_srs=s_srs,
+        t_srs=t_srs,
     )
     logger.info(cmd)
     subprocess.run(cmd, check=True, shell=True)
@@ -103,32 +102,3 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96", using_gdal_bounds=False):
     if not using_gdal_bounds:
         # Now shift back to the .rsc is pointing to the middle of the pixel
         utils.shift_rsc_file(rsc_filename, to_gdal=False)
-
-
-def download_egm_grid(geoid="egm96"):
-    if geoid == "egm96":
-        url = URL_EGM96
-    elif geoid in ("egm08", "egm2008"):
-        url = URL_EGM08
-    else:
-        raise ValueError("Unknown geoid: {}".format(geoid))
-
-    egm_file = EGM_FILES[geoid]
-    if os.path.exists(egm_file):
-        logger.info("{} already exists, skipping.".format(egm_file))
-        return
-
-    size = _get_file_size_mb(url)
-    logger.info(
-        "Performing 1-time download {} ({:.0f} MB file), saving to {}".format(
-            url, size, egm_file
-        )
-    )
-    with open(egm_file, "wb") as f:
-        resp = requests.get(url)
-        f.write(resp.content)
-
-
-def _get_file_size_mb(url):
-    # https://stackoverflow.com/a/44299915/4174466
-    return int(requests.get(url, stream=True).headers["Content-length"]) / 1e6
