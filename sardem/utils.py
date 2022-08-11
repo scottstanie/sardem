@@ -7,6 +7,8 @@ import subprocess
 import sys
 from math import floor
 
+import numpy as np
+
 from sardem import loading
 
 
@@ -478,3 +480,51 @@ def _add_reference_datum(xml_file, keep_egm=False):
     root.append(ref)
     tree.write(xml_file)
     return xml_file
+
+
+def grid(
+    rows=None,
+    cols=None,
+    y_step=None,
+    x_step=None,
+    y_first=None,
+    x_first=None,
+    width=None,
+    file_length=None,
+    sparse=False,
+    **kwargs,
+):
+    """Takes sizes and spacing info, creates a grid of values
+
+    Args:
+        rows (int): number of rows
+        cols (int): number of cols
+        y_step (float): spacing between rows
+        x_step (float): spacing between cols
+        y_first (float): starting location of first row at top
+        x_first (float): starting location of first col on left
+        sparse (bool): Optional (default False). Passed through to
+            np.meshgrid to optionally conserve memory
+
+    Returns:
+        tuple[ndarray, ndarray]: the XX, YY grids of longitudes and lats
+
+    Examples:
+    >>> test_grid_data = {'cols': 2, 'rows': 3, 'x_first': -155.0, 'x_step': 0.01,\
+'y_first': 19.5, 'y_step': -0.2}
+    >>> lons, lats = grid(**test_grid_data)
+    >>> np.set_printoptions(legacy="1.13")
+    >>> print(lons)
+    [[-155.   -154.99]
+     [-155.   -154.99]
+     [-155.   -154.99]]
+    >>> print(lats)
+    [[ 19.5  19.5]
+     [ 19.3  19.3]
+     [ 19.1  19.1]]
+    """
+    rows = rows or file_length
+    cols = cols or width
+    x = np.linspace(x_first, x_first + (cols - 1) * x_step, cols).reshape((1, cols))
+    y = np.linspace(y_first, y_first + (rows - 1) * y_step, rows).reshape((rows, 1))
+    return np.meshgrid(x, y, sparse=sparse)

@@ -371,7 +371,7 @@ def main(
         if make_isce_xml:
             logger.info("Creating ISCE2 XML file")
             utils.gdal2isce_xml(
-                output_name, keep_egm=keep_egm, using_gdal_bounds=using_gdal_bounds
+                output_name, keep_egm=keep_egm, geoid=geoid, using_gdal_bounds=using_gdal_bounds
             )
         return
 
@@ -402,6 +402,20 @@ def main(
         rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
 
     rsc_filename = output_name + ".rsc"
+
+    if keep_egm or data_source == "NASA_WATER":
+        logger.info("Keeping DEM as EGM96 geoid heights")
+    else:
+        logger.info("Correcting DEM to heights above WGS84 ellipsoid")
+        geoid = "egm96" if data_source.startswith("NASA") else "egm2008"
+        dem_wgs84 = conversions.convert_dem_to_wgs84_pyproj(
+            dem=stitched_dem, rsc_dict=rsc_dict, geoid=geoid, using_gdal_bounds=using_gdal_bounds
+        )
+        stitched_dem.tofile(output_name + ".egm")
+        with open(rsc_filename + ".egm", "w") as f:
+            f.write(loading.format_dem_rsc(rsc_dict))
+        stitched_dem = dem_wgs84
+        del dem_wgs84
 
     # Upsampling:
     if xrate == 1 and yrate == 1:
@@ -454,13 +468,14 @@ def main(
         logger.info("Creating ISCE2 XML file")
         utils.gdal2isce_xml(output_name, keep_egm=keep_egm, shift_rsc=using_gdal_bounds)
 
-    if keep_egm or data_source == "NASA_WATER":
-        logger.info("Keeping DEM as EGM96 geoid heights")
-    else:
-        logger.info("Correcting DEM to heights above WGS84 ellipsoid")
-        conversions.convert_dem_to_wgs84(
-            output_name, using_gdal_bounds=using_gdal_bounds
-        )
+    # if keep_egm or data_source == "NASA_WATER":
+    #     logger.info("Keeping DEM as EGM geoid heights")
+    # else:
+    #     logger.info("Correcting DEM to heights above WGS84 ellipsoid")
+    #     geoid = "egm96" if data_source.startswith("NASA") else "egm2008"
+    #     conversions.convert_dem_to_wgs84(
+    #         output_name, geoid=geoid, using_gdal_bounds=using_gdal_bounds
+    #     )
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":

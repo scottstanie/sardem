@@ -5,7 +5,7 @@ import subprocess
 
 import requests
 
-from . import utils
+from . import utils, loading
 
 logger = logging.getLogger("sardem")
 
@@ -132,3 +132,34 @@ def download_egm_grid(geoid="egm96"):
 def _get_file_size_mb(url):
     # https://stackoverflow.com/a/44299915/4174466
     return int(requests.get(url, stream=True).headers["Content-length"]) / 1e6
+
+
+# def convert_dem_to_wgs84_pyproj(dem_filename, geoid="egm96", using_gdal_bounds=False):
+def convert_dem_to_wgs84_pyproj(dem, rsc_dict, geoid="egm96", using_gdal_bounds=False):
+    """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights
+
+    Overwrites file, requires GDAL to be installed
+    """
+    try:
+        from pyproj import Transformer
+    except ImportError:
+        logger.error("pyproj required to convert DEM to WGS84")
+        raise
+
+    epsg_codes = {
+        "egm96": "5773",  # https://epsg.io/5773
+        "egm08": "3855",  # https://epsg.io/3855
+    }
+    code = epsg_codes[geoid.lower()]
+    t = Transformer.from_crs("epsg:4326+{}".format(code), "epsg:4326", always_xy=True)
+    
+    if using_gdal_bounds:
+        rsc_dict_centers = utils.shift_rsc_dict(rsc_dict, to_gdal=False)
+    else:
+        rsc_dict_centers = rsc_dict
+    rsc_lower = {k.lower(): v for k, v in rsc_dict_centers.items()}
+    xx, yy = utils.grid(**rsc_lower)
+
+    _, _, new_heights = t.transform(xx.ravel(), yy.ravel(), dem.ravel())
+    dem_wgs84 = new_heights.reshape(xx.shape)
+    return dem_wgs84
