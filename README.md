@@ -115,9 +115,9 @@ Functions for working with digital elevation maps (DEMs) are mostly contained in
 
 ### NASA SRTM Data access
 
-The default datasource is NASA's SRTM version 3 global 1 degree data.
+The default data source is NASA's Shuttle Radar Topography Mission (SRTM) version 3 global 1 degree data.
 See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003 .
-The data is valid outside of artic regions (-60 to 60 degrees latitude), and is zeros over open ocean.
+The data is valid outside of arctic regions (-60 to 60 degrees latitude), and is zeros over open ocean.
 
 This data requires a username and password from here:
 https://urs.earthdata.nasa.gov/users/new
@@ -131,14 +131,3 @@ machine urs.earthdata.nasa.gov
     login USERNAME
     password PASSWORD
 ```
-
-If you want to avoid this entirely, you can [use Mapzen's data hosted on AWS](https://registry.opendata.aws/terrain-tiles/) by specifying
-```bash
-sardem 156.0 20.0 .5 0.5 --data-source AWS
-```
-
-`--data-source NASA` is the default.
-
-Mapzen combines SRTM data with other sources, so the .hgt files will be slightly different (but often not noticeable)
-
-Warning: Mapzen notes that they are discontinuing some services, which is why NASA is the default.
