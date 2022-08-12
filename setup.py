@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sardem",
-    version="0.10.4",
+    version="0.11.0",
     author="Scott Staniewicz",
     author_email="scott.stanie@gmail.com",
     description="Create upsampled DEMs for InSAR processing",
@@ -32,12 +32,5 @@ setuptools.setup(
             "sardem=sardem.cli:cli",
         ],
     },
-    ext_modules=[
-        setuptools.Extension(
-            "sardem.upsample_cy",
-            ["sardem/cython/upsample_cy.pyx"],
-            extra_compile_args=["-O3", "-std=gnu99"],
-        )
-    ],
     zip_safe=False,
 )
