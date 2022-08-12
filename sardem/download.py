@@ -25,7 +25,7 @@ def _get_username_pass():
     print("====================================================================")
     print("Please enter NASA Earthdata credentials to download NASA hosted STRM.")
     print("See https://urs.earthdata.nasa.gov/users/new for signup info.")
-    print("Or choose data_source=AWS for Mapzen tiles.")
+    print("Or choose data_source=COP for Copernicus DSM.")
     print("===========================================")
     username = input("Username: ")
     password = getpass.getpass(prompt="Password (will not be displayed): ")
