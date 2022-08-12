@@ -43,7 +43,7 @@ import logging
 import os
 import numpy as np
 
-from sardem import utils, loading, upsample_cy, conversions
+from sardem import utils, loading, upsample, conversions
 from sardem.download import Tile, Downloader
 
 NUM_PIXELS = 3601  # For SRTM1
@@ -404,10 +404,11 @@ def main(
     rsc_filename = output_name + ".rsc"
 
     # Upsampling:
+    dtype = np.int16
     if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
-        stitched_dem.astype(np.uint16).tofile(output_name)
+        stitched_dem.astype(dtype).tofile(output_name)
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
@@ -419,8 +420,7 @@ def main(
         rsc_filename_small = "small_" + rsc_filename
 
         logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-        # Note: forcing to uint16 to simplify c-program loading
-        stitched_dem.astype(np.uint16).tofile(dem_filename_small)
+        stitched_dem.astype(dtype).tofile(dem_filename_small)
         logger.info(
             "Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small
         )
@@ -435,15 +435,19 @@ def main(
             )
             f.write(upsampled_rsc)
 
-        # Now upsample this block
+        # Now upsample this by blocks
+        # Figure out size of row blocks to keep memory under 100 MB
         nrows, ncols = stitched_dem.shape
-        upsample_cy.upsample_wrap(
-            dem_filename_small.encode("utf-8"),
-            xrate,
-            yrate,
-            ncols,
-            nrows,
-            output_name.encode(),
+        block_rows = int(np.round(10e6 / ncols / 2, -2)) # round to 100s
+        logger.info("Upsampling by blocks of {} rows".format(block_rows))
+        upsample.upsample_by_blocks(
+            dem_filename_small,
+            output_name,
+            (nrows, ncols),
+            block_rows=block_rows,
+            dtype=dtype,
+            xrate=xrate,
+            yrate=yrate,
         )
         # Clean up the _small versions of dem and dem.rsc
         logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
@@ -466,5 +470,5 @@ def main(
     if data_source == "NASA_WATER":
         upsampled_dict = loading.load_dem_rsc(rsc_filename)
         rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
-        mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
+        mask = np.fromfile(output_name, dtype=dtype).reshape((rows, cols))
         mask.astype(bool).tofile(output_name)

@@ -55,7 +55,6 @@ def upsample_by_blocks(
             if np.issubdtype(dtype, np.integer):
                 cur_block_upsampled = np.round(cur_block_upsampled)
             cur_block_upsampled.astype(dtype).tofile(f)
-    
 
 
 def bilinear_interpolate(arr, x, y):

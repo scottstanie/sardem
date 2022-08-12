@@ -1,7 +1,6 @@
-nose
+pytest
 cython
 twine
-coveralls
 responses
 mock
 sphinx
