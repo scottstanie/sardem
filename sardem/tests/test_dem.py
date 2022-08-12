@@ -37,7 +37,7 @@ class TestDownload(unittest.TestCase):
     def setUp(self):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
         self.test_tile = "N19W156"
-        self.hgt_url = "http://e4ftl01.cr.usgs.gov/MEASURES/\
+        self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
         sample_hgt_path = join(DATAPATH, self.test_tile + ".hgt.zip")
@@ -52,7 +52,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
     def test_init(self):
         d = download.Downloader([self.test_tile], netrc_file=NETRC_PATH)
         self.assertEqual(
-            d.data_url, "http://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
+            d.data_url, "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
         )
 
     @responses.activate
