@@ -35,18 +35,27 @@ def upsample_by_blocks(
     _, total_cols = input_shape
     block_shape = (block_rows, total_cols)
 
-    for rows, _ in block_iterator(input_shape, block_shape):
-        offset = total_cols * rows[0] * np.dtype(dtype).itemsize
-        logging.info("Upsampling rows {}".format(rows))
-        cur_block = np.memmap(
-            filename,
-            mode="r",
-            dtype=dtype,
-            offset=offset,
-            shape=block_shape,
-        )
-        cur_block_upsampled = upsample(cur_block, xrate, yrate)
-        cur_block_upsampled.astype(dtype).tofile(outfile)
+    dtype = np.dtype(dtype)
+    with open(outfile, "wb") as f:
+        for rows, _ in block_iterator(input_shape, block_shape):
+            offset = total_cols * rows[0] * dtype.itemsize
+            cur_block_shape = (rows[1] - rows[0], total_cols)
+            logging.info("Upsampling rows {}".format(rows))
+            print("Upsampling rows {}".format(rows))
+            cur_block = np.memmap(
+                filename,
+                mode="r",
+                dtype=dtype,
+                offset=offset,
+                shape=cur_block_shape,
+            )
+            # always upsample as a float
+            cur_block_upsampled = upsample(cur_block.astype("float32"), xrate, yrate)
+            # then convert back to the original dtype
+            if np.issubdtype(dtype, np.integer):
+                cur_block_upsampled = np.round(cur_block_upsampled)
+            cur_block_upsampled.astype(dtype).tofile(f)
+    
 
 
 def bilinear_interpolate(arr, x, y):
