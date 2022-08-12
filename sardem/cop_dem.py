@@ -40,8 +40,8 @@ def download_and_stitch(
         t_srs = s_srs = None
     else:
         code = conversions.EPSG_CODES["egm08"]
-        s_srs = '"epsg:4326+{}"'.format(code)
-        t_srs = '"epsg:4326"'
+        s_srs = 'epsg:4326+{}'.format(code)
+        t_srs = 'epsg:4326'
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
 
