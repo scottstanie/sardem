@@ -63,11 +63,17 @@ def download_and_stitch(
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
     logger.info("Fetching remote tiles...")
-    cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
-    logger.info("Running GDAL command:")
+    try:
+        cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
+        logger.info("Running GDAL command:")
+        logger.info(cmd)
+    except Exception:
+        # Can't form the cli version due to `deepcopy` Pickle error, just skip
+        logger.info("Running gdal Warp with options:")
+        logger.info(option_dict)
+        pass
+    # Now convert to something GDAL can actually use
     option_dict["callback"] = gdal.TermProgress
-    logger.info(cmd)
-    # Now convert to something GDAL can actuall use
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
     return
 
