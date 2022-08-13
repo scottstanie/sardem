@@ -452,7 +452,7 @@ def main(
 
     if make_isce_xml:
         logger.info("Creating ISCE2 XML file")
-        utils.gdal2isce_xml(output_name, keep_egm=keep_egm, shift_rsc=using_gdal_bounds)
+        utils.gdal2isce_xml(output_name, keep_egm=keep_egm, using_gdal_bounds=using_gdal_bounds)
 
     if keep_egm or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")
