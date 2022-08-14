@@ -355,6 +355,7 @@ def main(
         raise ValueError("Must provide either bbox or geojson or wkt_file")
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
     
+    bbox_orig = bbox
     if not use_exact_bbox:
         if all(_float_is_on_bounds(b) for b in bbox):
             logger.info("Shifting bbox to nearest tile bounds")
@@ -372,6 +373,7 @@ def main(
     # i.e. if `shift_rsc` is False, then we are `using_gdal_bounds`
     using_gdal_bounds = not shift_rsc
 
+    # For copernicus, use GDAL to warp from the VRT
     if data_source == "COP":
         utils._gdal_installed_correctly()
         from sardem import cop_dem
@@ -390,7 +392,8 @@ def main(
             )
         return
 
-    tile_names = list(Tile(*bbox).srtm1_tile_names())
+    # If using SRTM, download tiles manually and stitch
+    tile_names = list(Tile(*bbox_orig).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source)
     local_filenames = d.download_all()
