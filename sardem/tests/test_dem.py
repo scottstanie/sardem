@@ -1,12 +1,12 @@
-import unittest
-import json
-import tempfile
-import shutil
-from os.path import join, dirname
 import os
+import shutil
+import tempfile
+import unittest
+from os.path import dirname, join
+
 import responses
 
-from sardem import dem, utils, download
+from sardem import dem, download, utils
 
 DATAPATH = join(dirname(__file__), "data")
 NETRC_PATH = join(DATAPATH, "netrc")
@@ -172,3 +172,7 @@ TODO:
         output_dem = sario.load_file('elevation.dem')
         # assert_array_almost_equal(expected_dem)
     """
+
+
+# TODO: tests with the hawaii COP tile
+# https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N19_00_W156_00_DEM/Copernicus_DSM_COG_10_N19_00_W156_00_DEM.tif

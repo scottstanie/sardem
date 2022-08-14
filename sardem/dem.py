@@ -1,4 +1,4 @@
-"""Digital Elevation Map (DEM) downloading/stitching/upsampling
+"""Digital Elevation Map (DEM) downloading, stitching, upsampling
 
 Module contains utilities for downloading all necessary .hgt files
 for a lon/lat rectangle, stiches them into one DEM, and creates a
@@ -38,15 +38,17 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
         PROJECTION    LL
 """
 from __future__ import division, print_function
+
 import collections
 import logging
 import os
+
 import numpy as np
 
-from sardem import utils, loading, upsample_cy, conversions
-from sardem.download import Tile, Downloader
+from sardem import conversions, loading, upsample_cy, utils
+from sardem.constants import NUM_PIXELS_SRTM1
+from sardem.download import Downloader, Tile
 
-NUM_PIXELS = 3601  # For SRTM1
 RSC_KEYS = [
     "WIDTH",
     "FILE_LENGTH",
@@ -79,7 +81,7 @@ class Stitcher:
     """
 
     def __init__(
-        self, tile_names, filenames=[], data_source="NASA", num_pixels=NUM_PIXELS
+        self, tile_names, filenames=[], data_source="NASA", num_pixels=NUM_PIXELS_SRTM1
     ):
         """List should come from Tile.srtm1_tile_names()"""
         self.tile_file_list = list(tile_names)
@@ -191,7 +193,7 @@ class Stitcher:
             else:
                 return loading.load_elevation(filename)
         else:
-            return np.zeros((NUM_PIXELS, NUM_PIXELS), dtype=self.dtype)
+            return np.zeros((NUM_PIXELS_SRTM1, NUM_PIXELS_SRTM1), dtype=self.dtype)
 
     def load_and_stitch(self):
         """Function to load combine .hgt tiles
@@ -279,11 +281,11 @@ class Stitcher:
         return rsc_dict
 
 
-def crop_stitched_dem(bounds, stitched_dem, rsc_data):
-    """Takes the output of Stitcher.load_and_stitch, crops to bounds
+def crop_stitched_dem(bbox, stitched_dem, rsc_data):
+    """Takes the output of Stitcher.load_and_stitch, crops to bbox
 
     Args:
-        bounds (tuple[float]): (left, bot, right, top) lats and lons of
+        bbox (tuple[float]): (left, bot, right, top) lats and lons of
             desired bounding box for the DEM
         stitched_dem (numpy.array, 2D): result from files
             through Stitcher.load_and_stitch()
@@ -293,7 +295,7 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
         numpy.array: a cropped version of the bigger stitched_dem
     """
     indexes, new_starts = utils.find_bounding_idxs(
-        bounds,
+        bbox,
         rsc_data["X_STEP"],
         rsc_data["Y_STEP"],
         rsc_data["X_FIRST"],
@@ -305,11 +307,12 @@ def crop_stitched_dem(bounds, stitched_dem, rsc_data):
     return cropped_dem, new_starts, new_sizes
 
 
+def _float_is_on_bounds(x):
+    return int(x) == x
+
+
 def main(
-    left_lon=None,
-    top_lat=None,
-    dlon=None,
-    dlat=None,
+    bbox=None,
     geojson=None,
     wkt_file=None,
     data_source=None,
@@ -318,16 +321,16 @@ def main(
     make_isce_xml=False,
     keep_egm=False,
     shift_rsc=False,
+    use_exact_bbox=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
-        left_lon (float): Left most longitude of DEM box
-        top_lat (float): Top most longitude of DEM box
-        dlon (float): Width of box in longitude degrees
-        dlat (float): Height of box in latitude degrees
-        geojson (dict): geojson object outlining DEM (alternative to lat/lon)
+        bbox (tuple[float]): (left, bot, right, top)
+            Longitude/latitude desired bounding box for the DEM
+        geojson (dict): geojson object outlining DEM (alternative to bbox)
+        wkt_file (str): path to .wkt file outlining DEM (alternative to bbox)
         data_source (str): 'NASA' or 'AWS', where to download .hgt tiles from
         xrate (int): x-rate (columns) to upsample DEM (positive int)
         yrate (int): y-rate (rows) to upsample DEM (positive int)
@@ -337,21 +340,33 @@ def main(
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
             GDAL's convention of pixel edge). Default = False.
+        use_exact_bbox (bool): If the bbox is a set of integers, avoid padding so that
+            whole tiles are used.
+            Default = False, so the bbox is padded to the nearest tile.
         output_name (str): name of file to save final DEM (default = elevation.dem)
     """
-    if geojson:
-        bounds = utils.bounding_box(geojson=geojson)
-    elif wkt_file:
-        bounds = utils.get_wkt_bbox(wkt_file)
-    else:
-        bounds = utils.bounding_box(left_lon, top_lat, dlon, dlat)
-    logger.info("Bounds: %s", " ".join(str(b) for b in bounds))
-    outrows, outcols = utils.get_output_size(bounds, xrate, yrate)
+    if bbox is None:
+        if geojson:
+            bbox = utils.bounding_box(geojson=geojson)
+        elif wkt_file:
+            bbox = utils.get_wkt_bbox(wkt_file)
+    
+    if bbox is None:
+        raise ValueError("Must provide either bbox or geojson or wkt_file")
+    logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
+    
+    if not use_exact_bbox:
+        if all(_float_is_on_bounds(b) for b in bbox):
+            logger.info("Shifting bbox to nearest tile bounds")
+            bbox = utils.shift_integer_bbox(bbox)
+            logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
+
+    outrows, outcols = utils.get_output_size(bbox, xrate, yrate)
     if outrows * outcols > WARN_LIMIT:
         logger.warning(
             "Caution: Output size is {} x {} pixels.".format(outrows, outcols)
         )
-        logger.warning("Are the bounds correct?")
+        logger.warning("Are the bounds correct (left, bottom, right, top)?")
 
     # Are we using GDAL's convention (pixel edge) or the center?
     # i.e. if `shift_rsc` is False, then we are `using_gdal_bounds`
@@ -363,7 +378,7 @@ def main(
 
         cop_dem.download_and_stitch(
             output_name,
-            bounds,
+            bbox,
             keep_egm=keep_egm,
             xrate=xrate,
             yrate=yrate,
@@ -375,7 +390,7 @@ def main(
             )
         return
 
-    tile_names = list(Tile(*bounds).srtm1_tile_names())
+    tile_names = list(Tile(*bbox).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source)
     local_filenames = d.download_all()
@@ -386,10 +401,10 @@ def main(
     # Now create corresponding rsc file
     rsc_dict = s.create_dem_rsc()
 
-    # Cropping: get very close to the bounds asked for:
+    # Cropping: get very close to the bbox asked for:
     logger.info("Cropping stitched DEM to boundaries")
     stitched_dem, new_starts, new_sizes = crop_stitched_dem(
-        bounds, stitched_dem, rsc_dict
+        bbox, stitched_dem, rsc_dict
     )
     new_x_first, new_y_first = new_starts
     new_rows, new_cols = new_sizes

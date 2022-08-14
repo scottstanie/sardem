@@ -8,6 +8,7 @@ import sys
 from math import floor
 
 from sardem import loading
+from sardem.constants import DEFAULT_RES
 
 
 def set_logger_handler(logger, level="INFO"):
@@ -110,6 +111,14 @@ def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None
     top = max(float(lat) for (lon, lat) in coordinates)
     bottom = min(float(lat) for (lon, lat) in coordinates)
     return left, bottom, right, top
+
+
+def shift_integer_bbox(bbox):
+    """Shift the integer bounds of a bbox by 1/2 pixel to select a whole tile"""
+    left, bottom, right, top = bbox
+    hp = 0.5 * DEFAULT_RES  # half pixel
+    # Tile names refer to the center of the bottom-left corner of the tile
+    return left - hp, bottom + hp, right - hp, top + hp
 
 
 def coords(geojson):
