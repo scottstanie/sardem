@@ -442,8 +442,8 @@ def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
         first_lon += 0.5 * delta_lon
         first_lat += 0.5 * delta_lat
 
-    img.firstLongitude = first_lon
-    img.firstLatitude = first_lat
+    img.firstLongitude = round(first_lon, 9)  # rounding to avoid precision issues
+    img.firstLatitude = round(first_lat, 9)
     img.deltaLongitude = delta_lon
     img.deltaLatitude = delta_lat
 
