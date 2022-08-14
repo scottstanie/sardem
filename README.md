@@ -12,7 +12,11 @@ usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-fil
 
 The default data source, `--data-source NASA`, uses the SRTM 1 arcsecond data. You can also use the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). 
 
-**Note** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), GDAL is required. See below:
+**Note** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, GDAL is required. 
+For the Copernicus data, the minimum required GDAL version is 3.4.2; version earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
+
+
+See below for installation:
 
 ## Setup and installation
 
@@ -44,11 +48,11 @@ pip install sardem
 GDAL is required for the conversion, which is most easily installed using `conda` (or `mamba`):
 
 ```bash 
-conda install -c conda-forge gdal 
+conda install -c conda-forge "gdal>=3.4.2"
 
 # or
 # conda install -c conda-forge mamba
-# mamba install -c conda-forge gdal
+# mamba install -c conda-forge "gdal>=3.4.2"
 ```
 
 
