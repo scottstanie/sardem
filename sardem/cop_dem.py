@@ -69,7 +69,7 @@ def download_and_stitch(
         logger.info(cmd)
     except Exception:
         # Can't form the cli version due to `deepcopy` Pickle error, just skip
-        logger.info("Running gdal Warp with options:")
+        logger.info("Running gdal.Warp with options:")
         logger.info(option_dict)
         pass
     # Now convert to something GDAL can actually use
