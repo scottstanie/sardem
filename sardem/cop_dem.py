@@ -14,7 +14,7 @@ utils.set_logger_handler(logger)
 
 
 def download_and_stitch(
-    output_name, bounds, keep_egm=False, xrate=1, yrate=1, download_vrt=False
+    output_name, bbox, keep_egm=False, xrate=1, yrate=1, vrt_filename=None
 ):
     """Download the COP DEM from AWS.
 
@@ -35,7 +35,8 @@ def download_and_stitch(
     #     if not os.path.exists(vrt_filename):
     #         make_cop_vrt(vrt_filename)
     # else:
-    vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
+    if vrt_filename is None:
+        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
 
     if keep_egm:
         t_srs = s_srs = None
@@ -50,7 +51,7 @@ def download_and_stitch(
     # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
         format="ENVI",
-        outputBounds=bounds,
+        outputBounds=bbox,
         dstSRS=t_srs,
         srcSRS=s_srs,
         xRes=xres,

@@ -21,3 +21,6 @@ docs/_build
 *.so
 
 data/
+
+
+.ipynb_checkpoints

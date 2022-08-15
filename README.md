@@ -11,9 +11,10 @@ usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-fil
 ```
 
 The default data source, `--data-source NASA`, uses the SRTM 1 arcsecond data. You can also use the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). 
+To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
-**Note** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, GDAL is required. 
-For the Copernicus data, the minimum required GDAL version is 3.4.2; version earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
+**Note** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
+For the Copernicus data, the minimum required GDAL version is 3.4.2; versions earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
 
 
 See below for installation:

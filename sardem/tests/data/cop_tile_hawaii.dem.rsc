@@ -1,0 +1,12 @@
+WIDTH                                    3600
+FILE_LENGTH                              3600
+PROJECTION                               LL
+DATUM                                    WGS84
+X_UNIT                                   degree
+Y_UNIT                                   degree
+X_FIRST                                  -156.0001388888889
+X_STEP                                   0.0002777777777777778
+Y_FIRST                                  20.00013888888889
+Y_STEP                                   -0.0002777777777777778
+Z_OFFSET                                 0
+Z_SCALE                                  1
