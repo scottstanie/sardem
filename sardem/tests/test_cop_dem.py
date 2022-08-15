@@ -9,7 +9,7 @@ DATAPATH = os.path.join(os.path.dirname(__file__), "data")
 
 
 def _write_absolute_vrt():
-    # <SourceFilename relativeToVRT="0">/vsizip/{TMP_PATH}/cop_tile_hawaii.dem.zip/cop_tile_hawaii.dem</SourceFilename>
+    # <SourceFilename relativeToVRT="0">/vsizip/{data_path}/cop_tile_hawaii.dem.zip/cop_tile_hawaii.dem</SourceFilename>
     template = os.path.join(DATAPATH, "N10_W160.vrt.template")
     output_filename = template.replace(".template", "")
     with open(template, "r") as f:

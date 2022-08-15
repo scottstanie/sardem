@@ -155,7 +155,6 @@ class TestBounds:
         ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
-
 def test_main_srtm(tmp_path):
     bbox = [-156.0, 19.0, -155.0, 20.0]
     path = join(DATAPATH, "N19W156.hgt.zip")
