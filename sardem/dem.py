@@ -440,7 +440,7 @@ def main(
         # Redo a new .rsc file for it
         logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
-            upsampled_rsc = utils.upsample_dem_rsc(
+            upsampled_rsc = upsample.upsample_dem_rsc(
                 xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
             )
             f.write(upsampled_rsc)
