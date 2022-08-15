@@ -1,9 +1,9 @@
-from collections import OrderedDict
-import unittest
-from os.path import join, dirname
-import tempfile
 import shutil
+import tempfile
+import unittest
 import zipfile
+from collections import OrderedDict
+from os.path import dirname, join
 
 from sardem import loading
 

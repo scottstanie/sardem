@@ -4,10 +4,11 @@ from copy import deepcopy
 import requests
 
 from sardem import conversions, utils
+from sardem.constants import DEFAULT_RES
 
 TILE_LIST_URL = "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt"
 URL_TEMPLATE = "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
-DEFAULT_RES = 1 / 3600
+
 logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
 
@@ -40,10 +41,11 @@ def download_and_stitch(
         t_srs = s_srs = None
     else:
         code = conversions.EPSG_CODES["egm08"]
-        s_srs = '"epsg:4326+{}"'.format(code)
-        t_srs = '"epsg:4326"'
+        s_srs = 'epsg:4326+{}'.format(code)
+        t_srs = 'epsg:4326'
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
+    resamp = "bilinear" if (xrate > 1 or yrate > 1) else "nearest"
 
     # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
@@ -54,7 +56,7 @@ def download_and_stitch(
         xRes=xres,
         yRes=yres,
         outputType=gdal.GDT_Int16,
-        resampleAlg="bilinear",
+        resampleAlg=resamp,
         multithread=True,
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
@@ -63,11 +65,17 @@ def download_and_stitch(
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
     logger.info("Fetching remote tiles...")
-    cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
-    logger.info("Running GDAL command:")
+    try:
+        cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
+        logger.info("Running GDAL command:")
+        logger.info(cmd)
+    except Exception:
+        # Can't form the cli version due to `deepcopy` Pickle error, just skip
+        logger.info("Running gdal.Warp with options:")
+        logger.info(option_dict)
+        pass
+    # Now convert to something GDAL can actually use
     option_dict["callback"] = gdal.TermProgress
-    logger.info(cmd)
-    # Now convert to something GDAL can actuall use
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
     return
 
@@ -76,7 +84,7 @@ def _gdal_cmd_from_options(src, dst, option_dict):
     from osgeo import gdal
 
     opts = deepcopy(option_dict)
-    # To see what the list of cli options are
+    # To see what the list of cli options are (gdal >= 3.5.0)
     opts["options"] = "__RETURN_OPTION_LIST__"
     opt_list = gdal.WarpOptions(**opts)
     out_opt_list = deepcopy(opt_list)
