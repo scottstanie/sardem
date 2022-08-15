@@ -1,16 +1,16 @@
-import os
-import numpy as np
-import zipfile
 import gzip
+import os
 import shutil
 import tempfile
 import unittest
+import zipfile
 from os.path import dirname, join
-import pytest
 
+import numpy as np
+import pytest
 import responses
 
-from sardem import dem, download, utils, loading
+from sardem import dem, download, loading, utils
 from sardem.constants import DEFAULT_RES
 
 HALF_PIXEL = 0.5 * DEFAULT_RES
@@ -155,45 +155,25 @@ class TestBounds:
         ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
-class TestMain:
+
+def test_main_srtm(tmp_path):
     bbox = [-156.0, 19.0, -155.0, 20.0]
+    path = join(DATAPATH, "N19W156.hgt.zip")
+    # tmpfile = tmp_path / "N19W156.hgt.zip"
+    unzipfile = tmp_path / "N19W156.hgt"
+    with zipfile.ZipFile(path, "r") as zip_ref:
+        with open(unzipfile, "wb") as f:
+            f.write(zip_ref.read("N19W156.hgt"))
+    expected = loading.load_elevation(unzipfile)
+    expected[expected < -1000] = 0
 
-    def test_main_srtm(self, tmp_path):
-        path = join(DATAPATH, "N19W156.hgt.zip")
-        # tmpfile = tmp_path / "N19W156.hgt.zip"
-        unzipfile = tmp_path / "N19W156.hgt"
-        with zipfile.ZipFile(path, "r") as zip_ref:
-            with open(unzipfile, "wb") as f:
-                f.write(zip_ref.read("N19W156.hgt"))
-        expected = loading.load_elevation(unzipfile)
-        expected[expected < -1000] = 0
-
-        tmp_output = tmp_path / "output.dem"
-        dem.main(
-            output_name=str(tmp_output),
-            bbox=self.bbox,
-            keep_egm=True,
-            data_source="NASA",
-            cache_dir=str(tmp_path),
-        )
-        output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-        np.testing.assert_allclose(expected[:-1, :-1], output)
-
-    def test_main_cop(self, tmp_path):
-        path = join(DATAPATH, "cop_tile_hawaii.dem.gz")
-        unzipfile = tmp_path / "cop_tile_hawaii.dem"
-        with gzip.open(path, "rb") as f_in:
-            with open(unzipfile, "wb") as f_out:
-                f_out.write(f_in.read())
-
-        expected = np.fromfile(unzipfile, dtype=np.int16).reshape(3600, 3600)
-        tmp_output = tmp_path / "output.dem"
-        dem.main(
-            output_name=str(tmp_output),
-            bbox=self.bbox,
-            keep_egm=True,
-            data_source="COP",
-            cache_dir=str(tmp_path),
-        )
-        output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-        np.testing.assert_allclose(expected, output, atol=1.0)
+    tmp_output = tmp_path / "output.dem"
+    dem.main(
+        output_name=str(tmp_output),
+        bbox=bbox,
+        keep_egm=True,
+        data_source="NASA",
+        cache_dir=str(tmp_path),
+    )
+    output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
+    np.testing.assert_allclose(expected[:-1, :-1], output)

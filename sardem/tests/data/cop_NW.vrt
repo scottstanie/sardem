@@ -1,0 +1,13 @@
+<VRTDataset rasterXSize="644400" rasterYSize="324000">
+  <SRS dataAxisToSRSAxisMapping="2,1,3">COMPD_CS["WGS 84 + EGM2008 height",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]],VERT_CS["EGM2008 height",VERT_DATUM["EGM2008 geoid",2005,AUTHORITY["EPSG","1027"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Gravity-related height",UP],AUTHORITY["EPSG","3855"]]]</SRS>
+  <GeoTransform> -1.7900013888888890e+02,  2.7777777777780000e-04,  0.0000000000000000e+00,  9.0000138888888884e+01,  0.0000000000000000e+00, -2.7777777777780000e-04</GeoTransform>
+  <VRTRasterBand dataType="Int16" band="1">
+    <ColorInterp>Gray</ColorInterp>
+    <SimpleSource>
+      <SourceFilename relativeToVRT="1">N10_W160.vrt</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SrcRect xOff="0" yOff="0" xSize="72000" ySize="36000" />
+      <DstRect xOff="68400" yOff="252000" xSize="72000" ySize="36000" />
+    </SimpleSource>
+  </VRTRasterBand>
+</VRTDataset>
