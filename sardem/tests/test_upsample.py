@@ -25,7 +25,6 @@ def test_upsample(tmp_path):
     assert_allclose(d_up2, d_up.round().astype(dtype))
 
 
-
 def test_upsample_dem_rsc():
     rsc_path = os.path.join(os.path.dirname(__file__), "data", "elevation.dem.rsc")
     # Test input checking

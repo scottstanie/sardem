@@ -1,5 +1,5 @@
 pytest
-cython
+build
 twine
 responses
 mock

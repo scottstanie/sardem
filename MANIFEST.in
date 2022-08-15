@@ -1,4 +1,1 @@
 include README.md
-include sardem/cython/*.c
-include sardem/cython/*.pyx
-include sardem/cython/*.pxd

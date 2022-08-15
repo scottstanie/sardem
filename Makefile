@@ -24,5 +24,5 @@ REPO?=pypi  # Set if not speficied (as pypitest, e.g.)
 
 upload:
 	rm -rf dist
-	python setup.py sdist
-	twine upload dist/*.tar.gz -r $(REPO)
+	python setup.py sdist bdist_wheel
+	twine upload dist/* -r $(REPO)
