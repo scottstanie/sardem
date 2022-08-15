@@ -321,7 +321,6 @@ def main(
     make_isce_xml=False,
     keep_egm=False,
     shift_rsc=False,
-    use_exact_bbox=False,
     output_name=None,
 ):
     """Function for entry point to create a DEM with `sardem`
@@ -340,9 +339,6 @@ def main(
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
             GDAL's convention of pixel edge). Default = False.
-        use_exact_bbox (bool): If the bbox is a set of integers, avoid padding so that
-            whole tiles are used.
-            Default = False, so the bbox is padded to the nearest tile.
         output_name (str): name of file to save final DEM (default = elevation.dem)
     """
     if bbox is None:
@@ -355,12 +351,10 @@ def main(
         raise ValueError("Must provide either bbox or geojson or wkt_file")
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
 
-    if not use_exact_bbox:
-        if all(_float_is_on_bounds(b) for b in bbox):
-            logger.info("Shifting bbox to nearest tile bounds")
-            bbox = utils.shift_integer_bbox(bbox)
-            logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
-    
+    if all(_float_is_on_bounds(b) for b in bbox):
+        logger.info("Shifting bbox to nearest tile bounds")
+        bbox = utils.shift_integer_bbox(bbox)
+        logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
     # Now we're assuming that `bbox` refers to the edges of the desired bounding box
 
     # Print a warning if they're possibly requesting too-large a box by mistake
@@ -391,7 +385,7 @@ def main(
     # If using SRTM, download tiles manually and stitch
     tile_names = list(Tile(*bbox).srtm1_tile_names())
 
-    d = Downloader(tile_names, data_source=data_source)
+    d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
     local_filenames = d.download_all()
 
     s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)

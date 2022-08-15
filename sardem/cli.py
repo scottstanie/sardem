@@ -132,15 +132,6 @@ def get_cli_args():
             " Default is GDAL's top-left edge convention."
         ),
     )
-    parser.add_argument(
-        "--use-exact-bbox",
-        action="store_true",
-        help=(
-            "If --bbox is a set of integers, don't pad the bbox by half a pixel. "
-            "Otherwise, assumes the DEM should be made from whole tiles."
-        ),
-    )
-
     return parser.parse_args()
 
 
@@ -188,6 +179,5 @@ def cli():
         make_isce_xml=args.make_isce_xml,
         keep_egm=args.keep_egm,
         shift_rsc=args.shift_rsc,
-        use_exact_bbox=args.use_exact_bbox,
         output_name=output,
     )
