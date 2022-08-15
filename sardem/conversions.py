@@ -68,7 +68,7 @@ def _get_size(filename):
     return xsize, ysize
 
 
-def convert_dem_to_wgs84(dem_filename, geoid="egm96", using_gdal_bounds=False):
+def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
     """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights
 
     Overwrites file, requires GDAL to be installed
@@ -79,8 +79,6 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96", using_gdal_bounds=False):
 
     path_, fname = os.path.split(dem_filename)
     rsc_filename = os.path.join(path_, fname + ".rsc")
-    if not using_gdal_bounds:
-        utils.shift_rsc_file(rsc_filename, to_gdal=True)
 
     output_egm = os.path.join(path_, "egm_" + fname)
     # output_wgs = dem_filename.replace(ext, ".wgs84" + ext)
@@ -98,7 +96,3 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96", using_gdal_bounds=False):
         logger.error("Reverting back, using EGM dem as output")
         os.rename(output_egm, dem_filename)
         os.rename(rsc_filename_egm, rsc_filename)
-
-    if not using_gdal_bounds:
-        # Now shift back to the .rsc is pointing to the middle of the pixel
-        utils.shift_rsc_file(rsc_filename, to_gdal=False)

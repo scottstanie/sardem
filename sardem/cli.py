@@ -1,7 +1,6 @@
 """
 Command line interface for running sardem
 """
-from sardem.download import Downloader
 import json
 from argparse import (
     ArgumentError,
@@ -10,6 +9,9 @@ from argparse import (
     FileType,
     RawTextHelpFormatter,
 )
+
+from sardem.download import Downloader
+from sardem import utils
 
 
 def positive_small_int(argstring):
@@ -135,7 +137,12 @@ def get_cli_args():
             " Default is GDAL's top-left edge convention."
         ),
     )
-
+    parser.add_argument(
+        "--cache-dir",
+        help=(
+            "Location to save downloaded files (Default = {})".format(utils.get_cache_dir())
+        ),
+    )
     return parser.parse_args()
 
 
@@ -143,11 +150,11 @@ def cli():
     args = get_cli_args()
     import sardem.dem
 
-    if args.left_lon and args.geojson or args.left_lon and args.bbox:
+    if (args.left_lon and args.geojson) or (args.left_lon and args.bbox):
         raise ArgumentError(
             args.geojson,
-            "Can only use one of positional arguments (left_lon top_lat dlon dlat) "
-            ", --geojson, or --bbox",
+            "Can only use one type of bounding box specifier: (left_lon top_lat dlon dlat) "
+            ", --geojson, --bbox, or --wkt-file",
         )
     # Need all 4 positionals, or the --geosjon
     elif (
@@ -156,19 +163,15 @@ def cli():
         and not args.bbox
         and not args.wkt_file
     ):
-        raise ValueError("Need --bbox, --geojoin, or --wkt-file")
+        raise ValueError("Need --bbox, --geojson, or --wkt-file")
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
-    if args.bbox:
-        left, bot, right, top = args.bbox
-        left_lon, top_lat = left, top
-        dlon = right - left
-        dlat = top - bot
-    elif args.wkt_file:
-        left_lon, top_lat, dlon, dlat = None, None, None, None
-    elif args.left_lon:
+    if args.left_lon:
         left_lon, top_lat = args.left_lon, args.top_lat
         dlon, dlat = args.dlon, args.dlat
+        bbox = utils.bounding_box(left_lon, top_lat, dlon, dlat)
+    elif args.bbox:
+        bbox = args.bbox
 
     if not args.output:
         output = (
@@ -178,10 +181,8 @@ def cli():
         output = args.output
 
     sardem.dem.main(
-        left_lon,
-        top_lat,
-        dlon,
-        dlat,
+        output_name=output,
+        bbox=bbox,
         geojson=geojson_dict,
         wkt_file=args.wkt_file,
         data_source=args.data_source,
@@ -190,5 +191,5 @@ def cli():
         make_isce_xml=args.make_isce_xml,
         keep_egm=args.keep_egm,
         shift_rsc=args.shift_rsc,
-        output_name=output,
+        cache_dir=args.cache_dir,
     )
