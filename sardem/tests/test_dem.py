@@ -12,6 +12,7 @@ import responses
 
 from sardem import dem, download, utils, loading
 from sardem.constants import DEFAULT_RES
+
 HALF_PIXEL = 0.5 * DEFAULT_RES
 
 DATAPATH = join(dirname(__file__), "data")
@@ -154,52 +155,45 @@ class TestBounds:
         ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
-"""
-TODO:
-    finish cropped, upsampled dem, show  this:
-        expected_dem = np.array(
-            [[2071, 2072, 2074, 2076, 2078, 2078, 2079, 2080, 2082], [
-                2071, 2072, 2073, 2075, 2076, 2077, 2078, 2079, 2081
-            ], [2071, 2072, 2073, 2074, 2075, 2076, 2078, 2079, 2080], [
-                2071, 2071, 2072, 2073, 2074, 2075, 2077, 2078, 2080
-            ], [2071, 2071, 2072, 2073, 2074, 2075, 2076, 2078, 2080], [
-                2071, 2071, 2072, 2072, 2073, 2074, 2076, 2077, 2079
-            ], [2071, 2071, 2072, 2072, 2073, 2074, 2076, 2077, 2078]],
-            dtype='<i2')
-
-        output_dem = sario.load_file('elevation.dem')
-        # assert_array_almost_equal(expected_dem)
-    """
-
-def sample_cop_tile(tmp_path):
-    path = join(DATAPATH, "cop_tile_hawaii.dem.gz")
-    tmpfile = tmp_path / "cop_tile_hawaii.dem"
-    with gzip.open(path, "rb") as f_in:
-        with open(tmpfile, "wb") as f_out:
-            f_out.write(f_in.read())
-    return tmpfile
-    # return np.fromfile(tmpfile, dtype=np.int16).reshape(3600, 3600)
-
-
 class TestMain:
     bbox = [-156.0, 19.0, -155.0, 20.0]
 
-    def test_main(self, tmp_path):
+    def test_main_srtm(self, tmp_path):
         path = join(DATAPATH, "N19W156.hgt.zip")
         # tmpfile = tmp_path / "N19W156.hgt.zip"
         unzipfile = tmp_path / "N19W156.hgt"
         with zipfile.ZipFile(path, "r") as zip_ref:
             with open(unzipfile, "wb") as f:
                 f.write(zip_ref.read("N19W156.hgt"))
-        sample_hgt = loading.load_elevation(unzipfile)
-        sample_hgt[sample_hgt < -1000] = 0
+        expected = loading.load_elevation(unzipfile)
+        expected[expected < -1000] = 0
 
         tmp_output = tmp_path / "output.dem"
-        dem.main(output_name=str(tmp_output), bbox=self.bbox, keep_egm=True, data_source="NASA", cache_dir=str(tmp_path))
+        dem.main(
+            output_name=str(tmp_output),
+            bbox=self.bbox,
+            keep_egm=True,
+            data_source="NASA",
+            cache_dir=str(tmp_path),
+        )
         output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-        np.testing.assert_allclose(sample_hgt[:-1, :-1], output)
-        
+        np.testing.assert_allclose(expected[:-1, :-1], output)
 
+    def test_main_cop(self, tmp_path):
+        path = join(DATAPATH, "cop_tile_hawaii.dem.gz")
+        unzipfile = tmp_path / "cop_tile_hawaii.dem"
+        with gzip.open(path, "rb") as f_in:
+            with open(unzipfile, "wb") as f_out:
+                f_out.write(f_in.read())
 
-# TODO: tests with the hawaii COP tile
-# https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N19_00_W156_00_DEM/Copernicus_DSM_COG_10_N19_00_W156_00_DEM.tif
+        expected = np.fromfile(unzipfile, dtype=np.int16).reshape(3600, 3600)
+        tmp_output = tmp_path / "output.dem"
+        dem.main(
+            output_name=str(tmp_output),
+            bbox=self.bbox,
+            keep_egm=True,
+            data_source="COP",
+            cache_dir=str(tmp_path),
+        )
+        output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
+        np.testing.assert_allclose(expected, output, atol=1.0)
