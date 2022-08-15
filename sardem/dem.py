@@ -350,11 +350,11 @@ def main(
             bbox = utils.bounding_box(geojson=geojson)
         elif wkt_file:
             bbox = utils.get_wkt_bbox(wkt_file)
-    
+
     if bbox is None:
         raise ValueError("Must provide either bbox or geojson or wkt_file")
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
-    
+
     bbox_orig = bbox
     if not use_exact_bbox:
         if all(_float_is_on_bounds(b) for b in bbox):
@@ -407,7 +407,7 @@ def main(
     # Cropping: get very close to the bbox asked for:
     logger.info("Cropping stitched DEM to boundaries")
     stitched_dem, new_starts, new_sizes = crop_stitched_dem(
-        bbox, stitched_dem, rsc_dict
+        bbox_orig, stitched_dem, rsc_dict
     )
     new_x_first, new_y_first = new_starts
     new_rows, new_cols = new_sizes
@@ -416,8 +416,13 @@ def main(
     rsc_dict["Y_FIRST"] = new_y_first
     rsc_dict["FILE_LENGTH"] = new_rows
     rsc_dict["WIDTH"] = new_cols
-    if shift_rsc:
-        rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
+
+    print(
+        f"{bbox = }, {bbox_orig = }, {rsc_dict['Y_FIRST'] = }, {rsc_dict['X_FIRST'] = }"
+    )
+
+    if not using_gdal_bounds:
+        rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=False)
 
     rsc_filename = output_name + ".rsc"
 
