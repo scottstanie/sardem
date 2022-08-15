@@ -145,36 +145,62 @@ def coords(geojson):
     return geojson["coordinates"][0]
 
 
-def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
+def find_bounding_idxs(bbox, x_step, y_step, x_first, y_first):
     """Finds the indices of stitched dem to crop bounding box
 
     Also finds the new x_start and y_start after cropping.
 
-    Note: x_start, y_start could be different from bounds
+    Note: x_start, y_start could be different from bbox
     if steps didnt exactly match, but should be further up and left
 
-    Takes the desired bounds, .rsc data from stitched dem,
+    Args:
+        bbox (tuple[float]): (left,bottom,right,top) of bounding box
+        This refers to the *edges* of the box
+        x_step (float): step size in x direction
+        y_step (float): step size in y direction
+        x_first (float): x coordinate of first point in x direction
+            This refers to the *center* of the first pixel
+        y_first (float): y coordinate of first point in y direction
+            This refers to the *center* of the first pixel
+
+    Takes the desired bbox, .rsc data from stitched dem,
     Examples:
-        >>> bounds = [-155.49, 19.0, -154.5, 19.5]
+        >>> bbox = [-155.05, 19.05, -154.05, 20.05]
         >>> x_step = 0.1
         >>> y_step = -0.1
-        >>> x_first = -156
+        >>> x_first = -155
         >>> y_first = 20.0
-        >>> print(find_bounding_idxs(bounds, x_step, y_step, x_first, y_first))
-        ((5, 10, 15, 5), (-155.5, 19.5))
-        >>> bounds[-1] += 0.06
-        >>> print(find_bounding_idxs(bounds, x_step, y_step, x_first, y_first))
-        ((5, 10, 15, 4), (-155.5, 19.6))
+        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
+        ((0, 10, 10, 0), (-155.0, 20.0))
+        >>> bbox[-1] -= 0.1
+        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
+        ((0, 10, 10, 1), (-155.0, 19.9))
     """
+    # `bbox` should refer to the edges of the bounding box
+    # shift by half pixel so they point to the pixel centers for index finding
+    hp = 0.5 * DEFAULT_RES  # half pixel
+    left, bot, right, top = bbox
+    left += hp
+    bot += hp
 
-    left, bot, right, top = bounds
+    # Shift these two inward to be the final pixel centers
+    right -= hp
+    top -= hp
+
     left_idx = int(round((left - x_first) / x_step))
-    right_idx = int(round((right - x_first) / x_step))
+    new_x_first = x_first + x_step * left_idx
+    right_idx = int(round((right - x_first) / x_step)) + 1
+
     # Note: y_step will be negative for these
     top_idx = int(round((top - y_first) / y_step))
-    bot_idx = int(round((bot - y_first) / y_step))
-    new_x_first = x_first + x_step * left_idx
     new_y_first = y_first + y_step * top_idx  # Again: y_step negative
+    bot_idx = int(round((bot - y_first) / y_step)) + 1
+    if any(arg < 0 for arg in (left_idx, right_idx, top_idx, bot_idx)):
+        raise ValueError(
+            "x_first/y_first ({}, {}) must be within the bbox {}".format(
+                x_first, y_first, bbox
+            )
+        )
     return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
 
 
@@ -357,6 +383,7 @@ def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
     """
     _gdal_installed_correctly()
     from osgeo import gdal
+
     try:
         import isce  # noqa
         import isceobj
@@ -463,7 +490,9 @@ def _add_reference_datum(xml_file, keep_egm=False):
     import xml.etree.ElementTree as ET
     from xml.dom import minidom
 
-    logger.info("add <reference> info to xml file: {}".format(os.path.basename(xml_file)))
+    logger.info(
+        "add <reference> info to xml file: {}".format(os.path.basename(xml_file))
+    )
 
     # get property element for reference
     ref = ET.Element("property", attrib={"name": "reference"})

@@ -10,7 +10,8 @@ from multiprocessing.pool import ThreadPool
 import numpy as np
 import requests
 
-from . import utils
+from sardem import utils
+from sardem.constants import DEFAULT_RES
 
 try:
     input = raw_input  # Check for python 2
@@ -145,11 +146,16 @@ class Tile:
             True
             >>> list(d.srtm1_tile_names())
             ['N19W156', 'N19W155']
-            >>> bounds = [-156.0, 19.0, -154.0, 20.0]  # Show int bounds
+            >>> hp = 1 / 3600 / 2  # Half a degree in decimal degrees
+            >>> bounds = [-156.0 - hp, 19.0 - hp, -154.0 + hp, 20.0 + hp]
             >>> list(d.srtm1_tile_names())
             ['N19W156', 'N19W155']
         """
-        left, bottom, right, top = self.bounds
+        # `bounds` should refer to the edges of the bounding box
+        # shift each inward by half pixel so they point to the boundary pixel centers
+        shift_inward = np.array([1, 1, -1, -1]) * DEFAULT_RES / 2
+        left, bottom, right, top = np.array(self.bounds) + shift_inward
+
         left_int, top_int = self.srtm1_tile_corner(left, top)
         right_int, bot_int = self.srtm1_tile_corner(right, bottom)
         # If exact integer was requested for top/right, assume tile with that number

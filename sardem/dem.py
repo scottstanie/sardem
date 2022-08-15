@@ -46,7 +46,7 @@ import os
 import numpy as np
 
 from sardem import conversions, loading, upsample_cy, utils
-from sardem.constants import NUM_PIXELS_SRTM1
+from sardem.constants import DEFAULT_RES, NUM_PIXELS_SRTM1
 from sardem.download import Downloader, Tile
 
 RSC_KEYS = [
@@ -355,23 +355,21 @@ def main(
         raise ValueError("Must provide either bbox or geojson or wkt_file")
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
 
-    bbox_orig = bbox
     if not use_exact_bbox:
         if all(_float_is_on_bounds(b) for b in bbox):
             logger.info("Shifting bbox to nearest tile bounds")
             bbox = utils.shift_integer_bbox(bbox)
             logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
+    
+    # Now we're assuming that `bbox` refers to the edges of the desired bounding box
 
+    # Print a warning if they're possibly requesting too-large a box by mistake
     outrows, outcols = utils.get_output_size(bbox, xrate, yrate)
     if outrows * outcols > WARN_LIMIT:
         logger.warning(
             "Caution: Output size is {} x {} pixels.".format(outrows, outcols)
         )
         logger.warning("Are the bounds correct (left, bottom, right, top)?")
-
-    # Are we using GDAL's convention (pixel edge) or the center?
-    # i.e. if `shift_rsc` is False, then we are `using_gdal_bounds`
-    using_gdal_bounds = not shift_rsc
 
     # For copernicus, use GDAL to warp from the VRT
     if data_source == "COP":
@@ -387,13 +385,11 @@ def main(
         )
         if make_isce_xml:
             logger.info("Creating ISCE2 XML file")
-            utils.gdal2isce_xml(
-                output_name, keep_egm=keep_egm, using_gdal_bounds=using_gdal_bounds
-            )
+            utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
         return
 
     # If using SRTM, download tiles manually and stitch
-    tile_names = list(Tile(*bbox_orig).srtm1_tile_names())
+    tile_names = list(Tile(*bbox).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source)
     local_filenames = d.download_all()
@@ -407,7 +403,7 @@ def main(
     # Cropping: get very close to the bbox asked for:
     logger.info("Cropping stitched DEM to boundaries")
     stitched_dem, new_starts, new_sizes = crop_stitched_dem(
-        bbox_orig, stitched_dem, rsc_dict
+        bbox, stitched_dem, rsc_dict
     )
     new_x_first, new_y_first = new_starts
     new_rows, new_cols = new_sizes
@@ -417,12 +413,7 @@ def main(
     rsc_dict["FILE_LENGTH"] = new_rows
     rsc_dict["WIDTH"] = new_cols
 
-    print(
-        f"{bbox = }, {bbox_orig = }, {rsc_dict['Y_FIRST'] = }, {rsc_dict['X_FIRST'] = }"
-    )
-
-    if not using_gdal_bounds:
-        rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=False)
+    rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
 
     rsc_filename = output_name + ".rsc"
 
@@ -475,17 +466,17 @@ def main(
 
     if make_isce_xml:
         logger.info("Creating ISCE2 XML file")
-        utils.gdal2isce_xml(
-            output_name, keep_egm=keep_egm, using_gdal_bounds=using_gdal_bounds
-        )
+        utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
     if keep_egm or data_source == "NASA_WATER":
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
-        conversions.convert_dem_to_wgs84(
-            output_name, using_gdal_bounds=using_gdal_bounds
-        )
+        conversions.convert_dem_to_wgs84(output_name, geoid="egm96")
+ 
+    # If the user wants the .rsc file to point to pixel center:
+    if shift_rsc:
+        utils.shift_rsc_file(rsc_filename, to_gdal=False)
 
     # Overwrite with smaller dtype for water mask
     if data_source == "NASA_WATER":
