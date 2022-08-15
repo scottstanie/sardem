@@ -2,8 +2,13 @@
 Command line interface for running sardem
 """
 import json
-from argparse import (ArgumentError, ArgumentParser, ArgumentTypeError,
-                      FileType, RawTextHelpFormatter)
+from argparse import (
+    ArgumentError,
+    ArgumentParser,
+    ArgumentTypeError,
+    FileType,
+    RawTextHelpFormatter,
+)
 
 from sardem.download import Downloader
 from sardem import utils
@@ -132,6 +137,12 @@ def get_cli_args():
             " Default is GDAL's top-left edge convention."
         ),
     )
+    parser.add_argument(
+        "--cache-dir",
+        help=(
+            "Location to save downloaded files (Default = {})".format(utils.get_cache_dir())
+        ),
+    )
     return parser.parse_args()
 
 
@@ -170,6 +181,7 @@ def cli():
         output = args.output
 
     sardem.dem.main(
+        output_name=output,
         bbox=bbox,
         geojson=geojson_dict,
         wkt_file=args.wkt_file,
@@ -179,5 +191,5 @@ def cli():
         make_isce_xml=args.make_isce_xml,
         keep_egm=args.keep_egm,
         shift_rsc=args.shift_rsc,
-        output_name=output,
+        cache_dir=args.cache_dir,
     )

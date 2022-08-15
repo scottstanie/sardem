@@ -312,6 +312,7 @@ def _float_is_on_bounds(x):
 
 
 def main(
+    output_name=None,
     bbox=None,
     geojson=None,
     wkt_file=None,
@@ -321,11 +322,12 @@ def main(
     make_isce_xml=False,
     keep_egm=False,
     shift_rsc=False,
-    output_name=None,
+    cache_dir=None,
 ):
     """Function for entry point to create a DEM with `sardem`
 
     Args:
+        output_name (str): name of file to save final DEM (default = elevation.dem)
         bbox (tuple[float]): (left, bot, right, top)
             Longitude/latitude desired bounding box for the DEM
         geojson (dict): geojson object outlining DEM (alternative to bbox)
@@ -339,7 +341,7 @@ def main(
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
             GDAL's convention of pixel edge). Default = False.
-        output_name (str): name of file to save final DEM (default = elevation.dem)
+        cache_dir (str): directory to cache downloaded tiles
     """
     if bbox is None:
         if geojson:
