@@ -88,8 +88,8 @@ def upsample(arr, xrate, yrate):
     """Upsample an array by a factor of xrate and yrate"""
     ny, nx = arr.shape
 
-    xi = np.linspace(0, arr.shape[1] - 1, nx * xrate).reshape((1, -1))
-    yi = np.linspace(0, arr.shape[0] - 1, ny * yrate).reshape((-1, 1))
+    xi = np.linspace(0, arr.shape[1] - 1, round(nx * xrate)).reshape((1, -1))
+    yi = np.linspace(0, arr.shape[0] - 1, round(ny * yrate)).reshape((-1, 1))
     return bilinear_interpolate(arr, xi, yi)
 
 
