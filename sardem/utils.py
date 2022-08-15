@@ -40,17 +40,6 @@ def get_cache_dir():
     return path
 
 
-def up_size(cur_size, rate):
-    """Calculates the number of points to be computed in the upsampling
-
-    Example: 3 points at x = (0, 1, 2), rate = 2 becomes 5 points:
-        x = (0, .5, 1, 1.5, 2)
-        >>> up_size(3, 2)
-        5
-    """
-    return int(floor(1 + (cur_size - 1) * rate))
-
-
 def floor_float(num, ndigits):
     """Like rounding to ndigits, but flooring
 
@@ -169,72 +158,6 @@ def find_bounding_idxs(bounds, x_step, y_step, x_first, y_first):
     return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
 
 
-def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
-    if rsc_dict and rsc_filename:
-        raise ValueError("Can only give one of rsc_dict or rsc_filename")
-    elif not rsc_dict and not rsc_filename:
-        raise ValueError("Must give at least one of rsc_dict or rsc_filename")
-
-    if rsc_filename:
-        rsc_dict = loading.load_dem_rsc(rsc_filename)
-    return rsc_dict
-
-
-def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
-    """Creates a new .dem.rsc file for upsampled version
-
-    Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
-
-    Args:
-        xrate (int): rate in x direcion to upsample the DEM
-        yrate (int): rate in y direcion to upsample the DEM
-        rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
-        filepath (str): Optional, location of .dem.rsc file
-
-    Note: Must supply only one of rsc_dict or rsc_filename
-
-    Returns:
-        str: file same as original with upsample adjusted numbers
-
-    Raises:
-        TypeError: if neither (or both) rsc_filename and rsc_dict are given
-
-    """
-    if not xrate and not yrate:
-        raise ValueError("Must supply either xrate or yrate for upsampling")
-
-    rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
-
-    xrate = xrate or 1
-    yrate = yrate or 1
-    outstring = ""
-    for field, value in rsc_dict.items():
-        # Files seemed to be left justified with 13 spaces? Not sure why 13
-        # TODO: its 14- but fix this and previous formatting to be DRY
-        if field.lower() == "width":
-            new_size = up_size(value, xrate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() == "file_length":
-            new_size = up_size(value, yrate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() == "x_step":
-            # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
-            value /= xrate
-            # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
-        elif field.lower() == "y_step":
-            value /= yrate
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
-        else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
-
-    return outstring
-
-
 def get_wkt_bbox(fname):
     try:
         from shapely import wkt
@@ -348,6 +271,7 @@ def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
     """
     _gdal_installed_correctly()
     from osgeo import gdal
+
     try:
         import isce  # noqa
         import isceobj
@@ -454,7 +378,9 @@ def _add_reference_datum(xml_file, keep_egm=False):
     import xml.etree.ElementTree as ET
     from xml.dom import minidom
 
-    logger.info("add <reference> info to xml file: {}".format(os.path.basename(xml_file)))
+    logger.info(
+        "add <reference> info to xml file: {}".format(os.path.basename(xml_file))
+    )
 
     # get property element for reference
     ref = ET.Element("property", attrib={"name": "reference"})
