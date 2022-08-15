@@ -1,4 +1,7 @@
 import os
+import numpy as np
+import zipfile
+import gzip
 import shutil
 import tempfile
 import unittest
@@ -8,6 +11,8 @@ import pytest
 import responses
 
 from sardem import dem, download, utils
+from sardem.constants import DEFAULT_RES
+HALF_PIXEL = 0.5 * DEFAULT_RES
 
 DATAPATH = join(dirname(__file__), "data")
 NETRC_PATH = join(DATAPATH, "netrc")
@@ -72,10 +77,11 @@ class TestRsc:
     def test_upsample_dem_rsc(self):
         # Test input checking
         with pytest.raises(ValueError):
-            utils.upsample_dem_rsc( xrate=2,
-            rsc_dict={"something": 1},
-            rsc_filename=self.rsc_path,
-        )
+            utils.upsample_dem_rsc(
+                xrate=2,
+                rsc_dict={"something": 1},
+                rsc_filename=self.rsc_path,
+            )
         with pytest.raises(ValueError):
             utils.upsample_dem_rsc(xrate=2)
 
@@ -143,10 +149,9 @@ class TestBounds:
         assert set(tuple(c) for c in result) == set(tuple(c) for c in self.coords)
 
     def test_bounding_box(self):
-        assert utils.bounding_box(self.left_lon, self.top_lat, self.dlon, self.dlat) == (
-            (-156.0, 18.7, -154.6, 20.3)
-        )
-
+        assert utils.bounding_box(
+            self.left_lon, self.top_lat, self.dlon, self.dlat
+        ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
 """
@@ -165,6 +170,38 @@ TODO:
         output_dem = sario.load_file('elevation.dem')
         # assert_array_almost_equal(expected_dem)
     """
+
+
+@pytest.fixture
+def sample_hgt_file(tmp_path):
+    tmpfile = tmp_path / "sample.hgt"
+    path = join(DATAPATH, "N19W156.hgt.zip")
+    with zipfile.ZipFile(path, "r") as zip_ref:
+        with open(tmpfile, "wb") as f:
+            f.write(zip_ref.read("N19W156.hgt"))
+    return tmpfile
+
+
+def sample_cop_tile(tmp_path):
+    path = join(DATAPATH, "cop_tile_hawaii.dem.gz")
+    tmpfile = tmp_path / "cop_tile_hawaii.dem"
+    with gzip.open(path, "rb") as f_in:
+        with open(tmpfile, "wb") as f_out:
+            f_out.write(f_in.read())
+    return tmpfile
+    # return np.fromfile(tmpfile, dtype=np.int16).reshape(3600, 3600)
+
+
+class TestMain:
+    bbox = [-156.0, 19.0, -155.0, 20.0]
+
+    def test_main(self, tmp_path, sample_hgt_file):
+        cache_dir = sample_hgt_file.parent
+        sample_hgt = np.fromfile(sample_hgt_file, dtype=np.int16).reshape(3601, 3601)
+        dem.main(output_name=tmp_path, bbox=self.bbox, keep_egm=True, data_source="NASA", cache_dir=cache_dir)
+        output = np.fromfile(tmp_path, dtype=np.int16).reshape(3600, 3600)
+        np.testing.assert_allclose(sample_hgt, output[:-1, :-1])
+        
 
 
 # TODO: tests with the hawaii COP tile
