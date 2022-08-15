@@ -10,7 +10,7 @@ import pytest
 
 import responses
 
-from sardem import dem, download, utils
+from sardem import dem, download, utils, loading
 from sardem.constants import DEFAULT_RES
 HALF_PIXEL = 0.5 * DEFAULT_RES
 
@@ -171,17 +171,6 @@ TODO:
         # assert_array_almost_equal(expected_dem)
     """
 
-
-@pytest.fixture
-def sample_hgt_file(tmp_path):
-    tmpfile = tmp_path / "sample.hgt"
-    path = join(DATAPATH, "N19W156.hgt.zip")
-    with zipfile.ZipFile(path, "r") as zip_ref:
-        with open(tmpfile, "wb") as f:
-            f.write(zip_ref.read("N19W156.hgt"))
-    return tmpfile
-
-
 def sample_cop_tile(tmp_path):
     path = join(DATAPATH, "cop_tile_hawaii.dem.gz")
     tmpfile = tmp_path / "cop_tile_hawaii.dem"
@@ -195,12 +184,20 @@ def sample_cop_tile(tmp_path):
 class TestMain:
     bbox = [-156.0, 19.0, -155.0, 20.0]
 
-    def test_main(self, tmp_path, sample_hgt_file):
-        cache_dir = sample_hgt_file.parent
-        sample_hgt = np.fromfile(sample_hgt_file, dtype=np.int16).reshape(3601, 3601)
-        dem.main(output_name=tmp_path, bbox=self.bbox, keep_egm=True, data_source="NASA", cache_dir=cache_dir)
-        output = np.fromfile(tmp_path, dtype=np.int16).reshape(3600, 3600)
-        np.testing.assert_allclose(sample_hgt, output[:-1, :-1])
+    def test_main(self, tmp_path):
+        path = join(DATAPATH, "N19W156.hgt.zip")
+        # tmpfile = tmp_path / "N19W156.hgt.zip"
+        unzipfile = tmp_path / "N19W156.hgt"
+        with zipfile.ZipFile(path, "r") as zip_ref:
+            with open(unzipfile, "wb") as f:
+                f.write(zip_ref.read("N19W156.hgt"))
+        sample_hgt = loading.load_elevation(unzipfile)
+        sample_hgt[sample_hgt < -1000] = 0
+
+        tmp_output = tmp_path / "output.dem"
+        dem.main(output_name=str(tmp_output), bbox=self.bbox, keep_egm=True, data_source="NASA", cache_dir=str(tmp_path))
+        output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
+        np.testing.assert_allclose(sample_hgt[:-1, :-1], output)
         
 
 
