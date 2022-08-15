@@ -71,67 +71,6 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         d.download_all()
         self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
 
-
-class TestRsc:
-    rsc_path = join(DATAPATH, "elevation.dem.rsc")
-
-    def test_upsample_dem_rsc(self):
-        # Test input checking
-        with pytest.raises(ValueError):
-            utils.upsample_dem_rsc(
-                xrate=2,
-                rsc_dict={"something": 1},
-                rsc_filename=self.rsc_path,
-            )
-        with pytest.raises(ValueError):
-            utils.upsample_dem_rsc(xrate=2)
-
-        up_rsc = utils.upsample_dem_rsc(xrate=1, yrate=1, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         2
-FILE_LENGTH   3
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000138888888
-Y_STEP        -0.000138888888
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-        up_rsc = utils.upsample_dem_rsc(xrate=2, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         3
-FILE_LENGTH   3
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000069444444
-Y_STEP        -0.000138888888
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-
-        up_rsc = utils.upsample_dem_rsc(xrate=2, yrate=2, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         3
-FILE_LENGTH   5
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000069444444
-Y_STEP        -0.000069444444
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-        assert expected == up_rsc
-
-
 class TestBounds:
     coords = [
         [-156.0, 18.7],
