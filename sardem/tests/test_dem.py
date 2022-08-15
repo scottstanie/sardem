@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import unittest
 from os.path import dirname, join
+import pytest
 
 import responses
 
@@ -65,23 +66,18 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
 
 
-class TestRsc(unittest.TestCase):
-    def setUp(self):
-        self.rsc_path = join(DATAPATH, "elevation.dem.rsc")
+class TestRsc:
+    rsc_path = join(DATAPATH, "elevation.dem.rsc")
 
     def test_upsample_dem_rsc(self):
         # Test input checking
-        self.assertRaises(
-            ValueError,
-            utils.upsample_dem_rsc,
-            xrate=2,
+        with pytest.raises(ValueError):
+            utils.upsample_dem_rsc( xrate=2,
             rsc_dict={"something": 1},
             rsc_filename=self.rsc_path,
         )
-        self.assertRaises(ValueError, utils.upsample_dem_rsc, xrate=2)
-        self.assertRaises(
-            ValueError, utils.upsample_dem_rsc, rsc_filename=self.rsc_path
-        )  # Need rate
+        with pytest.raises(ValueError):
+            utils.upsample_dem_rsc(xrate=2)
 
         up_rsc = utils.upsample_dem_rsc(xrate=1, yrate=1, rsc_filename=self.rsc_path)
         expected = """\
@@ -126,34 +122,31 @@ Z_OFFSET      0
 Z_SCALE       1
 PROJECTION    LL
 """
-        self.assertEqual(expected, up_rsc)
+        assert expected == up_rsc
 
 
-class TestBounds(unittest.TestCase):
-    def setUp(self):
-        self.coords = [
-            [-156.0, 18.7],
-            [-154.6, 18.7],
-            [-154.6, 20.3],
-            [-156.0, 20.3],
-            [-156.0, 18.7],
-        ]
-        self.left_lon = -156.0
-        self.top_lat = 20.3
-        self.dlat = 1.6
-        self.dlon = 1.4
+class TestBounds:
+    coords = [
+        [-156.0, 18.7],
+        [-154.6, 18.7],
+        [-154.6, 20.3],
+        [-156.0, 20.3],
+        [-156.0, 18.7],
+    ]
+    left_lon = -156.0
+    top_lat = 20.3
+    dlat = 1.6
+    dlon = 1.4
 
     def test_corner_input(self):
         result = utils.corner_coords(self.left_lon, self.top_lat, self.dlon, self.dlat)
-        self.assertEqual(
-            set(tuple(c) for c in result), set(tuple(c) for c in self.coords)
-        )
+        assert set(tuple(c) for c in result) == set(tuple(c) for c in self.coords)
 
     def test_bounding_box(self):
-        self.assertEqual(
-            utils.bounding_box(self.left_lon, self.top_lat, self.dlon, self.dlat),
-            (-156.0, 18.7, -154.6, 20.3),
+        assert utils.bounding_box(self.left_lon, self.top_lat, self.dlon, self.dlat) == (
+            (-156.0, 18.7, -154.6, 20.3)
         )
+
 
 
 """
