@@ -1,4 +1,3 @@
-import gzip
 import os
 import shutil
 import tempfile
@@ -7,7 +6,6 @@ import zipfile
 from os.path import dirname, join
 
 import numpy as np
-import pytest
 import responses
 
 from sardem import dem, download, loading, utils
@@ -71,6 +69,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         d.download_all()
         self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
 
+
 class TestBounds:
     coords = [
         [-156.0, 18.7],
@@ -95,7 +94,15 @@ class TestBounds:
 
 
 def test_main_srtm(tmp_path):
-    bbox = [-156.0, 19.0, -155.0, 20.0]
+    # $ rio bounds --bbox ~/.cache/sardem/N19W156.hgt
+    # [-156.0001388888889, 18.99986111111111, -154.99986111111113, 20.000138888888888]
+    # but dropping the bottom row and right column of pixels to make 3600x3600
+    bbox = [
+        -156.0 - HALF_PIXEL,
+        19.0 + HALF_PIXEL,
+        -155.0 - HALF_PIXEL,
+        20.0 + HALF_PIXEL,
+    ]
     path = join(DATAPATH, "N19W156.hgt.zip")
     # tmpfile = tmp_path / "N19W156.hgt.zip"
     unzipfile = tmp_path / "N19W156.hgt"
