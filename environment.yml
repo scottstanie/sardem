@@ -1,0 +1,8 @@
+channels:
+- conda-forge
+dependencies:
+- python >= 3.6
+- gdal >= 3.4.2
+- numpy >= 1.14.2
+- requests >= 2.20.0
+- pip

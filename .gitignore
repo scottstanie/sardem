@@ -5,6 +5,7 @@
 *.hgt
 *.dem
 *.dem.rsc
+*.hdr
 
 # Directories for setup.py
 build
@@ -24,3 +25,4 @@ data/
 
 
 .ipynb_checkpoints
+.vscode
