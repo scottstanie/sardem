@@ -3,7 +3,7 @@
 
 # Don't add huge DEM data files
 *.hgt
-*.dem
+*.dem.*
 *.dem.rsc
 *.hdr
 
