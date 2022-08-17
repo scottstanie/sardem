@@ -134,65 +134,6 @@ def coords(geojson):
     return geojson["coordinates"][0]
 
 
-def find_bounding_idxs(bbox, x_step, y_step, x_first, y_first):
-    """Finds the indices of stitched dem to crop bounding box
-
-    Also finds the new x_start and y_start after cropping.
-
-    Note: x_start, y_start could be different from bbox
-    if steps didnt exactly match, but should be further up and left
-
-    Args:
-        bbox (tuple[float]): (left,bottom,right,top) of bounding box
-        This refers to the *edges* of the box
-        x_step (float): step size in x direction
-        y_step (float): step size in y direction
-        x_first (float): x coordinate of first point in x direction
-            This refers to the *center* of the first pixel
-        y_first (float): y coordinate of first point in y direction
-            This refers to the *center* of the first pixel
-
-    Takes the desired bbox, .rsc data from stitched dem,
-    Examples:
-        >>> bbox = [-155.05, 19.05, -154.05, 20.05]
-        >>> x_step = 0.1
-        >>> y_step = -0.1
-        >>> x_first = -155
-        >>> y_first = 20.0
-        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
-        ((0, 10, 10, 0), (-155.0, 20.0))
-        >>> bbox[-1] -= 0.1
-        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
-        ((0, 10, 10, 1), (-155.0, 19.9))
-    """
-    # `bbox` should refer to the edges of the bounding box
-    # shift by half pixel so they point to the pixel centers for index finding
-    hp = 0.5 * DEFAULT_RES  # half pixel
-    left, bot, right, top = bbox
-    left += hp
-    bot += hp
-
-    # Shift these two inward to be the final pixel centers
-    right -= hp
-    top -= hp
-
-    left_idx = int(round((left - x_first) / x_step))
-    new_x_first = x_first + x_step * left_idx
-    right_idx = int(round((right - x_first) / x_step)) + 1
-
-    # Note: y_step will be negative for these
-    top_idx = int(round((top - y_first) / y_step))
-    new_y_first = y_first + y_step * top_idx  # Again: y_step negative
-    bot_idx = int(round((bot - y_first) / y_step)) + 1
-    if any(arg < 0 for arg in (left_idx, right_idx, top_idx, bot_idx)):
-        raise ValueError(
-            "x_first/y_first ({}, {}) must be within the bbox {}".format(
-                x_first, y_first, bbox
-            )
-        )
-    return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
-
-
 def get_wkt_bbox(fname):
     try:
         from shapely import wkt
@@ -296,7 +237,7 @@ def _gdal_installed_correctly():
         return False
 
 
-def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
+def gdal2isce_xml(fname, keep_egm=False):
     """
     Generate ISCE xml file from gdal supported file
 
@@ -387,10 +328,10 @@ def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
     first_lat = transform[3]
     delta_lat = transform[5]
     delta_lon = transform[1]
-    if using_gdal_bounds:
-        # We need to shift the `first________` values to the middle of the top left pixel
-        first_lon += 0.5 * delta_lon
-        first_lat += 0.5 * delta_lat
+    # We are using gdal conventions of the edges of the image for the bbox
+    # We need to shift the `first________` values to the middle of the top left pixel
+    first_lon += 0.5 * delta_lon
+    first_lat += 0.5 * delta_lat
 
     img.firstLongitude = round(first_lon, 9)  # rounding to avoid precision issues
     img.firstLatitude = round(first_lat, 9)

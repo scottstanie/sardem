@@ -25,6 +25,26 @@ def test_upsample(tmp_path):
     assert_allclose(d_up2, d_up.round().astype(dtype))
 
 
+def test_resample():
+    a = np.arange(16).reshape(4, 4).astype("float32")
+    expected = np.array([[2.5, 3.5, 4.5], [6.5, 7.5, 8.5], [10.5, 11.5, 12.5]])
+    rsc_dict_mid = {
+        "width": 4,
+        "file_length": 4,
+        "x_first": 1.0,
+        "x_step": 1,
+        "y_first": 4.0,
+        "y_step": -1,
+    }
+    bbox = (1, 1, 4, 4)
+    a_resampled = upsample.resample(a, rsc_dict_mid, bbox)
+    assert_allclose(expected, a_resampled) 
+
+    bbox = (0.5, 0.5, 4.5, 4.5)
+    a_resampled = upsample.resample(a, rsc_dict_mid, bbox)
+    assert_allclose(a, a_resampled) 
+
+
 def test_upsample_dem_rsc():
     rsc_path = os.path.join(os.path.dirname(__file__), "data", "elevation.dem.rsc")
     # Test input checking

@@ -281,32 +281,6 @@ class Stitcher:
         return rsc_dict
 
 
-def crop_stitched_dem(bbox, stitched_dem, rsc_data):
-    """Takes the output of Stitcher.load_and_stitch, crops to bbox
-
-    Args:
-        bbox (tuple[float]): (left, bot, right, top) lats and lons of
-            desired bounding box for the DEM
-        stitched_dem (numpy.array, 2D): result from files
-            through Stitcher.load_and_stitch()
-        rsc_data (dict): data from .dem.rsc file, from Stitcher.create_dem_rsc
-
-    Returns:
-        numpy.array: a cropped version of the bigger stitched_dem
-    """
-    indexes, new_starts = utils.find_bounding_idxs(
-        bbox,
-        rsc_data["X_STEP"],
-        rsc_data["Y_STEP"],
-        rsc_data["X_FIRST"],
-        rsc_data["Y_FIRST"],
-    )
-    left_idx, bot_idx, right_idx, top_idx = indexes
-    cropped_dem = stitched_dem[top_idx:bot_idx, left_idx:right_idx]
-    new_sizes = cropped_dem.shape
-    return cropped_dem, new_starts, new_sizes
-
-
 def _float_is_on_bounds(x):
     return int(x) == x
 
@@ -390,27 +364,20 @@ def main(
 
     d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
     local_filenames = d.download_all()
+    print(local_filenames)
 
     s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
-    # Now create corresponding rsc file
+    # Now create corresponding rsc file for all the tiles
     rsc_dict = s.create_dem_rsc()
 
-    # Cropping: get very close to the bbox asked for:
     logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem, new_starts, new_sizes = crop_stitched_dem(
-        bbox, stitched_dem, rsc_dict
-    )
-    new_x_first, new_y_first = new_starts
-    new_rows, new_cols = new_sizes
-    # Now adjust the .dem.rsc data to reflect new top-left corner and new shape
-    rsc_dict["X_FIRST"] = new_x_first
-    rsc_dict["Y_FIRST"] = new_y_first
-    rsc_dict["FILE_LENGTH"] = new_rows
-    rsc_dict["WIDTH"] = new_cols
-
-    rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
+    stitched_dem = upsample.resample(stitched_dem, rsc_dict, bbox)
+    rsc_dict["X_FIRST"] = bbox[0]
+    rsc_dict["Y_FIRST"] = bbox[3]
+    rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]
+    rsc_dict["WIDTH"] = stitched_dem.shape[1]
 
     rsc_filename = output_name + ".rsc"
 
@@ -446,20 +413,30 @@ def main(
             )
             f.write(upsampled_rsc)
 
-        # Now upsample this by blocks
-        # Figure out size of row blocks to keep memory under 100 MB
-        nrows, ncols = stitched_dem.shape
-        block_rows = int(np.round(10e6 / ncols / 2, -2)) # round to 100s
-        logger.info("Upsampling by blocks of {} rows".format(block_rows))
-        upsample.upsample_by_blocks(
-            dem_filename_small,
-            output_name,
-            (nrows, ncols),
-            block_rows=block_rows,
-            dtype=dtype,
-            xrate=xrate,
-            yrate=yrate,
-        )
+        # Now upsample using with GDAL or python
+        if utils._gdal_installed_correctly():
+            logger.info("Using GDAL Translate for upsampling")
+            upsample.upsample_with_gdal(
+                dem_filename_small,
+                output_name,
+                method="bilinear",  # make this an option?
+                xrate=xrate,
+                yrate=yrate,
+            )
+        else:
+            # Figure out size of row blocks to keep memory under 100 MB
+            nrows, ncols = stitched_dem.shape
+            block_rows = int(np.round(10e6 / ncols / 2, -2))  # round to 100s
+            logger.info("Upsampling by blocks of {} rows".format(block_rows))
+            upsample.upsample_by_blocks(
+                dem_filename_small,
+                output_name,
+                (nrows, ncols),
+                block_rows=block_rows,
+                dtype=dtype,
+                xrate=xrate,
+                yrate=yrate,
+            )
         # Clean up the _small versions of dem and dem.rsc
         logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
         os.remove(dem_filename_small)
@@ -469,7 +446,14 @@ def main(
         logger.info("Creating ISCE2 XML file")
         utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
-    if keep_egm or data_source == "NASA_WATER":
+    if data_source == "NASA_WATER":
+        logger.info("Water mask requires no geoid correction.")
+        # Overwrite with smaller dtype for water mask
+        upsampled_dict = loading.load_dem_rsc(rsc_filename)
+        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
+        mask = np.fromfile(output_name, dtype=dtype).reshape((rows, cols))
+        mask.astype(bool).tofile(output_name)
+    elif keep_egm:
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
@@ -478,10 +462,3 @@ def main(
     # If the user wants the .rsc file to point to pixel center:
     if shift_rsc:
         utils.shift_rsc_file(rsc_filename, to_gdal=False)
-
-    # Overwrite with smaller dtype for water mask
-    if data_source == "NASA_WATER":
-        upsampled_dict = loading.load_dem_rsc(rsc_filename)
-        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
-        mask = np.fromfile(output_name, dtype=dtype).reshape((rows, cols))
-        mask.astype(bool).tofile(output_name)

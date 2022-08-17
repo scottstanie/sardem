@@ -121,4 +121,4 @@ def test_main_srtm(tmp_path):
         cache_dir=str(tmp_path),
     )
     output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-    np.testing.assert_allclose(expected[:-1, :-1], output)
+    np.testing.assert_allclose(expected[:-1, :-1], output, atol=1)

@@ -8,6 +8,39 @@ logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
 
 
+def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
+    """Perform upsampling on a raster using gdal
+
+    See here for available methods
+    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-r
+
+    Parameters
+    ----------
+    filename : str
+        Name of input file
+    outfile : str
+        Name of output file
+    method : str
+        Interpolation method to use, see above
+    xrate : int, optional.
+        Rate to upsample in the x/column direction
+        Default = 1, no upsampling
+    yrate : int, optional
+        Rate to upsample in the y/row direction
+        Default = 1, no upsampling
+    """
+    from osgeo import gdal
+
+    options = gdal.TranslateOptions(
+        format="ROI_PAC",
+        widthPct=xrate * 100,
+        heightPct=yrate * 100,
+        resampleAlg=method,
+        callback=gdal.TermProgress,
+    )
+    gdal.Translate(outfile, filename, options=options)
+
+
 def upsample_by_blocks(
     filename, outfile, input_shape, block_rows, dtype, xrate=1, yrate=1
 ):
@@ -37,7 +70,7 @@ def upsample_by_blocks(
 
     dtype = np.dtype(dtype)
     with open(outfile, "wb") as f:
-        for rows, _ in block_iterator(input_shape, block_shape):
+        for rows, _ in _block_iterator(input_shape, block_shape):
             offset = total_cols * rows[0] * dtype.itemsize
             cur_block_shape = (rows[1] - rows[0], total_cols)
             logging.info("Upsampling rows {}".format(rows))
@@ -93,7 +126,51 @@ def upsample(arr, xrate, yrate):
     return bilinear_interpolate(arr, xi, yi)
 
 
-def block_iterator(arr_shape, block_shape):
+def resample(arr, rsc_dict, bbox):
+    """Resample an array described by rsc_dict to a new bounding box"""
+    rdict_lower = {k.lower(): v for k, v in rsc_dict.items()}
+    x_first, x_step = rdict_lower["x_first"], rdict_lower["x_step"]
+    y_first, y_step = rdict_lower["y_first"], rdict_lower["y_step"]
+
+    # `bbox` should refer to the edges of the bounding box
+    # shift by half pixel so they point to the pixel centers for index finding
+    # hp = 0.5 * DEFAULT_RES  # half pixel
+    hp = x_step / 2
+    left, bot, right, top = bbox
+    left += hp
+    bot += hp
+    # Shift these two inward to be the final pixel centers
+    right -= hp
+    top -= hp
+
+    out_rows = int(round((bot - top) / y_step)) + 1
+    out_cols = int(round((right - left) / x_step)) + 1
+
+    xspan = x_step * (arr.shape[1] - 1)
+    yspan = y_step * (arr.shape[0] - 1)
+    x0, x1 = (left - x_first) / xspan, (right - x_first) / xspan
+    y0, y1 = (top - y_first) / yspan, (bot - y_first) / yspan
+
+    # if any(arg < 0 for arg in (left_idx, right_idx, top_idx, bot_idx)):
+    if any(arg < -1e-8 for arg in (x0, x1, y0, y1)):
+        raise ValueError(
+            "x_first/y_first ({}, {}) must be within the bbox {}".format(
+                x_first, y_first, bbox
+            )
+        )
+
+    rows, cols = arr.shape
+    xi = (cols - 1) * np.linspace(x0, x1, out_cols, endpoint=True).reshape((1, -1))
+    yi = (rows - 1) * np.linspace(y0, y1, out_rows, endpoint=True).reshape((-1, 1))
+    dtype = arr.dtype
+    resampled = bilinear_interpolate(arr.astype(float), xi, yi).astype(dtype)
+    if np.issubdtype(dtype, np.integer):
+        return np.round(resampled).astype(dtype)
+    else:
+        return resampled.astype(dtype)
+
+
+def _block_iterator(arr_shape, block_shape):
     """Iterator to get indexes for accessing blocks of a raster
 
     Args:
@@ -107,7 +184,7 @@ def block_iterator(arr_shape, block_shape):
         It will return the edges as smaller blocks, rather than skip them
 
     Examples:
-    >>> list(block_iterator((180, 250), (100, 100)))
+    >>> list(_block_iterator((180, 250), (100, 100)))
     [((0, 100), (0, 100)), ((0, 100), (100, 200)), ((0, 100), (200, 250)), \
 ((100, 180), (0, 100)), ((100, 180), (100, 200)), ((100, 180), (200, 250))]
     """
