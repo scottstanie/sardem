@@ -3,8 +3,9 @@
 
 # Don't add huge DEM data files
 *.hgt
-*.dem
+*.dem.*
 *.dem.rsc
+*.hdr
 
 # Directories for setup.py
 build
@@ -24,3 +25,4 @@ data/
 
 
 .ipynb_checkpoints
+.vscode

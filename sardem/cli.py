@@ -22,14 +22,17 @@ def positive_small_int(argstring):
         raise ArgumentTypeError("--rate must be positive integer < 50")
     return intval
 
-
 DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tiles, stitch together, then upsample.
 
+    The `--bbox` convention points to the *edges* of the [left, bottom, right, top]
+    pixels, following the "pixel is area" convention as used in gdal.
+    I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
+
     Usage Examples:
-        sardem --bbox -156 18.8 -154.7 20.3  # bounding box: left  bottom  right top
+        sardem --bbox -156 18.8 -154.7 20.3  # bounding box: [left  bottom  right top]
         sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
         sardem --bbox -156 18.8 -154.7 20.3 --data-source COP  # Copernicus DEM
         sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
@@ -71,7 +74,9 @@ def get_cli_args():
         metavar=("left", "bottom", "right", "top"),
         type=float,
         help="Bounding box of area of interest "
-        " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). ",
+        " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). \n"
+        "--bbox points to the *edges* of the pixels, \n"
+        " following the 'pixel is area' convention as used in gdal. ",
     )
     parser.add_argument(
         "--geojson",

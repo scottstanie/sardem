@@ -45,7 +45,7 @@ import os
 
 import numpy as np
 
-from sardem import conversions, loading, upsample_cy, utils
+from sardem import conversions, loading, upsample, utils
 from sardem.constants import DEFAULT_RES, NUM_PIXELS_SRTM1
 from sardem.download import Downloader, Tile
 
@@ -281,32 +281,6 @@ class Stitcher:
         return rsc_dict
 
 
-def crop_stitched_dem(bbox, stitched_dem, rsc_data):
-    """Takes the output of Stitcher.load_and_stitch, crops to bbox
-
-    Args:
-        bbox (tuple[float]): (left, bot, right, top) lats and lons of
-            desired bounding box for the DEM
-        stitched_dem (numpy.array, 2D): result from files
-            through Stitcher.load_and_stitch()
-        rsc_data (dict): data from .dem.rsc file, from Stitcher.create_dem_rsc
-
-    Returns:
-        numpy.array: a cropped version of the bigger stitched_dem
-    """
-    indexes, new_starts = utils.find_bounding_idxs(
-        bbox,
-        rsc_data["X_STEP"],
-        rsc_data["Y_STEP"],
-        rsc_data["X_FIRST"],
-        rsc_data["Y_FIRST"],
-    )
-    left_idx, bot_idx, right_idx, top_idx = indexes
-    cropped_dem = stitched_dem[top_idx:bot_idx, left_idx:right_idx]
-    new_sizes = cropped_dem.shape
-    return cropped_dem, new_starts, new_sizes
-
-
 def _float_is_on_bounds(x):
     return int(x) == x
 
@@ -337,7 +311,8 @@ def main(
         yrate (int): y-rate (rows) to upsample DEM (positive int)
         make_isce_xml (bool): whether to make an isce2-compatible XML file
         keep_egm (bool): Don't convert the DEM heights from geoid heights
-            above EGM96 or EGM2008 to heights above WGS84 ellipsoid (default = False)
+            above EGM96 or EGM2008 to heights above WGS84 ellipsoid 
+            (default = False: do the conversion)
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
             GDAL's convention of pixel edge). Default = False.
@@ -353,10 +328,10 @@ def main(
         raise ValueError("Must provide either bbox or geojson or wkt_file")
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
 
-    if all(_float_is_on_bounds(b) for b in bbox):
-        logger.info("Shifting bbox to nearest tile bounds")
-        bbox = utils.shift_integer_bbox(bbox)
-        logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
+    # if all(_float_is_on_bounds(b) for b in bbox):
+    #     logger.info("Shifting bbox to nearest tile bounds")
+    #     bbox = utils.shift_integer_bbox(bbox)
+    #     logger.info("New edge bounds: %s", " ".join(str(b) for b in bbox))
     # Now we're assuming that `bbox` refers to the edges of the desired bounding box
 
     # Print a warning if they're possibly requesting too-large a box by mistake
@@ -393,31 +368,25 @@ def main(
     s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
-    # Now create corresponding rsc file
-    rsc_dict = s.create_dem_rsc()
+    # Now create corresponding rsc file for all the tiles
+    rsc_dict_tiles = s.create_dem_rsc()
 
-    # Cropping: get very close to the bbox asked for:
     logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem, new_starts, new_sizes = crop_stitched_dem(
-        bbox, stitched_dem, rsc_dict
-    )
-    new_x_first, new_y_first = new_starts
-    new_rows, new_cols = new_sizes
-    # Now adjust the .dem.rsc data to reflect new top-left corner and new shape
-    rsc_dict["X_FIRST"] = new_x_first
-    rsc_dict["Y_FIRST"] = new_y_first
-    rsc_dict["FILE_LENGTH"] = new_rows
-    rsc_dict["WIDTH"] = new_cols
-
-    rsc_dict = utils.shift_rsc_dict(rsc_dict, to_gdal=True)
+    stitched_dem = upsample.resample(stitched_dem, rsc_dict_tiles, bbox)
+    rsc_dict = rsc_dict_tiles.copy()
+    rsc_dict["X_FIRST"] = bbox[0]
+    rsc_dict["Y_FIRST"] = bbox[3]
+    rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]
+    rsc_dict["WIDTH"] = stitched_dem.shape[1]
 
     rsc_filename = output_name + ".rsc"
 
     # Upsampling:
+    dtype = np.int16
     if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)
-        stitched_dem.astype(np.uint16).tofile(output_name)
+        stitched_dem.astype(dtype).tofile(output_name)
         logger.info("Writing .dem.rsc file to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
@@ -429,8 +398,7 @@ def main(
         rsc_filename_small = "small_" + rsc_filename
 
         logger.info("Writing non-upsampled dem temporarily to %s", dem_filename_small)
-        # Note: forcing to uint16 to simplify c-program loading
-        stitched_dem.astype(np.uint16).tofile(dem_filename_small)
+        stitched_dem.astype(dtype).tofile(dem_filename_small)
         logger.info(
             "Writing non-upsampled dem.rsc temporarily to %s", rsc_filename_small
         )
@@ -440,21 +408,35 @@ def main(
         # Redo a new .rsc file for it
         logger.info("Writing new upsampled dem.rsc to %s", rsc_filename)
         with open(rsc_filename, "w") as f:
-            upsampled_rsc = utils.upsample_dem_rsc(
+            upsampled_rsc = upsample.upsample_dem_rsc(
                 xrate=xrate, yrate=yrate, rsc_dict=rsc_dict
             )
             f.write(upsampled_rsc)
 
-        # Now upsample this block
-        nrows, ncols = stitched_dem.shape
-        upsample_cy.upsample_wrap(
-            dem_filename_small.encode("utf-8"),
-            xrate,
-            yrate,
-            ncols,
-            nrows,
-            output_name.encode(),
-        )
+        # Now upsample using with GDAL or python
+        if utils._gdal_installed_correctly():
+            logger.info("Using GDAL Translate for upsampling")
+            upsample.upsample_with_gdal(
+                dem_filename_small,
+                output_name,
+                method="bilinear",  # make this an option?
+                xrate=xrate,
+                yrate=yrate,
+            )
+        else:
+            # Figure out size of row blocks to keep memory under 100 MB
+            nrows, ncols = stitched_dem.shape
+            block_rows = int(np.round(10e6 / ncols / 2, -2))  # round to 100s
+            logger.info("Upsampling by blocks of {} rows".format(block_rows))
+            upsample.upsample_by_blocks(
+                dem_filename_small,
+                output_name,
+                (nrows, ncols),
+                block_rows=block_rows,
+                dtype=dtype,
+                xrate=xrate,
+                yrate=yrate,
+            )
         # Clean up the _small versions of dem and dem.rsc
         logger.info("Cleaning up %s and %s", dem_filename_small, rsc_filename_small)
         os.remove(dem_filename_small)
@@ -464,7 +446,14 @@ def main(
         logger.info("Creating ISCE2 XML file")
         utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
 
-    if keep_egm or data_source == "NASA_WATER":
+    if data_source == "NASA_WATER":
+        logger.info("Water mask requires no geoid correction.")
+        # Overwrite with smaller dtype for water mask
+        upsampled_dict = loading.load_dem_rsc(rsc_filename)
+        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
+        mask = np.fromfile(output_name, dtype=dtype).reshape((rows, cols))
+        mask.astype(bool).tofile(output_name)
+    elif keep_egm:
         logger.info("Keeping DEM as EGM96 geoid heights")
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
@@ -473,10 +462,3 @@ def main(
     # If the user wants the .rsc file to point to pixel center:
     if shift_rsc:
         utils.shift_rsc_file(rsc_filename, to_gdal=False)
-
-    # Overwrite with smaller dtype for water mask
-    if data_source == "NASA_WATER":
-        upsampled_dict = loading.load_dem_rsc(rsc_filename)
-        rows, cols = upsampled_dict["file_length"], upsampled_dict["width"]
-        mask = np.fromfile(output_name, dtype=np.int16).reshape((rows, cols))
-        mask.astype(bool).tofile(output_name)

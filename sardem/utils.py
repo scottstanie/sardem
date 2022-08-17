@@ -41,17 +41,6 @@ def get_cache_dir():
     return path
 
 
-def up_size(cur_size, rate):
-    """Calculates the number of points to be computed in the upsampling
-
-    Example: 3 points at x = (0, 1, 2), rate = 2 becomes 5 points:
-        x = (0, .5, 1, 1.5, 2)
-        >>> up_size(3, 2)
-        5
-    """
-    return int(floor(1 + (cur_size - 1) * rate))
-
-
 def floor_float(num, ndigits):
     """Like rounding to ndigits, but flooring
 
@@ -145,131 +134,6 @@ def coords(geojson):
     return geojson["coordinates"][0]
 
 
-def find_bounding_idxs(bbox, x_step, y_step, x_first, y_first):
-    """Finds the indices of stitched dem to crop bounding box
-
-    Also finds the new x_start and y_start after cropping.
-
-    Note: x_start, y_start could be different from bbox
-    if steps didnt exactly match, but should be further up and left
-
-    Args:
-        bbox (tuple[float]): (left,bottom,right,top) of bounding box
-        This refers to the *edges* of the box
-        x_step (float): step size in x direction
-        y_step (float): step size in y direction
-        x_first (float): x coordinate of first point in x direction
-            This refers to the *center* of the first pixel
-        y_first (float): y coordinate of first point in y direction
-            This refers to the *center* of the first pixel
-
-    Takes the desired bbox, .rsc data from stitched dem,
-    Examples:
-        >>> bbox = [-155.05, 19.05, -154.05, 20.05]
-        >>> x_step = 0.1
-        >>> y_step = -0.1
-        >>> x_first = -155
-        >>> y_first = 20.0
-        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
-        ((0, 10, 10, 0), (-155.0, 20.0))
-        >>> bbox[-1] -= 0.1
-        >>> print(find_bounding_idxs(bbox, x_step, y_step, x_first, y_first))
-        ((0, 10, 10, 1), (-155.0, 19.9))
-    """
-    # `bbox` should refer to the edges of the bounding box
-    # shift by half pixel so they point to the pixel centers for index finding
-    hp = 0.5 * DEFAULT_RES  # half pixel
-    left, bot, right, top = bbox
-    left += hp
-    bot += hp
-
-    # Shift these two inward to be the final pixel centers
-    right -= hp
-    top -= hp
-
-    left_idx = int(round((left - x_first) / x_step))
-    new_x_first = x_first + x_step * left_idx
-    right_idx = int(round((right - x_first) / x_step)) + 1
-
-    # Note: y_step will be negative for these
-    top_idx = int(round((top - y_first) / y_step))
-    new_y_first = y_first + y_step * top_idx  # Again: y_step negative
-    bot_idx = int(round((bot - y_first) / y_step)) + 1
-    if any(arg < 0 for arg in (left_idx, right_idx, top_idx, bot_idx)):
-        raise ValueError(
-            "x_first/y_first ({}, {}) must be within the bbox {}".format(
-                x_first, y_first, bbox
-            )
-        )
-    return (left_idx, bot_idx, right_idx, top_idx), (new_x_first, new_y_first)
-
-
-def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
-    if rsc_dict and rsc_filename:
-        raise ValueError("Can only give one of rsc_dict or rsc_filename")
-    elif not rsc_dict and not rsc_filename:
-        raise ValueError("Must give at least one of rsc_dict or rsc_filename")
-
-    if rsc_filename:
-        rsc_dict = loading.load_dem_rsc(rsc_filename)
-    return rsc_dict
-
-
-def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
-    """Creates a new .dem.rsc file for upsampled version
-
-    Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
-
-    Args:
-        xrate (int): rate in x direcion to upsample the DEM
-        yrate (int): rate in y direcion to upsample the DEM
-        rsc_dict (str): Optional, the rsc data from Stitcher.create_dem_rsc()
-        filepath (str): Optional, location of .dem.rsc file
-
-    Note: Must supply only one of rsc_dict or rsc_filename
-
-    Returns:
-        str: file same as original with upsample adjusted numbers
-
-    Raises:
-        TypeError: if neither (or both) rsc_filename and rsc_dict are given
-
-    """
-    if not xrate and not yrate:
-        raise ValueError("Must supply either xrate or yrate for upsampling")
-
-    rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
-
-    xrate = xrate or 1
-    yrate = yrate or 1
-    outstring = ""
-    for field, value in rsc_dict.items():
-        # Files seemed to be left justified with 13 spaces? Not sure why 13
-        # TODO: its 14- but fix this and previous formatting to be DRY
-        if field.lower() == "width":
-            new_size = up_size(value, xrate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() == "file_length":
-            new_size = up_size(value, yrate)
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
-        elif field.lower() == "x_step":
-            # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
-            value /= xrate
-            # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
-        elif field.lower() == "y_step":
-            value /= yrate
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
-        else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
-
-    return outstring
-
-
 def get_wkt_bbox(fname):
     try:
         from shapely import wkt
@@ -333,14 +197,14 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
     if to_gdal:
         # Move up+left half a pixel to represent the top left *edge* of the image
         new_first = {
-            "X_FIRST": x_first - 0.5 * x_step,
-            "Y_FIRST": y_first - 0.5 * y_step,
+            "X_FIRST": round(x_first - 0.5 * x_step, 9),
+            "Y_FIRST": round(y_first - 0.5 * y_step, 9),
         }
     else:
         # Move down+right half a pixel to represent the *center* of top left pixel
         new_first = {
-            "X_FIRST": x_first + 0.5 * x_step,
-            "Y_FIRST": y_first + 0.5 * y_step,
+            "X_FIRST": round(x_first + 0.5 * x_step, 9),
+            "Y_FIRST": round(y_first + 0.5 * y_step, 9),
         }
     rsc_dict.update(new_first)
 
@@ -373,7 +237,7 @@ def _gdal_installed_correctly():
         return False
 
 
-def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
+def gdal2isce_xml(fname, keep_egm=False):
     """
     Generate ISCE xml file from gdal supported file
 
@@ -464,10 +328,10 @@ def gdal2isce_xml(fname, keep_egm=False, using_gdal_bounds=True):
     first_lat = transform[3]
     delta_lat = transform[5]
     delta_lon = transform[1]
-    if using_gdal_bounds:
-        # We need to shift the `first________` values to the middle of the top left pixel
-        first_lon += 0.5 * delta_lon
-        first_lat += 0.5 * delta_lat
+    # We are using gdal conventions of the edges of the image for the bbox
+    # We need to shift the `first________` values to the middle of the top left pixel
+    first_lon += 0.5 * delta_lon
+    first_lat += 0.5 * delta_lat
 
     img.firstLongitude = round(first_lon, 9)  # rounding to avoid precision issues
     img.firstLatitude = round(first_lat, 9)

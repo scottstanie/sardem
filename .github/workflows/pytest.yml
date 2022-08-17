@@ -1,0 +1,34 @@
+# https://github.com/marketplace/actions/setup-miniconda#example-6-mamba
+# https://github.com/bopen/xarray-sentinel/blob/main/.github/workflows/on-push.yml
+name: Test installation with pytest
+
+# Build on every branch push, tag push, and pull request change:
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run tests with pytest
+    defaults:
+      run:
+        shell: bash -l {0}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Conda environment with Micromamba
+      uses: mamba-org/provision-with-micromamba@v12
+      with:
+        environment-file: environment.yml
+        environment-name: DEVELOP
+        channels: conda-forge
+        cache-env: true
+        cache-env-key: ubuntu-latest-3.10
+        extra-specs: |
+          python=3.10
+    - name: Install package
+      run: |
+        python -m pip install --no-deps -e .
+        python -m pip install -r requirements-dev.txt
+    - name: Run tests
+      run: |
+        pytest --doctest-modules -v

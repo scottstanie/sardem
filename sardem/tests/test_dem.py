@@ -1,22 +1,17 @@
-import gzip
 import os
 import shutil
 import tempfile
 import unittest
-import zipfile
 from os.path import dirname, join
 
 import numpy as np
-import pytest
 import responses
 
-from sardem import dem, download, loading, utils
-from sardem.constants import DEFAULT_RES
+from sardem import dem, download, utils
 
-HALF_PIXEL = 0.5 * DEFAULT_RES
 
-DATAPATH = join(dirname(__file__), "data")
-NETRC_PATH = join(DATAPATH, "netrc")
+DATA_PATH = join(dirname(__file__), "data")
+NETRC_PATH = join(DATA_PATH, "netrc")
 
 
 class TestNetrc(unittest.TestCase):
@@ -47,7 +42,7 @@ class TestDownload(unittest.TestCase):
         self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
-        sample_hgt_path = join(DATAPATH, self.test_tile + ".hgt.zip")
+        sample_hgt_path = join(DATA_PATH, self.test_tile + ".hgt.zip")
         with open(sample_hgt_path, "rb") as f:
             self.sample_hgt_zip = f.read()
 
@@ -70,66 +65,6 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         )
         d.download_all()
         self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
-
-
-class TestRsc:
-    rsc_path = join(DATAPATH, "elevation.dem.rsc")
-
-    def test_upsample_dem_rsc(self):
-        # Test input checking
-        with pytest.raises(ValueError):
-            utils.upsample_dem_rsc(
-                xrate=2,
-                rsc_dict={"something": 1},
-                rsc_filename=self.rsc_path,
-            )
-        with pytest.raises(ValueError):
-            utils.upsample_dem_rsc(xrate=2)
-
-        up_rsc = utils.upsample_dem_rsc(xrate=1, yrate=1, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         2
-FILE_LENGTH   3
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000138888888
-Y_STEP        -0.000138888888
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-        up_rsc = utils.upsample_dem_rsc(xrate=2, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         3
-FILE_LENGTH   3
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000069444444
-Y_STEP        -0.000138888888
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-
-        up_rsc = utils.upsample_dem_rsc(xrate=2, yrate=2, rsc_filename=self.rsc_path)
-        expected = """\
-WIDTH         3
-FILE_LENGTH   5
-X_FIRST       -155.676388889
-Y_FIRST       19.5755555567
-X_STEP        0.000069444444
-Y_STEP        -0.000069444444
-X_UNIT        degrees
-Y_UNIT        degrees
-Z_OFFSET      0
-Z_SCALE       1
-PROJECTION    LL
-"""
-        assert expected == up_rsc
 
 
 class TestBounds:
@@ -155,24 +90,14 @@ class TestBounds:
         ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
-def test_main_srtm(tmp_path):
-    bbox = [-156.0, 19.0, -155.0, 20.0]
-    path = join(DATAPATH, "N19W156.hgt.zip")
-    # tmpfile = tmp_path / "N19W156.hgt.zip"
-    unzipfile = tmp_path / "N19W156.hgt"
-    with zipfile.ZipFile(path, "r") as zip_ref:
-        with open(unzipfile, "wb") as f:
-            f.write(zip_ref.read("N19W156.hgt"))
-    expected = loading.load_elevation(unzipfile)
-    expected[expected < -1000] = 0
-
+def test_main_srtm(tmp_path, srtm_tile_path, srtm_tile, srtm_tile_bbox):
     tmp_output = tmp_path / "output.dem"
     dem.main(
         output_name=str(tmp_output),
-        bbox=bbox,
+        bbox=srtm_tile_bbox,
         keep_egm=True,
         data_source="NASA",
-        cache_dir=str(tmp_path),
+        cache_dir=str(srtm_tile_path.parent),
     )
     output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-    np.testing.assert_allclose(expected[:-1, :-1], output)
+    np.testing.assert_allclose(srtm_tile[:-1, :-1], output, atol=1)

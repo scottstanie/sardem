@@ -36,7 +36,7 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
     xsize, ysize = _get_size(filename)
     cmd = (
         'gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}'
-        ' -of ENVI -ts {xsize} {ysize} '
+        ' -of ROI_PAC -ts {xsize} {ysize} '
         ' -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}'
     )
     cmd = cmd.format(

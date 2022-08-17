@@ -1,7 +1,6 @@
-nose
-cython
+pytest
+build
 twine
-coveralls
 responses
 mock
 sphinx
