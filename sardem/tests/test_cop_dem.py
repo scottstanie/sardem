@@ -7,16 +7,16 @@ from sardem import cop_dem, utils
 from sardem.constants import DEFAULT_RES
 
 HALF_PIXEL = 0.5 * DEFAULT_RES
-DATAPATH = os.path.join(os.path.dirname(__file__), "data")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
 
 def _write_absolute_vrt():
     # <SourceFilename relativeToVRT="0">/vsizip/{data_path}/cop_tile_hawaii.dem.zip/cop_tile_hawaii.dem</SourceFilename>
-    template = os.path.join(DATAPATH, "N10_W160.vrt.template")
+    template = os.path.join(DATA_PATH, "N10_W160.vrt.template")
     output_filename = template.replace(".template", "")
     with open(template, "r") as f:
         vrt = f.read()
-    vrt = vrt.format(data_path=DATAPATH)
+    vrt = vrt.format(data_path=DATA_PATH)
     with open(output_filename, "w") as f:
         f.write(vrt)
     return output_filename
@@ -41,12 +41,12 @@ def test_main_cop(tmp_path):
         bbox=bbox,
         keep_egm=True,
         # Point to shrunk version of VRT to avoid downloading
-        vrt_filename=os.path.join(DATAPATH, "cop_global.vrt"),
+        vrt_filename=os.path.join(DATA_PATH, "cop_global.vrt"),
     )
     output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
 
     # Get the expected output
-    path = os.path.join(DATAPATH, "cop_tile_hawaii.dem.zip")
+    path = os.path.join(DATA_PATH, "cop_tile_hawaii.dem.zip")
     unzipfile = tmp_path / "cop_tile_hawaii.dem"
     with zipfile.ZipFile(path, "r") as zip_ref:
         with open(unzipfile, "wb") as f:

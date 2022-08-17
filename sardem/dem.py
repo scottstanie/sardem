@@ -364,16 +364,16 @@ def main(
 
     d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
     local_filenames = d.download_all()
-    print(local_filenames)
 
     s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
     stitched_dem = s.load_and_stitch()
 
     # Now create corresponding rsc file for all the tiles
-    rsc_dict = s.create_dem_rsc()
+    rsc_dict_tiles = s.create_dem_rsc()
 
     logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem = upsample.resample(stitched_dem, rsc_dict, bbox)
+    stitched_dem = upsample.resample(stitched_dem, rsc_dict_tiles, bbox)
+    rsc_dict = rsc_dict_tiles.copy()
     rsc_dict["X_FIRST"] = bbox[0]
     rsc_dict["Y_FIRST"] = bbox[3]
     rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]

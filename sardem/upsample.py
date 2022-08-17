@@ -163,7 +163,7 @@ def resample(arr, rsc_dict, bbox):
     xi = (cols - 1) * np.linspace(x0, x1, out_cols, endpoint=True).reshape((1, -1))
     yi = (rows - 1) * np.linspace(y0, y1, out_rows, endpoint=True).reshape((-1, 1))
     dtype = arr.dtype
-    resampled = bilinear_interpolate(arr.astype(float), xi, yi).astype(dtype)
+    resampled = bilinear_interpolate(arr.astype(float), xi, yi)
     if np.issubdtype(dtype, np.integer):
         return np.round(resampled).astype(dtype)
     else:

@@ -2,19 +2,16 @@ import os
 import shutil
 import tempfile
 import unittest
-import zipfile
 from os.path import dirname, join
 
 import numpy as np
 import responses
 
-from sardem import dem, download, loading, utils
-from sardem.constants import DEFAULT_RES
+from sardem import dem, download, utils
 
-HALF_PIXEL = 0.5 * DEFAULT_RES
 
-DATAPATH = join(dirname(__file__), "data")
-NETRC_PATH = join(DATAPATH, "netrc")
+DATA_PATH = join(dirname(__file__), "data")
+NETRC_PATH = join(DATA_PATH, "netrc")
 
 
 class TestNetrc(unittest.TestCase):
@@ -45,7 +42,7 @@ class TestDownload(unittest.TestCase):
         self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/\
 SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
-        sample_hgt_path = join(DATAPATH, self.test_tile + ".hgt.zip")
+        sample_hgt_path = join(DATA_PATH, self.test_tile + ".hgt.zip")
         with open(sample_hgt_path, "rb") as f:
             self.sample_hgt_zip = f.read()
 
@@ -93,32 +90,14 @@ class TestBounds:
         ) == ((-156.0, 18.7, -154.6, 20.3))
 
 
-def test_main_srtm(tmp_path):
-    # $ rio bounds --bbox ~/.cache/sardem/N19W156.hgt
-    # [-156.0001388888889, 18.99986111111111, -154.99986111111113, 20.000138888888888]
-    # but dropping the bottom row and right column of pixels to make 3600x3600
-    bbox = [
-        -156.0 - HALF_PIXEL,
-        19.0 + HALF_PIXEL,
-        -155.0 - HALF_PIXEL,
-        20.0 + HALF_PIXEL,
-    ]
-    path = join(DATAPATH, "N19W156.hgt.zip")
-    # tmpfile = tmp_path / "N19W156.hgt.zip"
-    unzipfile = tmp_path / "N19W156.hgt"
-    with zipfile.ZipFile(path, "r") as zip_ref:
-        with open(unzipfile, "wb") as f:
-            f.write(zip_ref.read("N19W156.hgt"))
-    expected = loading.load_elevation(unzipfile)
-    expected[expected < -1000] = 0
-
+def test_main_srtm(tmp_path, srtm_tile_path, srtm_tile, srtm_tile_bbox):
     tmp_output = tmp_path / "output.dem"
     dem.main(
         output_name=str(tmp_output),
-        bbox=bbox,
+        bbox=srtm_tile_bbox,
         keep_egm=True,
         data_source="NASA",
-        cache_dir=str(tmp_path),
+        cache_dir=str(srtm_tile_path.parent),
     )
     output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
-    np.testing.assert_allclose(expected[:-1, :-1], output, atol=1)
+    np.testing.assert_allclose(srtm_tile[:-1, :-1], output, atol=1)
