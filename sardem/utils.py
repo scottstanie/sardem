@@ -197,14 +197,14 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
     if to_gdal:
         # Move up+left half a pixel to represent the top left *edge* of the image
         new_first = {
-            "X_FIRST": x_first - 0.5 * x_step,
-            "Y_FIRST": y_first - 0.5 * y_step,
+            "X_FIRST": round(x_first - 0.5 * x_step, 9),
+            "Y_FIRST": round(y_first - 0.5 * y_step, 9),
         }
     else:
         # Move down+right half a pixel to represent the *center* of top left pixel
         new_first = {
-            "X_FIRST": x_first + 0.5 * x_step,
-            "Y_FIRST": y_first + 0.5 * y_step,
+            "X_FIRST": round(x_first + 0.5 * x_step, 9),
+            "Y_FIRST": round(y_first + 0.5 * y_step, 9),
         }
     rsc_dict.update(new_first)
 
