@@ -297,6 +297,8 @@ def main(
     keep_egm=False,
     shift_rsc=False,
     cache_dir=None,
+    output_type="int16",
+    output_format="ENVI",
 ):
     """Function for entry point to create a DEM with `sardem`
 
@@ -317,6 +319,8 @@ def main(
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
             GDAL's convention of pixel edge). Default = False.
         cache_dir (str): directory to cache downloaded tiles
+        output_type (str): output type for DEM (default = int16)
+        output_format (str): output format for copernicus DEM (default = ENVI)
     """
     if bbox is None:
         if geojson:
@@ -353,6 +357,8 @@ def main(
             keep_egm=keep_egm,
             xrate=xrate,
             yrate=yrate,
+            output_format=output_format,
+            output_type=output_type,
         )
         if make_isce_xml:
             logger.info("Creating ISCE2 XML file")
@@ -382,7 +388,7 @@ def main(
     rsc_filename = output_name + ".rsc"
 
     # Upsampling:
-    dtype = np.int16
+    dtype = np.dtype(output_type.lower())
     if xrate == 1 and yrate == 1:
         logger.info("Rate = 1: No upsampling to do")
         logger.info("Writing DEM to %s", output_name)

@@ -148,6 +148,21 @@ def get_cli_args():
             "Location to save downloaded files (Default = {})".format(utils.get_cache_dir())
         ),
     )
+    parser.add_argument(
+        "--output-format",
+        "-of",
+        choices=["ENVI", "GTiff", "ROI_PAC"],
+        default="ENVI",
+        help="Output format (for copernicus DEM option, default %(default)s)."
+    )
+    parser.add_argument(
+        "--output-type",
+        "-ot",
+        choices=["int16", "float32"],
+        type=str.lower,
+        default="int16",
+        help="Output data type (default %(default)s)."
+    )
     return parser.parse_args()
 
 
@@ -177,7 +192,9 @@ def cli():
         bbox = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     elif args.bbox:
         bbox = args.bbox
-
+    else:
+        bbox = None
+    
     if not args.output:
         output = (
             "watermask.wbd" if args.data_source == "NASA_WATER" else "elevation.dem"
@@ -197,4 +214,6 @@ def cli():
         keep_egm=args.keep_egm,
         shift_rsc=args.shift_rsc,
         cache_dir=args.cache_dir,
+        output_format=args.output_format,
+        output_type=args.output_type,
     )

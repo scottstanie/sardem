@@ -14,7 +14,14 @@ utils.set_logger_handler(logger)
 
 
 def download_and_stitch(
-    output_name, bbox, keep_egm=False, xrate=1, yrate=1, vrt_filename=None
+    output_name,
+    bbox,
+    keep_egm=False,
+    xrate=1,
+    yrate=1,
+    vrt_filename=None,
+    output_format="ENVI",
+    output_type="int16"
 ):
     """Download the COP DEM from AWS.
 
@@ -42,21 +49,21 @@ def download_and_stitch(
         t_srs = s_srs = None
     else:
         code = conversions.EPSG_CODES["egm08"]
-        s_srs = 'epsg:4326+{}'.format(code)
-        t_srs = 'epsg:4326'
+        s_srs = "epsg:4326+{}".format(code)
+        t_srs = "epsg:4326"
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
     resamp = "bilinear" if (xrate > 1 or yrate > 1) else "nearest"
 
     # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
-        format="ENVI",
+        format=output_format,
         outputBounds=bbox,
         dstSRS=t_srs,
         srcSRS=s_srs,
         xRes=xres,
         yRes=yres,
-        outputType=gdal.GDT_Int16,
+        outputType=gdal.GetDataTypeByName(output_type.title()),
         resampleAlg=resamp,
         multithread=True,
         warpMemoryLimit=5000,
