@@ -22,6 +22,7 @@ def positive_small_int(argstring):
         raise ArgumentTypeError("--rate must be positive integer < 50")
     return intval
 
+
 DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
 
     Pick a lat/lon bounding box for a DEM, and it will download
@@ -145,7 +146,9 @@ def get_cli_args():
     parser.add_argument(
         "--cache-dir",
         help=(
-            "Location to save downloaded files (Default = {})".format(utils.get_cache_dir())
+            "Location to save downloaded files (Default = {})".format(
+                utils.get_cache_dir()
+            )
         ),
     )
     parser.add_argument(
@@ -153,15 +156,15 @@ def get_cli_args():
         "-of",
         choices=["ENVI", "GTiff", "ROI_PAC"],
         default="ENVI",
-        help="Output format (for copernicus DEM option, default %(default)s)."
+        help="Output format (for copernicus DEM option, default %(default)s).",
     )
     parser.add_argument(
         "--output-type",
         "-ot",
-        choices=["int16", "float32"],
+        choices=["int16", "float32", "uint8"],
         type=str.lower,
         default="int16",
-        help="Output data type (default %(default)s)."
+        help="Output data type (default %(default)s).",
     )
     return parser.parse_args()
 
@@ -194,13 +197,17 @@ def cli():
         bbox = args.bbox
     else:
         bbox = None
-    
+
     if not args.output:
         output = (
-            "watermask.wbd" if args.data_source == "NASA_WATER" else "elevation.dem"
+            "watermask.flg" if args.data_source == "NASA_WATER" else "elevation.dem"
         )
     else:
         output = args.output
+
+    # Force the water mask to be uint8
+    if args.data_source == "NASA_WATER":
+        args.output_type = "uint8"
 
     sardem.dem.main(
         output_name=output,

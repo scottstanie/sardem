@@ -18,7 +18,7 @@ RSC_KEY_TYPES = [
 ]
 RSC_KEYS = [tup[0] for tup in RSC_KEY_TYPES]
 
-# in case only speciying rows/cols/steps, these always seem to be same
+# in case only specifying rows/cols/steps, these always seem to be same
 DEFAULT_KEYS = {
     "x_unit": "degrees",
     "y_unit": "degrees",
