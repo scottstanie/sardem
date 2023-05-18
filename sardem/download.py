@@ -367,10 +367,9 @@ class Downloader:
         shape = (3601, 3601)
         if self.data_source == "NASA_WATER":
             dtype = np.uint8
-            data = np.ones(shape, dtype=dtype) * 255
         else:
             dtype = np.int16
-            data = np.zeros(shape, dtype=dtype)
+        data = np.zeros(shape, dtype=dtype)
         data.tofile(local_filename)
 
     def download_all(self):
