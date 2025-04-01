@@ -72,9 +72,8 @@ conda install -c conda-forge "gdal>=3.4.2"
 The full options for the command line tool in `sardem/cli.py` can be found using
 
 ```
-$ sardem -h
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm] [--shift-rsc]
-              [--cache-dir CACHE_DIR]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm]
+              [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
 Stiches SRTM .hgt files to make (upsampled) DEM
@@ -121,15 +120,18 @@ options:
   --output OUTPUT, -o OUTPUT
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
   --data-source {NASA,NASA_WATER,COP}, -d {NASA,NASA_WATER,COP}
-                        Source of DEM data (default NASA). See README for more.
+                        Source of DEM data (default COP). See README for more.
   -isce, --make-isce-xml
                         Make an isce2 XML file for the DEM.
   --keep-egm            Keep the DEM heights as geoid heights above EGM96 or EGM2008. Default is to convert to WGS84 for InSAR processing.
   --shift-rsc           Shift the .rsc file by half a pixel so that X_FIRST and Y_FIRST are at the pixel center (instead of GDAL's convention of the top left edge). Default is GDAL's top-left edge convention.
   --cache-dir CACHE_DIR
                         Location to save downloaded files (Default = /Users/staniewi/.cache/sardem)
+  --output-format {ENVI,GTiff,ROI_PAC}, -of {ENVI,GTiff,ROI_PAC}
+                        Output format (for copernicus DEM option, default GTiff).
+  --output-type {int16,float32,uint8}, -ot {int16,float32,uint8}
+                        Output data type (default float32).
 ```
-
 
 ## NASA SRTM Data access
 

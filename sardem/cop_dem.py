@@ -20,8 +20,8 @@ def download_and_stitch(
     xrate=1,
     yrate=1,
     vrt_filename=None,
-    output_format="ENVI",
-    output_type="int16"
+    output_format="GTiff",
+    output_type="float32",
 ):
     """Download the COP DEM from AWS.
 

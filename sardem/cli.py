@@ -1,6 +1,7 @@
 """
 Command line interface for running sardem
 """
+
 import json
 from argparse import (
     ArgumentError,
@@ -117,7 +118,7 @@ def get_cli_args():
         "-d",
         choices=Downloader.VALID_SOURCES,
         type=str.upper,
-        default="NASA",
+        default="COP",
         help="Source of DEM data (default %(default)s). See README for more.",
     )
     parser.add_argument(
@@ -155,7 +156,7 @@ def get_cli_args():
         "--output-format",
         "-of",
         choices=["ENVI", "GTiff", "ROI_PAC"],
-        default="ENVI",
+        default="GTiff  ",
         help="Output format (for copernicus DEM option, default %(default)s).",
     )
     parser.add_argument(
@@ -163,7 +164,7 @@ def get_cli_args():
         "-ot",
         choices=["int16", "float32", "uint8"],
         type=str.lower,
-        default="int16",
+        default="float32",
         help="Output data type (default %(default)s).",
     )
     return parser.parse_args()
@@ -179,7 +180,7 @@ def cli():
             "Can only use one type of bounding box specifier: (left_lon top_lat dlon dlat) "
             ", --geojson, --bbox, or --wkt-file",
         )
-    # Need all 4 positionals, or the --geosjon
+    # Need all 4 positionals, or the --geojson
     elif (
         any(a is None for a in (args.left_lon, args.top_lat, args.dlon, args.dlat))
         and not args.geojson
