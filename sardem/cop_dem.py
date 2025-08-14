@@ -105,6 +105,7 @@ def download_and_stitch(
             }
         )
 
+        warp_opts = {"XSCALE": 1, "YSCALE": 1, "APPLY_VERTICAL_SHIFT": True}
         with rasterio.open(output_name, "w", **profile) as dst:
             for i in range(1, src.count + 1):
                 rasterio.warp.reproject(
@@ -116,6 +117,7 @@ def download_and_stitch(
                     dst_crs=t_srs if t_srs is not None else src.crs,
                     resampling=resample_alg,
                     num_threads=4,
+                    **warp_opts,
                 )
     return
 
