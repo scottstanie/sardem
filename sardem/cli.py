@@ -30,7 +30,7 @@ DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
     the necessary SRTM1 tiles, stitch together, then upsample.
 
     The `--bbox` convention points to the *edges* of the [left, bottom, right, top]
-    pixels, following the "pixel is area" convention as used in gdal.
+    pixels, following the "pixel is area" convention as used in rasterio.
     I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 
     Usage Examples:
@@ -78,7 +78,7 @@ def get_cli_args():
         help="Bounding box of area of interest "
         " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). \n"
         "--bbox points to the *edges* of the pixels, \n"
-        " following the 'pixel is area' convention as used in gdal. ",
+        " following the 'pixel is area' convention as used in rasterio. ",
     )
     parser.add_argument(
         "--geojson",

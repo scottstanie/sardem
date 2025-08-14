@@ -24,6 +24,15 @@ pip install sardem
 ```
 This creates the command line executable `sardem`
 
+Using `uv`:
+```bash
+uv add sardem
+```
+You can also run the `sardem` command line tool using `uvx`:
+```bash
+uvx sardem --help
+```
+
 Alternatively, you can clone to build/install:
 
 ```bash
@@ -32,40 +41,22 @@ cd sardem
 # Install requirements using either pip or conda
 # conda install -c conda-forge --file environment.yml
 # pip install -r requirements.txt
-# the conda environment.yml is more complete, as GDAL is required for some of the functionality
+# the conda environment.yml is more complete, as rasterio is required for some of the functionality
 pip install -e .
 ```
 which will run `pip install --upgrade .` and create the command line script.
-
 
 ## Data sources
 The default data source, `--data-source NASA`, uses the SRTM 1 arcsecond data. You can also use the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). 
 To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
-**Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
-For the Copernicus data, the minimum required GDAL version is 3.4.2; versions earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
-
+**Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **rasterio is required**.
+For the Copernicus data, rasterio >= 1.0.0 is required for coordinate transformations and data warping.
 
 ## Bounding box convention
 
 `sardem` uses the gdal convention ("pixel is area") where `--bbox` points to the *edges* of the [left, bottom, right, top] pixels.
 I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
-
-
-
-### Converting to WGS84 ellipsoidal heights from EGM96/EGM2008 geoid heights
-
-GDAL is required for the conversion, which is installed when using `conda install -c conda-forge sardem`.
-If you already are using an existing environment, make sure that the GDAL version is >=3.4.2.
-
-```bash 
-conda install -c conda-forge "gdal>=3.4.2"
-
-# or
-# conda install -c conda-forge mamba
-# mamba install -c conda-forge "gdal>=3.4.2"
-```
-
 
 ## Command Line Interface
 
@@ -83,7 +74,7 @@ Stiches SRTM .hgt files to make (upsampled) DEM
     the necessary SRTM1 tiles, stitch together, then upsample.
 
     The `--bbox` convention points to the *edges* of the [left, bottom, right, top]
-    pixels, following the "pixel is area" convention as used in gdal.
+    pixels, following the "pixel is area" convention as used in rasterio.
     I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 
     Usage Examples:

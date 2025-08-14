@@ -318,7 +318,7 @@ def main(
             (default = False: do the conversion)
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
-            GDAL's convention of pixel edge). Default = False.
+            rasterio's convention of pixel edge). Default = False.
         cache_dir (str): directory to cache downloaded tiles
         output_type (str): output type for DEM (default = int16)
         output_format (str): output format for copernicus DEM (default = ENVI)
@@ -347,9 +347,10 @@ def main(
         )
         logger.warning("Are the bounds correct (left, bottom, right, top)?")
 
-    # For copernicus, use GDAL to warp from the VRT
+    # For copernicus, use rasterio to warp from the VRT
     if data_source == "COP":
-        utils._gdal_installed_correctly()
+        if not utils._rasterio_available():
+            raise ImportError("rasterio is required for Copernicus DEM processing")
         from sardem import cop_dem
 
         cop_dem.download_and_stitch(

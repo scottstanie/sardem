@@ -4,7 +4,7 @@ from __future__ import division, print_function
 
 import logging
 import os
-import subprocess
+import importlib.util
 import sys
 from math import floor
 
@@ -155,8 +155,8 @@ def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
     is needed to create a .rsc file in GDAL convention.
 
     See here for geotransform info
-    https://gdal.org/user/raster_data_model.html#affine-geotransform
-    GDAL standard is to reference a raster by its top left edges,
+    https://rasterio.readthedocs.io/en/latest/topics/georeferencing.html
+    rasterio standard is to reference a raster by its top left edges,
     while some SAR processors use the middle of a pixel.
 
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
@@ -182,8 +182,8 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
     is needed to create a .rsc file in GDAL convention.
 
     See here for geotransform info
-    https://gdal.org/user/raster_data_model.html#affine-geotransform
-    GDAL standard is to reference a raster by its top left edges,
+    https://rasterio.readthedocs.io/en/latest/topics/georeferencing.html
+    rasterio standard is to reference a raster by its top left edges,
     while some SAR processors use the middle of a pixel.
 
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
@@ -226,16 +226,9 @@ def get_output_size(bounds, xrate, yrate):
     return rows, cols
 
 
-def _gdal_installed_correctly():
-    cmd = "gdalinfo --help-general"
-    # cmd = "gdalinfo -h"
-    try:
-        subprocess.check_output(cmd, shell=True)
-        return True
-    except subprocess.CalledProcessError:
-        logger.error("GDAL command failed to run.", exc_info=True)
-        logger.error("Check GDAL installation.")
-        return False
+def _rasterio_available():
+    """Check if rasterio is available"""
+    return importlib.util.find_spec("rasterio") is not None
 
 
 def gdal2isce_xml(fname, keep_egm=False):
@@ -246,7 +239,8 @@ def gdal2isce_xml(fname, keep_egm=False):
              from applications.gdal2isce_xml import gdal2isce_xml
              xml_file = gdal2isce_xml(fname+'.vrt')
     """
-    _gdal_installed_correctly()
+    if not _rasterio_available():
+        raise ImportError("rasterio is required for XML generation")
     import rasterio
 
     try:
