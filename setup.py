@@ -25,7 +25,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering",
         "Intended Audience :: Science/Research",
     ],
-    install_requires=["numpy", "requests"],
+    install_requires=["numpy", "requests", "rasterio>=1.0.0"],
     entry_points={
         "console_scripts": [
             "sardem=sardem.cli:cli",

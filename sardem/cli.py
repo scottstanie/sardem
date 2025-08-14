@@ -1,6 +1,7 @@
 """
 Command line interface for running sardem
 """
+
 import json
 from argparse import (
     ArgumentError,

@@ -88,6 +88,7 @@ def load_watermask(filename):
     https://lpdaac.usgs.gov/products/srtmswbdv003/
     """
     import numpy as np
+
     return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601))
 
 

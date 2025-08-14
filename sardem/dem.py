@@ -37,6 +37,7 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
         Z_SCALE       1
         PROJECTION    LL
 """
+
 from __future__ import division, print_function
 
 import collections
@@ -313,7 +314,7 @@ def main(
         yrate (int): y-rate (rows) to upsample DEM (positive int)
         make_isce_xml (bool): whether to make an isce2-compatible XML file
         keep_egm (bool): Don't convert the DEM heights from geoid heights
-            above EGM96 or EGM2008 to heights above WGS84 ellipsoid 
+            above EGM96 or EGM2008 to heights above WGS84 ellipsoid
             (default = False: do the conversion)
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
@@ -419,17 +420,17 @@ def main(
             )
             f.write(upsampled_rsc)
 
-        # Now upsample using with GDAL or python
-        if utils._gdal_installed_correctly():
-            logger.info("Using GDAL Translate for upsampling")
-            upsample.upsample_with_gdal(
+        # Now upsample using rasterio or python
+        try:
+            logger.info("Using rasterio for upsampling")
+            upsample.upsample_with_rasterio(
                 dem_filename_small,
                 output_name,
                 method="bilinear",  # make this an option?
                 xrate=xrate,
                 yrate=yrate,
             )
-        else:
+        except Exception:
             # Figure out size of row blocks to keep memory under 100 MB
             nrows, ncols = stitched_dem.shape
             block_rows = int(np.round(10e6 / ncols / 2, -2))  # round to 100s
@@ -464,7 +465,7 @@ def main(
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
         conversions.convert_dem_to_wgs84(output_name, geoid="egm96")
- 
+
     # If the user wants the .rsc file to point to pixel center:
     if shift_rsc:
         utils.shift_rsc_file(rsc_filename, to_gdal=False)

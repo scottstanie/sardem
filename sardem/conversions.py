@@ -35,9 +35,9 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
     # We want it to match the input file
     xsize, ysize = _get_size(filename)
     cmd = (
-        'gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}'
-        ' -of ROI_PAC -ts {xsize} {ysize} '
-        ' -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}'
+        "gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}"
+        " -of ROI_PAC -ts {xsize} {ysize} "
+        " -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}"
     )
     cmd = cmd.format(
         inp=filename,
@@ -59,12 +59,11 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
 
 
 def _get_size(filename):
-    """Retrieve the raster size from a gdal-readable file"""
-    from osgeo import gdal
+    """Retrieve the raster size from a rasterio-readable file"""
+    import rasterio
 
-    ds = gdal.Open(filename)
-    xsize, ysize = ds.RasterXSize, ds.RasterYSize
-    ds = None
+    with rasterio.open(filename) as ds:
+        xsize, ysize = ds.width, ds.height
     return xsize, ysize
 
 

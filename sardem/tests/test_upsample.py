@@ -38,7 +38,7 @@ def test_resample():
     }
     bbox = (1, 1, 4, 4)
     a_resampled = upsample.resample(a, rsc_dict_mid, bbox)
-    assert_allclose(expected, a_resampled) 
+    assert_allclose(expected, a_resampled)
 
     bbox = (0.5, 0.5, 4.5, 4.5)
     a_resampled = upsample.resample(a, rsc_dict_mid, bbox)
@@ -58,6 +58,7 @@ def test_resample_tile(srtm_tile, srtm_tile_bbox):
     tile_resamp = upsample.resample(srtm_tile, rsc_dict_srtm, srtm_tile_bbox)
     # should be the exact same
     assert_allclose(srtm_tile[:-1, :-1], tile_resamp)
+
 
 def test_upsample_dem_rsc():
     rsc_path = os.path.join(os.path.dirname(__file__), "data", "elevation.dem.rsc")
