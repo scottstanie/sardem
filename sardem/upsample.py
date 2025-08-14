@@ -8,11 +8,8 @@ logger = logging.getLogger("sardem")
 utils.set_logger_handler(logger)
 
 
-def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
-    """Perform upsampling on a raster using gdal
-
-    See here for available methods
-    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-r
+def upsample_with_rasterio(filename, outfile, method="cubic", xrate=1, yrate=1):
+    """Perform upsampling on a raster using rasterio
 
     Parameters
     ----------
@@ -21,7 +18,7 @@ def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
     outfile : str
         Name of output file
     method : str
-        Interpolation method to use, see above
+        Interpolation method to use (cubic, bilinear, nearest, etc.)
     xrate : int, optional.
         Rate to upsample in the x/column direction
         Default = 1, no upsampling
@@ -29,16 +26,53 @@ def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
         Rate to upsample in the y/row direction
         Default = 1, no upsampling
     """
-    from osgeo import gdal
+    import rasterio
+    from rasterio.enums import Resampling
+    from rasterio.warp import reproject
 
-    options = gdal.TranslateOptions(
-        format="ROI_PAC",
-        widthPct=xrate * 100,
-        heightPct=yrate * 100,
-        resampleAlg=method,
-        callback=gdal.TermProgress,
-    )
-    gdal.Translate(outfile, filename, options=options)
+    # Map method names to rasterio resampling methods
+    resampling_methods = {
+        "cubic": Resampling.cubic,
+        "bilinear": Resampling.bilinear,
+        "nearest": Resampling.nearest,
+        "lanczos": Resampling.lanczos,
+        "average": Resampling.average,
+    }
+
+    resample_alg = resampling_methods.get(method.lower(), Resampling.cubic)
+
+    with rasterio.open(filename) as src:
+        # Calculate new dimensions
+        new_width = int(src.width * xrate)
+        new_height = int(src.height * yrate)
+
+        # Calculate new transform
+        new_transform = src.transform * src.transform.scale(
+            (src.width / new_width), (src.height / new_height)
+        )
+
+        # Create output profile
+        profile = src.profile.copy()
+        profile.update(
+            {
+                "driver": "ENVI",  # ROI_PAC equivalent
+                "height": new_height,
+                "width": new_width,
+                "transform": new_transform,
+            }
+        )
+
+        with rasterio.open(outfile, "w", **profile) as dst:
+            for i in range(1, src.count + 1):
+                reproject(
+                    source=rasterio.band(src, i),
+                    destination=rasterio.band(dst, i),
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=new_transform,
+                    dst_crs=src.crs,
+                    resampling=resample_alg,
+                )
 
 
 def upsample_by_blocks(

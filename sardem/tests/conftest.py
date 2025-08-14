@@ -9,6 +9,7 @@ from sardem.constants import DEFAULT_RES
 HALF_PIXEL = 0.5 * DEFAULT_RES
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
+
 @pytest.fixture
 def srtm_tile_path(tmp_path):
     return tmp_path / "N19W156.hgt"
@@ -23,6 +24,7 @@ def srtm_tile(srtm_tile_path):
     expected = loading.load_elevation(srtm_tile_path)
     expected[expected < -1000] = 0
     return expected
+
 
 @pytest.fixture
 def srtm_tile_bbox():

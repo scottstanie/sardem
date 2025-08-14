@@ -1,9 +1,10 @@
 """utils.py: extra helper functions"""
+
 from __future__ import division, print_function
 
 import logging
 import os
-import subprocess
+import importlib.util
 import sys
 from math import floor
 
@@ -154,8 +155,8 @@ def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
     is needed to create a .rsc file in GDAL convention.
 
     See here for geotransform info
-    https://gdal.org/user/raster_data_model.html#affine-geotransform
-    GDAL standard is to reference a raster by its top left edges,
+    https://rasterio.readthedocs.io/en/latest/topics/georeferencing.html
+    rasterio standard is to reference a raster by its top left edges,
     while some SAR processors use the middle of a pixel.
 
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
@@ -181,8 +182,8 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
     is needed to create a .rsc file in GDAL convention.
 
     See here for geotransform info
-    https://gdal.org/user/raster_data_model.html#affine-geotransform
-    GDAL standard is to reference a raster by its top left edges,
+    https://rasterio.readthedocs.io/en/latest/topics/georeferencing.html
+    rasterio standard is to reference a raster by its top left edges,
     while some SAR processors use the middle of a pixel.
 
     `to_gdal`=True means it moves the X_FIRST, Y_FIRST up and left half a pixel.
@@ -225,16 +226,9 @@ def get_output_size(bounds, xrate, yrate):
     return rows, cols
 
 
-def _gdal_installed_correctly():
-    cmd = "gdalinfo --help-general"
-    # cmd = "gdalinfo -h"
-    try:
-        subprocess.check_output(cmd, shell=True)
-        return True
-    except subprocess.CalledProcessError:
-        logger.error("GDAL command failed to run.", exc_info=True)
-        logger.error("Check GDAL installation.")
-        return False
+def _rasterio_available():
+    """Check if rasterio is available"""
+    return importlib.util.find_spec("rasterio") is not None
 
 
 def gdal2isce_xml(fname, keep_egm=False):
@@ -245,8 +239,9 @@ def gdal2isce_xml(fname, keep_egm=False):
              from applications.gdal2isce_xml import gdal2isce_xml
              xml_file = gdal2isce_xml(fname+'.vrt')
     """
-    _gdal_installed_correctly()
-    from osgeo import gdal
+    if not _rasterio_available():
+        raise ImportError("rasterio is required for XML generation")
+    import rasterio
 
     try:
         import isce  # noqa
@@ -255,17 +250,17 @@ def gdal2isce_xml(fname, keep_egm=False):
         logger.error("isce2 not installed. Cannot generate xml file.")
         raise
 
-    # open the GDAL file and get typical data informationi
-    GDAL2ISCE_DATATYPE = {
-        1: "BYTE",
-        2: "uint16",
-        3: "SHORT",
-        4: "uint32",
-        5: "INT",
-        6: "FLOAT",
-        7: "DOUBLE",
-        10: "CFLOAT",
-        11: "complex128",
+    # open the rasterio file and get typical data information
+    RASTERIO2ISCE_DATATYPE = {
+        "uint8": "BYTE",
+        "uint16": "uint16",
+        "int16": "SHORT",
+        "uint32": "uint32",
+        "int32": "INT",
+        "float32": "FLOAT",
+        "float64": "DOUBLE",
+        "complex64": "CFLOAT",
+        "complex128": "complex128",
     }
 
     # check if the input file is a vrt
@@ -276,25 +271,21 @@ def gdal2isce_xml(fname, keep_egm=False):
         outname = fname
     logger.info("Writing to %s", outname)
 
-    # open the GDAL file and get typical ds information
-    ds = gdal.Open(fname, gdal.GA_ReadOnly)
-    width = ds.RasterXSize
-    length = ds.RasterYSize
-    bands = ds.RasterCount
-    logger.info("width:       " + "\t" + str(width))
-    logger.info("length:      " + "\t" + str(length))
-    logger.info("num of bands:" + "\t" + str(bands))
+    # open the rasterio file and get typical dataset information
+    with rasterio.open(fname) as ds:
+        width = ds.width
+        length = ds.height
+        bands = ds.count
+        logger.info("width:       " + "\t" + str(width))
+        logger.info("length:      " + "\t" + str(length))
+        logger.info("num of bands:" + "\t" + str(bands))
 
-    # getting the datatype information
-    raster = ds.GetRasterBand(1)
-    dataTypeGdal = raster.DataType
+        # getting the datatype information
+        dataType = RASTERIO2ISCE_DATATYPE.get(str(ds.dtypes[0]), str(ds.dtypes[0]))
+        logger.info("dataType: " + "\t" + str(dataType))
 
-    # user look-up dictionary from gdal to isce format
-    dataType = GDAL2ISCE_DATATYPE[dataTypeGdal]
-    logger.info("dataType: " + "\t" + str(dataType))
-
-    # transformation contains gridcorners (lines/pixels or lonlat and the spacing 1/-1 or deltalon/deltalat)
-    transform = ds.GetGeoTransform()
+        # transformation contains gridcorners (lines/pixels or lonlat and the spacing 1/-1 or deltalon/deltalat)
+        transform = ds.transform
     # if a complex data type, then create complex image
     # if a real data type, then create a regular image
 
@@ -307,28 +298,18 @@ def gdal2isce_xml(fname, keep_egm=False):
     img.dataType = dataType
 
     # interleave
-    md = ds.GetMetadata("IMAGE_STRUCTURE")
-    sch = md.get("INTERLEAVE", None)
-    if sch == "LINE":
-        img.scheme = "BIL"
-    elif sch == "PIXEL":
+    if bands < 2:
+        logger.info("Single band, using BIP")
         img.scheme = "BIP"
-    elif sch == "BAND":
-        img.scheme = "BSQ"
     else:
-        logger.info("Unrecognized interleaving scheme, {}".format(sch))
-        if bands < 2:
-            logger.info("Assuming default, BIP")
-            img.scheme = "BIP"
-        else:
-            logger.info("Assuming default, BSQ")
-            img.scheme = "BSQ"
+        logger.info("Multi-band, using BSQ")
+        img.scheme = "BSQ"
 
-    first_lon = transform[0]
-    first_lat = transform[3]
-    delta_lat = transform[5]
-    delta_lon = transform[1]
-    # We are using gdal conventions of the edges of the image for the bbox
+    first_lon = transform.c
+    first_lat = transform.f
+    delta_lat = transform.e
+    delta_lon = transform.a
+    # We are using rasterio conventions of the edges of the image for the bbox
     # We need to shift the `first________` values to the middle of the top left pixel
     first_lon += 0.5 * delta_lon
     first_lat += 0.5 * delta_lat

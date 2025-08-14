@@ -2,7 +2,7 @@ channels:
 - conda-forge
 dependencies:
 - python >= 3.6
-- gdal >= 3.4.2
+- rasterio >= 1.0.0
 - numpy >= 1.14.2
 - requests >= 2.20.0
 - pip

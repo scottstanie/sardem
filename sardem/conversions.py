@@ -30,26 +30,41 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
     # Target srs: WGS84 horizontal/vertical
     t_srs = '"epsg:4326"'
 
-    # Note: https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-tr
-    # If not specified, gdalwarp will generate an output raster with xsize=ysize
-    # We want it to match the input file
+    # Use rasterio for coordinate system transformation
+    import rasterio
+    from rasterio.warp import reproject, Resampling
+
     xsize, ysize = _get_size(filename)
-    cmd = (
-        'gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}'
-        ' -of ROI_PAC -ts {xsize} {ysize} '
-        ' -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}'
-    )
-    cmd = cmd.format(
-        inp=filename,
-        out=output,
-        overwrite="-overwrite" if overwrite else "",
-        xsize=xsize,
-        ysize=ysize,
-        s_srs=s_srs,
-        t_srs=t_srs,
-    )
-    logger.info(cmd)
-    subprocess.run(cmd, check=True, shell=True)
+
+    with rasterio.open(filename) as src:
+        # Create output profile
+        profile = src.profile.copy()
+        profile.update(
+            {
+                "driver": "ENVI",  # ROI_PAC equivalent
+                "crs": t_srs.strip('"'),
+                "width": xsize,
+                "height": ysize,
+            }
+        )
+
+        if not overwrite and os.path.exists(output):
+            logger.warning("Output file {} exists and overwrite=False".format(output))
+            return output
+
+        logger.info("Converting {} from {} to {}".format(filename, s_srs, t_srs))
+        with rasterio.open(output, "w", **profile) as dst:
+            for i in range(1, src.count + 1):
+                reproject(
+                    source=rasterio.band(src, i),
+                    destination=rasterio.band(dst, i),
+                    src_transform=src.transform,
+                    src_crs=s_srs.strip('"'),
+                    dst_transform=dst.transform,
+                    dst_crs=t_srs.strip('"'),
+                    resampling=Resampling.nearest,
+                    num_threads=4,
+                )
 
     if copy_rsc:
         rsc_file = filename + ".rsc"
@@ -59,23 +74,19 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
 
 
 def _get_size(filename):
-    """Retrieve the raster size from a gdal-readable file"""
-    from osgeo import gdal
+    """Retrieve the raster size from a rasterio-readable file"""
+    import rasterio
 
-    ds = gdal.Open(filename)
-    xsize, ysize = ds.RasterXSize, ds.RasterYSize
-    ds = None
+    with rasterio.open(filename) as ds:
+        xsize, ysize = ds.width, ds.height
     return xsize, ysize
 
 
 def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
     """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights
 
-    Overwrites file, requires GDAL to be installed
+    Overwrites file, uses rasterio for conversion
     """
-    if not utils._gdal_installed_correctly():
-        logger.error("GDAL required to convert DEM to WGS84")
-        return
 
     path_, fname = os.path.split(dem_filename)
     rsc_filename = os.path.join(path_, fname + ".rsc")
