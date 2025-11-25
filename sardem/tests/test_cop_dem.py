@@ -46,7 +46,6 @@ def test_main_cop(tmp_path):
     )
     with rio.open(tmp_output) as src:
         output = src.read(1)
-    # output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
 
     # Get the expected output
     path = os.path.join(DATA_PATH, "cop_tile_hawaii.dem.zip")
