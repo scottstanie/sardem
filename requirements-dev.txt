@@ -6,3 +6,4 @@ mock
 sphinx
 m2r
 sphinx_rtd_theme
+rasterio
