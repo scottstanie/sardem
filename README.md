@@ -156,3 +156,17 @@ machine urs.earthdata.nasa.gov
     login USERNAME
     password PASSWORD
 ```
+
+## Citations and Acknowledgments
+
+### Copernicus DEM
+
+When using the Copernicus DEM data (default `--data-source COP`), please cite the dataset using the following DOI:
+
+**https://doi.org/10.5270/ESA-c5d3d65**
+
+And include the following attribution notice:
+
+> © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
+
+For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
