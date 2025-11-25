@@ -39,7 +39,7 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source, `--data-source NASA`, uses the SRTM 1 arcsecond data. You can also use the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). 
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data. 
 To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 

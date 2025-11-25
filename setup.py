@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sardem",
-    version="0.11.3",
+    version="0.12.0",
     author="Scott Staniewicz",
     author_email="scott.stanie@gmail.com",
-    description="Create upsampled DEMs for InSAR processing",
+    description="Download and crop DEMs for InSAR processing",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/scottstanie/sardem",
