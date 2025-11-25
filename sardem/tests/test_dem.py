@@ -97,6 +97,8 @@ def test_main_srtm(tmp_path, srtm_tile_path, srtm_tile, srtm_tile_bbox):
         bbox=srtm_tile_bbox,
         keep_egm=True,
         data_source="NASA",
+        output_type="int16",
+        output_format="ENVI",
         cache_dir=str(srtm_tile_path.parent),
     )
     output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)

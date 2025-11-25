@@ -39,7 +39,7 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source, `--data-source NASA`, uses the SRTM 1 arcsecond data. You can also use the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). 
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data. 
 To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
@@ -71,13 +71,16 @@ conda install -c conda-forge "gdal>=3.4.2"
 
 The full options for the command line tool in `sardem/cli.py` can be found using
 
+```bash
+sardem --help
 ```
-$ sardem -h
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm] [--shift-rsc]
-              [--cache-dir CACHE_DIR]
+
+```bash
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm]
+              [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
-Stiches SRTM .hgt files to make (upsampled) DEM
+Download and stitch DEM data for local InSAR processing.
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tiles, stitch together, then upsample.
@@ -121,19 +124,23 @@ options:
   --output OUTPUT, -o OUTPUT
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
   --data-source {NASA,NASA_WATER,COP}, -d {NASA,NASA_WATER,COP}
-                        Source of DEM data (default NASA). See README for more.
+                        Source of DEM data (default COP). See README for more.
   -isce, --make-isce-xml
                         Make an isce2 XML file for the DEM.
   --keep-egm            Keep the DEM heights as geoid heights above EGM96 or EGM2008. Default is to convert to WGS84 for InSAR processing.
   --shift-rsc           Shift the .rsc file by half a pixel so that X_FIRST and Y_FIRST are at the pixel center (instead of GDAL's convention of the top left edge). Default is GDAL's top-left edge convention.
   --cache-dir CACHE_DIR
                         Location to save downloaded files (Default = /Users/staniewi/.cache/sardem)
+  --output-format {ENVI,GTiff,ROI_PAC}, -of {ENVI,GTiff,ROI_PAC}
+                        Output format (for copernicus DEM option, default GTiff).
+  --output-type {int16,float32,uint8}, -ot {int16,float32,uint8}
+                        Output data type (default float32).
 ```
-
 
 ## NASA SRTM Data access
 
-The default data source is NASA's Shuttle Radar Topography Mission (SRTM) version 3 global 1 degree data.
+NASA's Shuttle Radar Topography Mission (SRTM) version 3 global 1 degree data is available with `--data-source NASA`.
+This was the original default data source prior to version 0.12.0, but can still be selected explicitly.
 See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003 .
 The data is valid outside of arctic regions (-60 to 60 degrees latitude), and is zeros over open ocean.
 
@@ -149,3 +156,17 @@ machine urs.earthdata.nasa.gov
     login USERNAME
     password PASSWORD
 ```
+
+## Citations and Acknowledgments
+
+### Copernicus DEM
+
+When using the Copernicus DEM data (default `--data-source COP`), please cite the dataset using the following DOI:
+
+**https://doi.org/10.5270/ESA-c5d3d65**
+
+And include the following attribution notice:
+
+> © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
+
+For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM

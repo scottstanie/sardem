@@ -37,6 +37,7 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
         Z_SCALE       1
         PROJECTION    LL
 """
+
 from __future__ import division, print_function
 
 import collections
@@ -297,8 +298,8 @@ def main(
     keep_egm=False,
     shift_rsc=False,
     cache_dir=None,
-    output_type="int16",
-    output_format="ENVI",
+    output_type="float32",
+    output_format="GTiff",
 ):
     """Function for entry point to create a DEM with `sardem`
 
@@ -313,7 +314,7 @@ def main(
         yrate (int): y-rate (rows) to upsample DEM (positive int)
         make_isce_xml (bool): whether to make an isce2-compatible XML file
         keep_egm (bool): Don't convert the DEM heights from geoid heights
-            above EGM96 or EGM2008 to heights above WGS84 ellipsoid 
+            above EGM96 or EGM2008 to heights above WGS84 ellipsoid
             (default = False: do the conversion)
         shift_rsc (bool): Shift the .dem.rsc file down/right so that the
             X_FIRST and Y_FIRST values represent the pixel *center* (instead of
@@ -366,6 +367,12 @@ def main(
         return
 
     # If using SRTM, download tiles manually and stitch
+    if output_format != "ENVI":
+        logger.warning(
+            "NASA data source only supports ENVI format. Ignoring output_format=%s",
+            output_format,
+        )
+
     tile_names = list(Tile(*bbox).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
@@ -464,7 +471,7 @@ def main(
     else:
         logger.info("Correcting DEM to heights above WGS84 ellipsoid")
         conversions.convert_dem_to_wgs84(output_name, geoid="egm96")
- 
+
     # If the user wants the .rsc file to point to pixel center:
     if shift_rsc:
         utils.shift_rsc_file(rsc_filename, to_gdal=False)

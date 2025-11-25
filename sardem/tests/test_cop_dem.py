@@ -2,8 +2,9 @@ import os
 import zipfile
 
 import numpy as np
+import rasterio as rio
 
-from sardem import cop_dem, utils
+from sardem import cop_dem
 from sardem.constants import DEFAULT_RES
 
 HALF_PIXEL = 0.5 * DEFAULT_RES
@@ -33,17 +34,19 @@ def test_main_cop(tmp_path):
         -155.0 - HALF_PIXEL,
         20.0 + HALF_PIXEL,
     ]
-    tmp_output = tmp_path / "output.dem"
+    tmp_output = tmp_path / "output.dem.tif"
     temp_absolute_vrt = _write_absolute_vrt()
 
     cop_dem.download_and_stitch(
         output_name=str(tmp_output),
         bbox=bbox,
         keep_egm=True,
+        output_type="int16",
         # Point to shrunk version of VRT to avoid downloading
         vrt_filename=os.path.join(DATA_PATH, "cop_global.vrt"),
     )
-    output = np.fromfile(tmp_output, dtype=np.int16).reshape(3600, 3600)
+    with rio.open(tmp_output) as src:
+        output = src.read(1)
 
     # Get the expected output
     path = os.path.join(DATA_PATH, "cop_tile_hawaii.dem.zip")
