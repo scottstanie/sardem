@@ -41,6 +41,7 @@ def test_main_cop(tmp_path):
         output_name=str(tmp_output),
         bbox=bbox,
         keep_egm=True,
+        output_type="int16",
         # Point to shrunk version of VRT to avoid downloading
         vrt_filename=os.path.join(DATA_PATH, "cop_global.vrt"),
     )

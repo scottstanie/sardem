@@ -367,6 +367,12 @@ def main(
         return
 
     # If using SRTM, download tiles manually and stitch
+    if output_format != "ENVI":
+        logger.warning(
+            "NASA data source only supports ENVI format. Ignoring output_format=%s",
+            output_format,
+        )
+
     tile_names = list(Tile(*bbox).srtm1_tile_names())
 
     d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)

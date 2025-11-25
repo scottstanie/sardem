@@ -71,12 +71,16 @@ conda install -c conda-forge "gdal>=3.4.2"
 
 The full options for the command line tool in `sardem/cli.py` can be found using
 
+```bash
+sardem --help
 ```
+
+```bash
 usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm]
               [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
-Stiches SRTM .hgt files to make (upsampled) DEM
+Download and stitch DEM data for local InSAR processing.
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tiles, stitch together, then upsample.
@@ -135,7 +139,8 @@ options:
 
 ## NASA SRTM Data access
 
-The default data source is NASA's Shuttle Radar Topography Mission (SRTM) version 3 global 1 degree data.
+NASA's Shuttle Radar Topography Mission (SRTM) version 3 global 1 degree data is available with `--data-source NASA`.
+This was the original default data source prior to version 0.12.0, but can still be selected explicitly.
 See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003 .
 The data is valid outside of arctic regions (-60 to 60 degrees latitude), and is zeros over open ocean.
 

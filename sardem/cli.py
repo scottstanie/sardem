@@ -24,7 +24,7 @@ def positive_small_int(argstring):
     return intval
 
 
-DESCRIPTION = """Stiches SRTM .hgt files to make (upsampled) DEM
+DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
 
     Pick a lat/lon bounding box for a DEM, and it will download
     the necessary SRTM1 tiles, stitch together, then upsample.
@@ -156,8 +156,8 @@ def get_cli_args():
         "--output-format",
         "-of",
         choices=["ENVI", "GTiff", "ROI_PAC"],
-        default="GTiff  ",
-        help="Output format (for copernicus DEM option, default %(default)s).",
+        default="GTiff",
+        help="Output format (default %(default)s). Used for COP data; NASA data always outputs ENVI format.",
     )
     parser.add_argument(
         "--output-type",
