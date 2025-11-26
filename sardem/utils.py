@@ -7,6 +7,8 @@ import subprocess
 import sys
 from math import floor
 
+import numpy as np
+
 from sardem import loading
 from sardem.constants import DEFAULT_RES
 
@@ -380,3 +382,101 @@ def _add_reference_datum(xml_file, keep_egm=False):
     root.append(ref)
     tree.write(xml_file)
     return xml_file
+
+
+def check_dateline(bbox):
+    """
+    Split a bounding box if it crosses the dateline.
+
+    Parameters
+    ----------
+    bbox : tuple of float
+        Bounding box as (left, bottom, right, top) in degrees.
+        left and right are longitude values, bottom and top are latitude values.
+
+    Returns
+    -------
+    list of tuples
+        A list containing: the input bbox if it didn't cross the dateline, or
+        two bboxes otherwise (one on either side of the dateline).
+
+    Notes
+    -----
+    When a bbox crosses the dateline, the longitude coordinates are "unwrapped"
+    so any resultant bbox is split at the dateline. For example:
+    - Input: (170, -10, -170, 10) means from 170°E to 170°W (crossing dateline)
+    - Output: [(170, -10, 180, 10), (-180, -10, -170, 10)]
+    """
+    try:
+        import shapely.ops
+        import shapely.wkt
+        from shapely.geometry import box, LinearRing, Polygon
+    except ImportError:
+        logger.warning("shapely not installed, dateline crossing not supported")
+        return [bbox]
+
+    left, bottom, right, top = bbox
+
+    # Normalize longitudes to -180 to 180 range first
+    while left > 180:
+        left -= 360
+    while left < -180:
+        left += 360
+    while right > 180:
+        right -= 360
+    while right < -180:
+        right += 360
+
+    # Check if bbox crosses the dateline
+    # Two cases:
+    # 1. right < left (e.g., 170 to -170 would be written as [170, -10, -170, 10])
+    # 2. The original bbox (before normalization) spans more than 180 degrees
+    original_right = bbox[2]
+    original_left = bbox[0]
+    spans_dateline = (
+        right < left or (original_right - original_left) > 180.0 or original_right > 180
+    )
+
+    if spans_dateline:
+        logger.info("Detected dateline crossing in bbox")
+
+        # Normalize the coordinates: unwrap so everything is 0-360
+        left_unwrapped = left if left >= 0 else left + 360
+        right_unwrapped = right if right >= 0 else right + 360
+
+        # Handle the case where right is less than left after normalization
+        if right_unwrapped < left_unwrapped:
+            right_unwrapped += 360
+
+        # Now split at the dateline (180 degrees)
+        dateline = shapely.wkt.loads('LINESTRING(180.0 -90.0, 180.0 90.0)')
+
+        # Create polygon with unwrapped coordinates
+        poly = box(left_unwrapped, bottom, right_unwrapped, top)
+
+        # Split the polygon at the dateline
+        merged_lines = shapely.ops.linemerge([dateline, poly.exterior])
+        border_lines = shapely.ops.unary_union(merged_lines)
+        decomp = shapely.ops.polygonize(border_lines)
+
+        polys = list(decomp)
+        bboxes = []
+
+        for poly in polys:
+            x_coords, y_coords = poly.exterior.coords.xy
+            x_min, x_max = min(x_coords), max(x_coords)
+            y_min, y_max = min(y_coords), max(y_coords)
+
+            # Wrap back to -180 to 180 range if needed
+            if x_min > 180:
+                x_min -= 360
+            if x_max > 180:
+                x_max -= 360
+
+            bboxes.append((x_min, y_min, x_max, y_max))
+
+        logger.info("Split bbox into {} boxes: {}".format(len(bboxes), bboxes))
+        return bboxes
+    else:
+        # No dateline crossing
+        return [bbox]

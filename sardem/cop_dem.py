@@ -32,18 +32,97 @@ def download_and_stitch(
         https://spacedata.copernicus.eu/web/cscda/dataset-details?articleId=394198
         https://copernicus-dem-30m.s3.amazonaws.com/readme.html
     """
+    import os
+    import tempfile
+
     from osgeo import gdal
 
     gdal.UseExceptions()
-    # TODO: does downloading make it run any faster?
-    # if download_vrt:
-    #     cache_dir = utils.get_cache_dir()
-    #     vrt_filename = os.path.join(cache_dir, "cop_global.vrt")
-    #     if not os.path.exists(vrt_filename):
-    #         make_cop_vrt(vrt_filename)
-    # else:
+
     if vrt_filename is None:
         vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
+
+    # Check for dateline crossing
+    bboxes = utils.check_dateline(bbox)
+
+    if len(bboxes) == 1:
+        # No dateline crossing, proceed normally
+        _download_single_bbox(
+            output_name,
+            bbox,
+            vrt_filename,
+            keep_egm,
+            xrate,
+            yrate,
+            output_format,
+            output_type,
+        )
+    else:
+        # Dateline crossing detected, download each bbox separately and merge
+        logger.info(
+            "Dateline crossing detected, downloading {} separate regions".format(
+                len(bboxes)
+            )
+        )
+
+        temp_files = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Download each bbox separately
+            for idx, sub_bbox in enumerate(bboxes):
+                temp_file = os.path.join(tmpdir, "dem_part_{}.tif".format(idx))
+                temp_files.append(temp_file)
+                logger.info("Downloading region {} of {}".format(idx + 1, len(bboxes)))
+                _download_single_bbox(
+                    temp_file,
+                    sub_bbox,
+                    vrt_filename,
+                    keep_egm,
+                    xrate,
+                    yrate,
+                    "GTiff",  # Always use GTiff for intermediate files
+                    output_type,
+                )
+
+            # Merge the temporary files into a VRT, then translate to final format
+            logger.info("Merging {} regions into final DEM".format(len(temp_files)))
+            vrt_temp = os.path.join(tmpdir, "merged.vrt")
+            gdal.BuildVRT(vrt_temp, temp_files)
+
+            # Translate to final format if needed
+            if output_format == "GTiff":
+                # Just use gdal.Warp to handle the merging properly
+                gdal.Warp(
+                    output_name,
+                    vrt_temp,
+                    options=gdal.WarpOptions(
+                        format=output_format,
+                        multithread=True,
+                        callback=gdal.TermProgress,
+                    ),
+                )
+            else:
+                gdal.Translate(
+                    output_name,
+                    vrt_temp,
+                    format=output_format,
+                    callback=gdal.TermProgress,
+                )
+
+    return
+
+
+def _download_single_bbox(
+    output_name,
+    bbox,
+    vrt_filename,
+    keep_egm,
+    xrate,
+    yrate,
+    output_format,
+    output_type,
+):
+    """Download a single bbox from the COP DEM (helper function)"""
+    from osgeo import gdal
 
     if keep_egm:
         t_srs = s_srs = None
@@ -55,7 +134,6 @@ def download_and_stitch(
     yres = DEFAULT_RES / yrate
     resamp = "bilinear" if (xrate > 1 or yrate > 1) else "nearest"
 
-    # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
         format=output_format,
         outputBounds=bbox,
@@ -70,7 +148,6 @@ def download_and_stitch(
         warpOptions=["NUM_THREADS=4"],
     )
 
-    # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
     logger.info("Fetching remote tiles...")
     try:
@@ -82,10 +159,10 @@ def download_and_stitch(
         logger.info("Running gdal.Warp with options:")
         logger.info(option_dict)
         pass
+
     # Now convert to something GDAL can actually use
     option_dict["callback"] = gdal.TermProgress
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
-    return
 
 
 def _gdal_cmd_from_options(src, dst, option_dict):
