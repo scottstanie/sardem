@@ -13,6 +13,9 @@ dist
 *.egg-info
 .eggs
 
+# Auto-generated version file
+sardem/_version.py
+
 *.log
 *.sql
 

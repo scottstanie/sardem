@@ -15,7 +15,7 @@ def test_shift_integer_bbox():
 
 
 def test_get_file_bbox(tmp_path):
-    """Test extracting bounding box from a raster file"""
+    """Test extracting bounding box from a raster file."""
     # Create a small dummy GeoTIFF with known bounds
     test_bounds = (-155.5, 19.2, -155.0, 19.6)  # small area, < 1 degree
     width, height = 100, 100
@@ -44,7 +44,7 @@ def test_get_file_bbox(tmp_path):
 
 
 def test_buffer_bbox():
-    """Test buffering a bounding box"""
+    """Test buffering a bounding box."""
     bbox = (-155.5, 19.2, -155.0, 19.6)  # left, bottom, right, top
     buffer = 0.1
 
@@ -56,7 +56,7 @@ def test_buffer_bbox():
 
 
 def test_buffer_bbox_negative():
-    """Test shrinking a bounding box with negative buffer"""
+    """Test shrinking a bounding box with negative buffer."""
     bbox = (-155.5, 19.2, -155.0, 19.6)  # left, bottom, right, top
     buffer = -0.05  # negative to shrink
 
@@ -68,7 +68,7 @@ def test_buffer_bbox_negative():
 
 
 def test_buffer_bbox_zero():
-    """Test that zero buffer returns unchanged bbox"""
+    """Test that zero buffer returns unchanged bbox."""
     bbox = (-155.5, 19.2, -155.0, 19.6)
     result = utils.buffer_bbox(bbox, 0.0)
     assert result == pytest.approx(bbox)

@@ -15,7 +15,7 @@ def _write_absolute_vrt():
     # <SourceFilename relativeToVRT="0">/vsizip/{data_path}/cop_tile_hawaii.dem.zip/cop_tile_hawaii.dem</SourceFilename>
     template = os.path.join(DATA_PATH, "N10_W160.vrt.template")
     output_filename = template.replace(".template", "")
-    with open(template, "r") as f:
+    with open(template) as f:
         vrt = f.read()
     vrt = vrt.format(data_path=DATA_PATH)
     with open(output_filename, "w") as f:
@@ -51,9 +51,8 @@ def test_main_cop(tmp_path):
     # Get the expected output
     path = os.path.join(DATA_PATH, "cop_tile_hawaii.dem.zip")
     unzipfile = tmp_path / "cop_tile_hawaii.dem"
-    with zipfile.ZipFile(path, "r") as zip_ref:
-        with open(unzipfile, "wb") as f:
-            f.write(zip_ref.read("cop_tile_hawaii.dem"))
+    with zipfile.ZipFile(path, "r") as zip_ref, open(unzipfile, "wb") as f:
+        f.write(zip_ref.read("cop_tile_hawaii.dem"))
     expected = np.fromfile(unzipfile, dtype=np.int16).reshape(3600, 3600)
 
     np.testing.assert_allclose(expected, output, atol=1.0)

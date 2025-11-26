@@ -31,6 +31,7 @@ def download_and_stitch(
     References:
         https://spacedata.copernicus.eu/web/cscda/dataset-details?articleId=394198
         https://copernicus-dem-30m.s3.amazonaws.com/readme.html
+
     """
     from osgeo import gdal
 
@@ -43,35 +44,35 @@ def download_and_stitch(
     #         make_cop_vrt(vrt_filename)
     # else:
     if vrt_filename is None:
-        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
+        vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"
 
     if keep_egm:
         t_srs = s_srs = None
     else:
         code = conversions.EPSG_CODES["egm08"]
-        s_srs = "epsg:4326+{}".format(code)
+        s_srs = f"epsg:4326+{code}"
         t_srs = "epsg:4326"
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
     resamp = "bilinear" if (xrate > 1 or yrate > 1) else "nearest"
 
     # access_mode = "overwrite" if overwrite else None
-    option_dict = dict(
-        format=output_format,
-        outputBounds=bbox,
-        dstSRS=t_srs,
-        srcSRS=s_srs,
-        xRes=xres,
-        yRes=yres,
-        outputType=gdal.GetDataTypeByName(output_type.title()),
-        resampleAlg=resamp,
-        multithread=True,
-        warpMemoryLimit=5000,
-        warpOptions=["NUM_THREADS=4"],
-    )
+    option_dict = {
+        "format": output_format,
+        "outputBounds": bbox,
+        "dstSRS": t_srs,
+        "srcSRS": s_srs,
+        "xRes": xres,
+        "yRes": yres,
+        "outputType": gdal.GetDataTypeByName(output_type.title()),
+        "resampleAlg": resamp,
+        "multithread": True,
+        "warpMemoryLimit": 5000,
+        "warpOptions": ["NUM_THREADS=4"],
+    }
 
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
-    logger.info("Creating {}".format(output_name))
+    logger.info(f"Creating {output_name}")
     logger.info("Fetching remote tiles...")
     try:
         cmd = _gdal_cmd_from_options(vrt_filename, output_name, option_dict)
@@ -81,7 +82,6 @@ def download_and_stitch(
         # Can't form the cli version due to `deepcopy` Pickle error, just skip
         logger.info("Running gdal.Warp with options:")
         logger.info(option_dict)
-        pass
     # Now convert to something GDAL can actually use
     option_dict["callback"] = gdal.TermProgress
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
@@ -99,12 +99,12 @@ def _gdal_cmd_from_options(src, dst, option_dict):
     for idx, o in enumerate(opt_list):
         # Wrap the srs option in quotes
         if o.endswith("srs"):
-            out_opt_list[idx + 1] = '"{}"'.format(out_opt_list[idx + 1])
+            out_opt_list[idx + 1] = f'"{out_opt_list[idx + 1]}"'
     return "gdalwarp {} {} {}".format(src, dst, " ".join(out_opt_list))
 
 
 def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
-    """Build a VRT from the Copernicus GLO 30m DEM COG dataset
+    """Build a VRT from the Copernicus GLO 30m DEM COG dataset.
 
     Note: this is a large VRT file, ~15MB, so it can many hours to build.
     """
@@ -120,14 +120,14 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
         resolution="highest",
         outputSRS="EPSG:4326+3855",
     )
-    logger.info("Building VRT {}".format(outname))
+    logger.info(f"Building VRT {outname}")
     vrt_file = gdal.BuildVRT(outname, url_list, options=vrt_options)
     vrt_file.FlushCache()
     vrt_file = None
 
 
 def get_tile_list():
-    """Get the list of tiles from the Copernicus DEM 30m tile list"""
+    """Get the list of tiles from the Copernicus DEM 30m tile list."""
     logger.info("Getting list of COP tiles from %s", TILE_LIST_URL)
     r = requests.get(TILE_LIST_URL)
     return r.text.splitlines()

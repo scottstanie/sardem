@@ -18,15 +18,14 @@ EGM_FILES = {
 
 
 def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="egm96"):
-    """Convert a DEM with a EGM96/2008 vertical datum to WGS84 heights above ellipsoid"""
-
+    """Convert a DEM with a EGM96/2008 vertical datum to WGS84 heights above ellipsoid."""
     if output is None:
         ext = os.path.splitext(filename)[1]
         output = filename.replace(ext, ".wgs84" + ext)
 
     code = EPSG_CODES[geoid]
     # Source srs: WGS84 ellipsoidal horizontal, EGM geoid vertical
-    s_srs = '"epsg:4326+{}"'.format(code)
+    s_srs = f'"epsg:4326+{code}"'
     # Target srs: WGS84 horizontal/vertical
     t_srs = '"epsg:4326"'
 
@@ -35,9 +34,9 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
     # We want it to match the input file
     xsize, ysize = _get_size(filename)
     cmd = (
-        'gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}'
-        ' -of ROI_PAC -ts {xsize} {ysize} '
-        ' -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}'
+        "gdalwarp {overwrite} -s_srs {s_srs} -t_srs {t_srs}"
+        " -of ROI_PAC -ts {xsize} {ysize} "
+        " -multi -wo NUM_THREADS=4 -wm 4000 {inp} {out}"
     )
     cmd = cmd.format(
         inp=filename,
@@ -59,7 +58,7 @@ def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="eg
 
 
 def _get_size(filename):
-    """Retrieve the raster size from a gdal-readable file"""
+    """Retrieve the raster size from a gdal-readable file."""
     from osgeo import gdal
 
     ds = gdal.Open(filename)
@@ -69,7 +68,7 @@ def _get_size(filename):
 
 
 def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
-    """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights
+    """Convert the file `dem_filename` from EGM96 heights to WGS84 ellipsoidal heights.
 
     Overwrites file, requires GDAL to be installed
     """
@@ -93,6 +92,6 @@ def convert_dem_to_wgs84(dem_filename, geoid="egm96"):
         os.remove(rsc_filename_egm)
     except Exception:
         logger.error("Failed to convert DEM:", exc_info=True)
-        logger.error("Reverting back, using EGM dem as output")
+        logger.exception("Reverting back, using EGM dem as output")
         os.rename(output_egm, dem_filename)
         os.rename(rsc_filename_egm, rsc_filename)

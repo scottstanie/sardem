@@ -9,7 +9,7 @@ utils.set_logger_handler(logger)
 
 
 def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
-    """Perform upsampling on a raster using gdal
+    """Perform upsampling on a raster using gdal.
 
     See here for available methods
     https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-r
@@ -28,6 +28,7 @@ def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
     yrate : int, optional
         Rate to upsample in the y/row direction
         Default = 1, no upsampling
+
     """
     from osgeo import gdal
 
@@ -44,7 +45,7 @@ def upsample_with_gdal(filename, outfile, method="cubic", xrate=1, yrate=1):
 def upsample_by_blocks(
     filename, outfile, input_shape, block_rows, dtype, xrate=1, yrate=1
 ):
-    """Perform bilinear upsampling on a raster by blocks
+    """Perform bilinear upsampling on a raster by blocks.
 
     Parameters
     ----------
@@ -64,6 +65,7 @@ def upsample_by_blocks(
     yrate : int, optional
         Rate to upsample in the y/row direction
         Default = 1, no upsampling
+
     """
     _, total_cols = input_shape
     block_shape = (block_rows, total_cols)
@@ -73,8 +75,8 @@ def upsample_by_blocks(
         for rows, _ in _block_iterator(input_shape, block_shape):
             offset = total_cols * rows[0] * dtype.itemsize
             cur_block_shape = (rows[1] - rows[0], total_cols)
-            logging.info("Upsampling rows {}".format(rows))
-            print("Upsampling rows {}".format(rows))
+            logging.info(f"Upsampling rows {rows}")
+            print(f"Upsampling rows {rows}")
             cur_block = np.memmap(
                 filename,
                 mode="r",
@@ -118,7 +120,7 @@ def bilinear_interpolate(arr, x, y):
 
 
 def upsample(arr, xrate, yrate):
-    """Upsample an array by a factor of xrate and yrate"""
+    """Upsample an array by a factor of xrate and yrate."""
     ny, nx = arr.shape
 
     xi = np.linspace(0, arr.shape[1] - 1, round(nx * xrate)).reshape((1, -1))
@@ -127,7 +129,7 @@ def upsample(arr, xrate, yrate):
 
 
 def resample(arr, rsc_dict, bbox):
-    """Resample an array described by rsc_dict to a new bounding box"""
+    """Resample an array described by rsc_dict to a new bounding box."""
     rdict_lower = {k.lower(): v for k, v in rsc_dict.items()}
     x_first, x_step = rdict_lower["x_first"], rdict_lower["x_step"]
     y_first, y_step = rdict_lower["y_first"], rdict_lower["y_step"]
@@ -143,8 +145,8 @@ def resample(arr, rsc_dict, bbox):
     right -= hp
     top -= hp
 
-    out_rows = int(round((bot - top) / y_step)) + 1
-    out_cols = int(round((right - left) / x_step)) + 1
+    out_rows = round((bot - top) / y_step) + 1
+    out_cols = round((right - left) / x_step) + 1
 
     xspan = x_step * (arr.shape[1] - 1)
     yspan = y_step * (arr.shape[0] - 1)
@@ -153,11 +155,8 @@ def resample(arr, rsc_dict, bbox):
 
     # if any(arg < 0 for arg in (left_idx, right_idx, top_idx, bot_idx)):
     if any(arg < -1e-8 for arg in (x0, x1, y0, y1)):
-        raise ValueError(
-            "x_first/y_first ({}, {}) must be within the bbox {}".format(
-                x_first, y_first, bbox
-            )
-        )
+        msg = f"x_first/y_first ({x_first}, {y_first}) must be within the bbox {bbox}"
+        raise ValueError(msg)
 
     rows, cols = arr.shape
     xi = (cols - 1) * np.linspace(x0, x1, out_cols, endpoint=True).reshape((1, -1))
@@ -171,7 +170,7 @@ def resample(arr, rsc_dict, bbox):
 
 
 def _block_iterator(arr_shape, block_shape):
-    """Iterator to get indexes for accessing blocks of a raster
+    """Iterator to get indexes for accessing blocks of a raster.
 
     Args:
         arr_shape = (num_rows, num_cols), full size of array to access
@@ -187,6 +186,7 @@ def _block_iterator(arr_shape, block_shape):
     >>> list(_block_iterator((180, 250), (100, 100)))
     [((0, 100), (0, 100)), ((0, 100), (100, 200)), ((0, 100), (200, 250)), \
 ((100, 180), (0, 100)), ((100, 180), (100, 200)), ((100, 180), (200, 250))]
+
     """
     rows, cols = arr_shape
     row_off, col_off = 0, 0
@@ -211,7 +211,7 @@ def _block_iterator(arr_shape, block_shape):
 
 
 def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
-    """Creates a new .dem.rsc file for upsampled version
+    """Creates a new .dem.rsc file for upsampled version.
 
     Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
 
@@ -231,7 +231,8 @@ def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
 
     """
     if not xrate and not yrate:
-        raise ValueError("Must supply either xrate or yrate for upsampling")
+        msg = "Must supply either xrate or yrate for upsampling"
+        raise ValueError(msg)
 
     rsc_dict = _load_rsc_dict(rsc_dict=rsc_dict, rsc_filename=rsc_filename)
 
@@ -242,34 +243,32 @@ def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
         # Files seemed to be left justified with 13 spaces? Not sure why 13
         # TODO: its 14- but fix this and previous formatting to be DRY
         if field.lower() == "width":
-            new_size = int(round(value * xrate))
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
+            new_size = round(value * xrate)
+            outstring += f"{field.upper():<14s}{new_size}\n"
         elif field.lower() == "file_length":
-            new_size = int(round(value * yrate))
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=new_size)
+            new_size = round(value * yrate)
+            outstring += f"{field.upper():<14s}{new_size}\n"
         elif field.lower() == "x_step":
             # New is 1 + (size - 1) * rate, old is size, old rate is 1/(size-1)
             value /= xrate
             # Also give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
+            outstring += f"{field.upper():<14s}{value:0.12f}\n"
         elif field.lower() == "y_step":
             value /= yrate
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
+            outstring += f"{field.upper():<14s}{value:0.12f}\n"
         else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
+            outstring += f"{field.upper():<14s}{value}\n"
 
     return outstring
 
 
 def _load_rsc_dict(rsc_dict=None, rsc_filename=None):
     if rsc_dict and rsc_filename:
-        raise ValueError("Can only give one of rsc_dict or rsc_filename")
+        msg = "Can only give one of rsc_dict or rsc_filename"
+        raise ValueError(msg)
     elif not rsc_dict and not rsc_filename:
-        raise ValueError("Must give at least one of rsc_dict or rsc_filename")
+        msg = "Must give at least one of rsc_dict or rsc_filename"
+        raise ValueError(msg)
 
     if rsc_filename:
         rsc_dict = loading.load_dem_rsc(rsc_filename)

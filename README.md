@@ -39,10 +39,10 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data. 
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data.
 To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
-**Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
+**Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**.
 For the Copernicus data, the minimum required GDAL version is 3.4.2; versions earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
 
 
@@ -58,7 +58,7 @@ I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 GDAL is required for the conversion, which is installed when using `conda install -c conda-forge sardem`.
 If you already are using an existing environment, make sure that the GDAL version is >=3.4.2.
 
-```bash 
+```bash
 conda install -c conda-forge "gdal>=3.4.2"
 
 # or

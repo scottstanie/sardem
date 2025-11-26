@@ -1,4 +1,4 @@
-"""Digital Elevation Map (DEM) downloading, stitching, upsampling
+"""Digital Elevation Map (DEM) downloading, stitching, upsampling.
 
 Module contains utilities for downloading all necessary .hgt files
 for a lon/lat rectangle, stiches them into one DEM, and creates a
@@ -38,8 +38,6 @@ Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
         PROJECTION    LL
 """
 
-from __future__ import division, print_function
-
 import collections
 import logging
 import os
@@ -47,7 +45,7 @@ import os
 import numpy as np
 
 from sardem import conversions, loading, upsample, utils
-from sardem.constants import DEFAULT_RES, NUM_PIXELS_SRTM1
+from sardem.constants import NUM_PIXELS_SRTM1
 from sardem.download import Downloader, Tile
 
 RSC_KEYS = [
@@ -70,7 +68,7 @@ utils.set_logger_handler(logger)
 
 
 class Stitcher:
-    """Class to combine separate .hgt tiles into one .dem file
+    """Class to combine separate .hgt tiles into one .dem file.
 
     Attributes:
         tile_file_list (list[str]) names of .hgt tiles
@@ -82,9 +80,15 @@ class Stitcher:
     """
 
     def __init__(
-        self, tile_names, filenames=[], data_source="NASA", num_pixels=NUM_PIXELS_SRTM1
+        self,
+        tile_names,
+        filenames=None,
+        data_source="NASA",
+        num_pixels=NUM_PIXELS_SRTM1,
     ):
-        """List should come from Tile.srtm1_tile_names()"""
+        """List should come from Tile.srtm1_tile_names()."""
+        if filenames is None:
+            filenames = []
         self.tile_file_list = list(tile_names)
         self.filenames = filenames
         # Assuming SRTMGL1: 3601 x 3601 squares
@@ -94,7 +98,7 @@ class Stitcher:
 
     @property
     def shape(self):
-        """Number of rows/columns in pixels for stitched .dem
+        """Number of rows/columns in pixels for stitched .dem.
 
         Uses the blockshape property, along with num_pixels property
         Returned as a tuple
@@ -103,21 +107,22 @@ class Stitcher:
             >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s.shape
             (3601, 7201)
+
         """
         blockrows, blockcols = self.blockshape
         return (self._total_length(blockrows), self._total_length(blockcols))
 
     def _total_length(self, numblocks):
-        """Computes the total number of pixels in one dem from numblocks"""
+        """Computes the total number of pixels in one dem from numblocks."""
         return numblocks * (self.num_pixels - 1) + 1
 
     @property
     def blockshape(self):
-        """Number of tile in rows cols"""
+        """Number of tile in rows cols."""
         return self._compute_shape()
 
     def _compute_shape(self):
-        """Takes the tile list and computes the number of tile rows and tile cols
+        """Takes the tile list and computes the number of tile rows and tile cols.
 
         Figures out how many lons wide and lats tall the tile array spans
         Note: This is not the total number of pixels, which can be found in .shape
@@ -126,16 +131,17 @@ class Stitcher:
             >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> s._compute_shape()
             (1, 2)
+
         """
         lon_lat_tups = [self.start_lon_lat(t) for t in self.tile_file_list]
         # Unique each lat/lon: length of lats = num rows, lons = cols
-        num_lons = len(set(tup[0] for tup in lon_lat_tups))
-        num_lats = len(set(tup[1] for tup in lon_lat_tups))
+        num_lons = len({tup[0] for tup in lon_lat_tups})
+        num_lats = len({tup[1] for tup in lon_lat_tups})
         return (num_lats, num_lons)
 
     @staticmethod
     def start_lon_lat(tile_name):
-        """Takes an SRTM1 data tile_name and returns the first (lon, lat) point
+        """Takes an SRTM1 data tile_name and returns the first (lon, lat) point.
 
         The reverse of Tile.srtm1_tile_names()
 
@@ -160,8 +166,8 @@ class Stitcher:
             (-156.0, 20.0)
             >>> Stitcher.start_lon_lat('S5E6')
             (6.0, -4.0)
-        """
 
+        """
         lat_str, lat, lon_str, lon = Tile.get_tile_parts(tile_name)
 
         # lat gets added to or subtracted
@@ -173,19 +179,20 @@ class Stitcher:
         return (left_lon, top_lat)
 
     def _create_file_array(self):
-        """Finds filenames and reshapes into numpy.array matching DEM shape
+        """Finds filenames and reshapes into numpy.array matching DEM shape.
 
         Examples:
             >>> s = Stitcher(['N19W156', 'N19W155', 'N18W156', 'N18W155'])
             >>> print(s._create_file_array())
             [['N19W156' 'N19W155']
              ['N18W156' 'N18W155']]
+
         """
         nrows, ncols = self.blockshape
         return np.array(self.tile_file_list).reshape((nrows, ncols))
 
     def _load_tile(self, tile_name):
-        """Loads the tile, or returns a square of zeros if missing"""
+        """Loads the tile, or returns a square of zeros if missing."""
         idx = self.tile_file_list.index(tile_name)
         filename = self.filenames[idx]
         if filename and os.path.exists(filename):
@@ -197,7 +204,7 @@ class Stitcher:
             return np.zeros((NUM_PIXELS_SRTM1, NUM_PIXELS_SRTM1), dtype=self.dtype)
 
     def load_and_stitch(self):
-        """Function to load combine .hgt tiles
+        """Function to load combine .hgt tiles.
 
         Uses hstack first on rows, then vstacks rows together.
         Also handles the deleting of overlapped rows/columns of SRTM tiles
@@ -205,6 +212,7 @@ class Stitcher:
 
         Returns:
             ndarray: the stitched .hgt tiles in 2D np.array
+
         """
         row_list = []
         # ncols in the number of .hgt blocks wide
@@ -222,7 +230,7 @@ class Stitcher:
         return np.vstack(row_list)
 
     def _find_step_sizes(self, ndigits=12):
-        """Calculates the step size for the dem.rsc
+        """Calculates the step size for the dem.rsc.
 
         Note: assuming same step size in x and y direction
 
@@ -236,12 +244,13 @@ class Stitcher:
             >>> s = Stitcher(['N19W156', 'N19W155'])
             >>> print(s._find_step_sizes())
             (0.000277777777, -0.000277777777)
+
         """
         step_size = utils.floor_float(1 / (self.num_pixels - 1), ndigits)
         return (step_size, -1 * step_size)
 
     def create_dem_rsc(self):
-        """Takes a list of the SRTM1 tile names and outputs .dem.rsc file values
+        """Takes a list of the SRTM1 tile names and outputs .dem.rsc file values.
 
         See module docstring for example .dem.rsc file.
 
@@ -257,8 +266,8 @@ class Stitcher:
             OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), \
 ('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), \
 ('Y_UNIT', 'degrees'), ('Z_OFFSET', 0), ('Z_SCALE', 1), ('PROJECTION', 'LL')])
-        """
 
+        """
         # Use an OrderedDict for the key/value pairs so writing to file easy
         rsc_dict = collections.OrderedDict.fromkeys(RSC_KEYS)
         rsc_dict.update(
@@ -301,7 +310,7 @@ def main(
     output_type="float32",
     output_format="GTiff",
 ):
-    """Function for entry point to create a DEM with `sardem`
+    """Function for entry point to create a DEM with `sardem`.
 
     Args:
         output_name (str): name of file to save final DEM (default = elevation.dem)
@@ -322,6 +331,7 @@ def main(
         cache_dir (str): directory to cache downloaded tiles
         output_type (str): output type for DEM (default = int16)
         output_format (str): output format for copernicus DEM (default = ENVI)
+
     """
     if bbox is None:
         if geojson:
@@ -330,7 +340,8 @@ def main(
             bbox = utils.get_wkt_bbox(wkt_file)
 
     if bbox is None:
-        raise ValueError("Must provide either bbox or geojson or wkt_file")
+        msg = "Must provide either bbox or geojson or wkt_file"
+        raise ValueError(msg)
     logger.info("Bounds: %s", " ".join(str(b) for b in bbox))
 
     # if all(_float_is_on_bounds(b) for b in bbox):
@@ -342,9 +353,7 @@ def main(
     # Print a warning if they're possibly requesting too-large a box by mistake
     outrows, outcols = utils.get_output_size(bbox, xrate, yrate)
     if outrows * outcols > WARN_LIMIT:
-        logger.warning(
-            "Caution: Output size is {} x {} pixels.".format(outrows, outcols)
-        )
+        logger.warning(f"Caution: Output size is {outrows} x {outcols} pixels.")
         logger.warning("Are the bounds correct (left, bottom, right, top)?")
 
     # For copernicus, use GDAL to warp from the VRT
@@ -404,7 +413,7 @@ def main(
         with open(rsc_filename, "w") as f:
             f.write(loading.format_dem_rsc(rsc_dict))
     else:
-        logger.info("Upsampling by ({}, {}) in (x, y) directions".format(xrate, yrate))
+        logger.info(f"Upsampling by ({xrate}, {yrate}) in (x, y) directions")
         # dem_filename_small = output_name.replace(".dem", "_small.dem")
         # rsc_filename_small = rsc_filename.replace(".dem.rsc", "_small.dem.rsc")
         dem_filename_small = "small_" + output_name
@@ -440,7 +449,7 @@ def main(
             # Figure out size of row blocks to keep memory under 100 MB
             nrows, ncols = stitched_dem.shape
             block_rows = int(np.round(10e6 / ncols / 2, -2))  # round to 100s
-            logger.info("Upsampling by blocks of {} rows".format(block_rows))
+            logger.info(f"Upsampling by blocks of {block_rows} rows")
             upsample.upsample_by_blocks(
                 dem_filename_small,
                 output_name,

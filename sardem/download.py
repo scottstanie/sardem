@@ -22,7 +22,7 @@ logger = logging.getLogger("sardem")
 
 
 def _get_username_pass():
-    """If netrc is not set up, get command line username and password"""
+    """If netrc is not set up, get command line username and password."""
     print("====================================================================")
     print("Please enter NASA Earthdata credentials to download NASA hosted STRM.")
     print("See https://urs.earthdata.nasa.gov/users/new for signup info.")
@@ -31,15 +31,14 @@ def _get_username_pass():
     username = input("Username: ")
     password = getpass.getpass(prompt="Password (will not be displayed): ")
     save_to_netrc = input(
-        "Would you like to save these to ~/.netrc (machine={}) for future use (y/n)?  ".format(
-            Downloader.NASAHOST
-        )
+        f"Would you like to save these to ~/.netrc (machine={Downloader.NASAHOST}) for"
+        " future use (y/n)?  "
     )
     return username, password, save_to_netrc.lower().startswith("y")
 
 
 class Netrc(netrc.netrc):
-    """Handles saving of .netrc file, fixes bug in stdlib older versions
+    """Handles saving of .netrc file, fixes bug in stdlib older versions.
 
     https://bugs.python.org/issue30806
     Uses ideas from tinynetrc
@@ -48,16 +47,17 @@ class Netrc(netrc.netrc):
     def format(self):
         """Dump the class data in the format of a .netrc file.
 
-        Fixes issue of including single quotes for username and password"""
+        Fixes issue of including single quotes for username and password
+        """
         rep = ""
-        for host in self.hosts.keys():
+        for host in self.hosts:
             attrs = self.hosts[host]
-            rep += "machine {host}\n\tlogin {attrs[0]}\n".format(host=host, attrs=attrs)
+            rep += f"machine {host}\n\tlogin {attrs[0]}\n"
             if attrs[1]:
-                rep += "\taccount {attrs[1]}\n".format(attrs=attrs)
-            rep += "\tpassword {attrs[2]}\n".format(attrs=attrs)
-        for macro in self.macros.keys():
-            rep += "macdef {macro}\n".format(macro=macro)
+                rep += f"\taccount {attrs[1]}\n"
+            rep += f"\tpassword {attrs[2]}\n"
+        for macro in self.macros:
+            rep += f"macdef {macro}\n"
             for line in self.macros[macro]:
                 rep += line
             rep += "\n"
@@ -72,14 +72,14 @@ class Netrc(netrc.netrc):
 
 
 class Tile:
-    """class to handle tile name formation and parsing"""
+    """class to handle tile name formation and parsing."""
 
     def __init__(self, left, bottom, right, top):
         self.bounds = (left, bottom, right, top)
 
     @staticmethod
     def get_tile_parts(tile_name):
-        """Parses the lat/lon information of a .hgt tile
+        r"""Parses the lat/lon information of a .hgt tile.
 
         Validates that the string is an actual tile name
 
@@ -102,34 +102,33 @@ class Tile:
             Traceback (most recent call last):
                ...
             ValueError: Invalid SRTM1 tile name: Notrealname, must match \
-([NS])(\d{1,2})([EW])(\d{1,3})
+([NS])(\\d{1,2})([EW])(\\d{1,3})
+
         """
         lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3})"
         match = re.match(lon_lat_regex, tile_name)
         if not match:
-            raise ValueError(
-                "Invalid SRTM1 tile name: {}, must match {}".format(
-                    tile_name, lon_lat_regex
-                )
-            )
+            msg = f"Invalid SRTM1 tile name: {tile_name}, must match {lon_lat_regex}"
+            raise ValueError(msg)
 
         lat_str, lat, lon_str, lon = match.groups()
         return lat_str, int(lat), lon_str, int(lon)
 
     @staticmethod
     def srtm1_tile_corner(lon, lat):
-        """Integers for the bottom right corner of requested lon/lat
+        """Integers for the bottom right corner of requested lon/lat.
 
         Examples:
             >>> Tile.srtm1_tile_corner(3.5, 5.6)
             (3, 5)
             >>> Tile.srtm1_tile_corner(-3.5, -5.6)
             (-4, -6)
+
         """
-        return int(math.floor(lon)), int(math.floor(lat))
+        return math.floor(lon), math.floor(lat)
 
     def srtm1_tile_names(self):
-        """Iterator over all tiles needed to cover the requested bounds
+        """Iterator over all tiles needed to cover the requested bounds.
 
         Args:
             None: bounds provided to Tile __init__()
@@ -150,6 +149,7 @@ class Tile:
             >>> bounds = [-156.0 - hp, 19.0 - hp, -154.0 + hp, 20.0 + hp]
             >>> list(d.srtm1_tile_names())
             ['N19W156', 'N19W155']
+
         """
         # `bounds` should refer to the edges of the bounding box
         # shift each inward by half pixel so they point to the boundary pixel centers
@@ -168,16 +168,16 @@ class Tile:
         # Now iterate in same order in which they'll be stithced together
         for ilat in range(top_int, bot_int - 1, -1):  # north to south
             hemi_ns = "N" if ilat >= 0 else "S"
-            lat_str = "{}{:02d}".format(hemi_ns, abs(ilat))
+            lat_str = f"{hemi_ns}{abs(ilat):02d}"
             for ilon in range(left_int, right_int + 1):  # West to east
                 hemi_ew = "E" if ilon >= 0 else "W"
-                lon_str = "{}{:03d}".format(hemi_ew, abs(ilon))
+                lon_str = f"{hemi_ew}{abs(ilon):03d}"
 
-                yield "{lat_str}{lon_str}".format(lat_str=lat_str, lon_str=lon_str)
+                yield f"{lat_str}{lon_str}"
 
 
 class Downloader:
-    """Class to download and save SRTM1 tiles to create DEMs
+    """Class to download and save SRTM1 tiles to create DEMs.
 
     Attributes:
         tile_names (iterator): strings of .hgt tiles (e.g. [N19W155.hgt])
@@ -195,7 +195,7 @@ class Downloader:
     DATA_URLS = {
         "NASA": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
         "NASA_WATER": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
-        "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif"
+        "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif",
     }
     VALID_SOURCES = DATA_URLS.keys()
     TILE_ENDINGS = {
@@ -211,9 +211,8 @@ class Downloader:
         self.tile_names = tile_names
         self.data_source = data_source
         if data_source not in self.VALID_SOURCES:
-            raise ValueError(
-                "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
-            )
+            msg = "data_source must be one of: {}".format(",".join(self.VALID_SOURCES))
+            raise ValueError(msg)
         self.data_url = self.DATA_URLS[data_source]
         self.ext_type = "raw" if data_source == "NASA_WATER" else "hgt"
         self.compress_type = self.COMPRESS_TYPES[data_source]
@@ -232,19 +231,19 @@ class Downloader:
                 and n.authenticators(self.NASAHOST)[0]
                 and n.authenticators(self.NASAHOST)[2]
             )
-        except (OSError, IOError):
+        except OSError:
             return False
 
     @staticmethod
     def _nasa_netrc_entry(username, password):
-        """Create a string for a NASA urs account in .netrc format"""
-        outstring = "machine {}\n".format(Downloader.NASAHOST)
-        outstring += "\tlogin {}\n".format(username)
-        outstring += "\tpassword {}\n".format(password)
+        """Create a string for a NASA urs account in .netrc format."""
+        outstring = f"machine {Downloader.NASAHOST}\n"
+        outstring += f"\tlogin {username}\n"
+        outstring += f"\tpassword {password}\n"
         return outstring
 
     def handle_credentials(self):
-        """Prompt user for NASA username/password, store as attribute or .netrc
+        """Prompt user for NASA username/password, store as attribute or .netrc.
 
         If the user wants to save as .netrc, add to existing, or create new ~/.netrc
         """
@@ -255,7 +254,7 @@ class Downloader:
                 n = self._get_netrc_file()
                 n.hosts[self.NASAHOST] = (username, None, password)
                 outstring = str(n)
-            except (OSError, IOError):
+            except OSError:
                 # Otherwise, make a fresh one to save
                 outstring = self._nasa_netrc_entry(username, password)
 
@@ -267,7 +266,7 @@ class Downloader:
             self.password = password
 
     def _form_tile_url(self, tile_name):
-        """Form the url for a .hgt tile
+        """Form the url for a .hgt tile.
 
         Args:
             tile_name (str): string name of tile
@@ -287,17 +286,15 @@ class Downloader:
 
         """
         if self.data_source.startswith("NASA"):
-            url = "{base}/{tile}.{ext}".format(
-                base=self.data_url,
-                tile=tile_name + self.TILE_ENDINGS[self.data_source],
-                ext=self.compress_type,
+            url = (
+                f"{self.data_url}/{tile_name + self.TILE_ENDINGS[self.data_source]}.{self.compress_type}"
             )
         return url
 
     def _download_hgt_tile(self, url):
-        """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips" """
+        """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips"."""
         # Using a netrc file is the easy cases
-        logger.info("Downloading {}".format(url))
+        logger.info(f"Downloading {url}")
         if self.data_source.startswith("NASA") and self._has_nasa_netrc():
             logger.info("Using netrc file: %s", self.netrc_file)
             response = requests.get(url)
@@ -313,13 +310,13 @@ class Downloader:
         return response
 
     def _unzip_file(self, filepath):
-        """Unzips in place the .hgt files downloaded"""
+        """Unzips in place the .hgt files downloaded."""
         # -o forces overwrite without prompt, -d specifices unzip directory
-        unzip_cmd = "unzip -o -d {}".format(self.cache_dir).split(" ")
-        subprocess.check_call(unzip_cmd + [filepath])
+        unzip_cmd = f"unzip -o -d {self.cache_dir}".split(" ")
+        subprocess.check_call([*unzip_cmd, filepath])
 
     def download_and_save(self, tile_name):
-        """Download and save one single tile
+        """Download and save one single tile.
 
         Args:
             tile_name (str): string name of tile
@@ -327,20 +324,21 @@ class Downloader:
 
         Returns:
             bool: True/False for Success/Failure of download
+
         """
         # keep all in one folder, compressed
         local_filename = self._filepath(tile_name)
         if os.path.exists(local_filename):
-            logger.info("{} already exists, skipping.".format(local_filename))
+            logger.info(f"{local_filename} already exists, skipping.")
         else:
             # download, then unzip
-            local_filename += ".{}".format(self.compress_type)
+            local_filename += f".{self.compress_type}"
             with open(local_filename, "wb") as f:
                 url = self._form_tile_url(tile_name)
                 response = self._download_hgt_tile(url)
                 # Now check response for auth issues/ errors
                 if response.status_code == 404:
-                    logger.warning("Cannot find url %s, using zeros for tile." % url)
+                    logger.warning(f"Cannot find url {url}, using zeros for tile.")
                     # Raise only if we want to kill everything
                     # response.raise_for_status()
                     local_filename = os.path.splitext(local_filename)[0]
@@ -348,8 +346,8 @@ class Downloader:
                     return local_filename
 
                 f.write(response.content)
-                logger.info("Writing to {}".format(local_filename))
-            logger.info("Unzipping {}".format(local_filename))
+                logger.info(f"Writing to {local_filename}")
+            logger.info(f"Unzipping {local_filename}")
             self._unzip_file(local_filename)
             # Now get rid of the .zip again
             local_filename = os.path.splitext(local_filename)[0]
@@ -373,7 +371,7 @@ class Downloader:
         data.tofile(local_filename)
 
     def download_all(self):
-        """Downloads and saves all tiles from tile list"""
+        """Downloads and saves all tiles from tile list."""
         # Only need to get credentials for this case:
         if (
             not self._all_files_exist()
@@ -386,9 +384,10 @@ class Downloader:
         local_filenames = pool.map(self.download_and_save, self.tile_names)
         pool.close()
         if not any(local_filenames):
-            raise ValueError(
+            msg = (
                 "No successful .hgt tiles found and downloaded:"
                 " check lats/ lons of DEM box for valid SRTM land area"
                 " (<60 deg latitude not open ocean)."
             )
+            raise ValueError(msg)
         return local_filenames

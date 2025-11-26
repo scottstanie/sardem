@@ -1,5 +1,4 @@
-"""utils.py: extra helper functions"""
-from __future__ import division, print_function
+"""utils.py: extra helper functions."""
 
 import logging
 import os
@@ -29,7 +28,7 @@ logger = logging.getLogger("sardem")
 
 
 def get_cache_dir():
-    """Find location of directory to store .hgt downloads
+    """Find location of directory to store .hgt downloads.
 
     Assuming linux, uses ~/.cache/sardem/
 
@@ -42,7 +41,7 @@ def get_cache_dir():
 
 
 def floor_float(num, ndigits):
-    """Like rounding to ndigits, but flooring
+    """Like rounding to ndigits, but flooring.
 
     Used for .dem.rsc creation, because rounding to 12 sigfigs
     causes the fortran routines to overstep the matrix and fail,
@@ -52,17 +51,18 @@ def floor_float(num, ndigits):
     Example:
         >>> floor_float(1/3600, 12)
         0.000277777777
+
     """
     return floor((10**ndigits) * num) / (10**ndigits)
 
 
 def is_file(f):
-    """python 2/3 compatible check for file object"""
+    """Python 2/3 compatible check for file object."""
     return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, "read")
 
 
 def corner_coords(lon, lat, dlon, dlat):
-    """Take the width/height, convert to 4 points of box corners"""
+    """Take the width/height, convert to 4 points of box corners."""
     dlat = abs(dlat)  # Since we start at top and go down
     return [
         [lon, lat],
@@ -73,7 +73,7 @@ def corner_coords(lon, lat, dlon, dlat):
 
 
 def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None):
-    """From a top left/dlat/dlon, compute bounding lon/lats
+    """From a top left/dlat/dlon, compute bounding lon/lats.
 
     Args:
         left_lon (float): Left (western) most longitude of DEM box
@@ -85,14 +85,15 @@ def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None
 
     Returns:
         tuple[float]: the left,bottom,right,top coords of bounding box
-    """
 
+    """
     if all(arg is not None for arg in (left_lon, top_lat, dlon, dlat)):
         coordinates = corner_coords(left_lon, top_lat, dlon, dlat)
     elif geojson:
         coordinates = coords(geojson)
     else:
-        raise ValueError("Must provide geojson, or top_corner, dlon, and dlat")
+        msg = "Must provide geojson, or top_corner, dlon, and dlat"
+        raise ValueError(msg)
 
     left = min(float(lon) for (lon, lat) in coordinates)
     right = max(float(lon) for (lon, lat) in coordinates)
@@ -103,7 +104,7 @@ def bounding_box(left_lon=None, top_lat=None, dlon=None, dlat=None, geojson=None
 
 
 def shift_integer_bbox(bbox):
-    """Shift the integer bounds of a bbox by 1/2 pixel to select a whole tile"""
+    """Shift the integer bounds of a bbox by 1/2 pixel to select a whole tile."""
     left, bottom, right, top = bbox
     hp = 0.5 * DEFAULT_RES  # half pixel
     # Tile names refer to the center of the bottom-left corner of the tile
@@ -112,7 +113,7 @@ def shift_integer_bbox(bbox):
 
 def coords(geojson):
     """Finds the coordinates of a geojson polygon
-    Note: we are assuming one simple polygon with no holes
+    Note: we are assuming one simple polygon with no holes.
 
     Args:
         geojson (dict): loaded geojson dict
@@ -122,6 +123,7 @@ def coords(geojson):
 
     Raises:
         ValueError: if invalid geojson type (no 'geometry' in the json)
+
     """
     # First, if given a deeper object (e.g. from geojson.io), extract just polygon
     try:
@@ -130,7 +132,8 @@ def coords(geojson):
         elif geojson.get("type") == "Feature":
             geojson = geojson["geometry"]
     except KeyError:
-        raise ValueError("Invalid geojson")
+        msg = "Invalid geojson"
+        raise ValueError(msg)
     return geojson["coordinates"][0]
 
 
@@ -138,7 +141,7 @@ def get_wkt_bbox(fname):
     try:
         from shapely import wkt
     except ImportError:
-        logger.error("Need shapely installed to load from .wkt file")
+        logger.exception("Need shapely installed to load from .wkt file")
         raise
 
     return wkt.load(fname).bounds
@@ -147,18 +150,19 @@ def get_wkt_bbox(fname):
 
 
 def get_file_bbox(filename):
-    """Get bounding box from a geospatial raster file
+    """Get bounding box from a geospatial raster file.
 
     Args:
         filename (str): Path to a geospatial raster file (e.g., GeoTIFF)
 
     Returns:
         tuple[float]: the left, bottom, right, top coords of bounding box
+
     """
     try:
         import rasterio
     except ImportError:
-        logger.error("Need rasterio installed to load bounds from raster file")
+        logger.exception("Need rasterio installed to load bounds from raster file")
         raise
 
     with rasterio.open(filename) as src:
@@ -166,7 +170,7 @@ def get_file_bbox(filename):
 
 
 def buffer_bbox(bbox, buffer_degrees):
-    """Apply a buffer to a bounding box
+    """Apply a buffer to a bounding box.
 
     Args:
         bbox (tuple[float]): Bounding box as (left, bottom, right, top)
@@ -174,6 +178,7 @@ def buffer_bbox(bbox, buffer_degrees):
 
     Returns:
         tuple[float]: Buffered bounding box (left, bottom, right, top)
+
     """
     left, bottom, right, top = bbox
     return (
@@ -185,7 +190,7 @@ def buffer_bbox(bbox, buffer_degrees):
 
 
 def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
-    """Shift the top-left of a .rsc file by half pixel
+    """Shift the top-left of a .rsc file by half pixel.
 
     The SRTM tiles are named such that the number represents the
     lon/lat of the lower left corner *center* of the tile, so a shift
@@ -212,7 +217,7 @@ def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
 
 
 def shift_rsc_dict(rsc_dict, to_gdal=True):
-    """Shift the top-left of the rsc data dictionary  by half pixel
+    """Shift the top-left of the rsc data dictionary  by half pixel.
 
     The SRTM tiles are named such that the number represents the
     lon/lat of the lower left corner *center* of the tile, so a shift
@@ -253,13 +258,13 @@ def shift_rsc_dict(rsc_dict, to_gdal=True):
 
 
 def get_output_size(bounds, xrate, yrate):
-    """Calculate the output size of a raster given the bounds and rates"""
+    """Calculate the output size of a raster given the bounds and rates."""
     default_spacing = 0.0002777777777777778
     left, bottom, right, top = bounds
     width = right - left
     height = top - bottom
-    rows = int(round(width / default_spacing * xrate))
-    cols = int(round(height / default_spacing * yrate))
+    rows = round(width / default_spacing * xrate)
+    cols = round(height / default_spacing * yrate)
     return rows, cols
 
 
@@ -271,13 +276,12 @@ def _gdal_installed_correctly():
         return True
     except subprocess.CalledProcessError:
         logger.error("GDAL command failed to run.", exc_info=True)
-        logger.error("Check GDAL installation.")
+        logger.exception("Check GDAL installation.")
         return False
 
 
 def gdal2isce_xml(fname, keep_egm=False):
-    """
-    Generate ISCE xml file from gdal supported file
+    """Generate ISCE xml file from gdal supported file.
 
     Example: import isce
              from applications.gdal2isce_xml import gdal2isce_xml
@@ -290,7 +294,7 @@ def gdal2isce_xml(fname, keep_egm=False):
         import isce  # noqa
         import isceobj
     except ImportError:
-        logger.error("isce2 not installed. Cannot generate xml file.")
+        logger.exception("isce2 not installed. Cannot generate xml file.")
         raise
 
     # open the GDAL file and get typical data informationi
@@ -354,7 +358,7 @@ def gdal2isce_xml(fname, keep_egm=False):
     elif sch == "BAND":
         img.scheme = "BSQ"
     else:
-        logger.info("Unrecognized interleaving scheme, {}".format(sch))
+        logger.info(f"Unrecognized interleaving scheme, {sch}")
         if bands < 2:
             logger.info("Assuming default, BIP")
             img.scheme = "BIP"
@@ -385,16 +389,11 @@ def gdal2isce_xml(fname, keep_egm=False):
 
 
 def _add_reference_datum(xml_file, keep_egm=False):
-    """
-    Example of modifying an existing XML file
-    """
-
+    """Example of modifying an existing XML file."""
     import xml.etree.ElementTree as ET
     from xml.dom import minidom
 
-    logger.info(
-        "add <reference> info to xml file: {}".format(os.path.basename(xml_file))
-    )
+    logger.info(f"add <reference> info to xml file: {os.path.basename(xml_file)}")
 
     # get property element for reference
     ref = ET.Element("property", attrib={"name": "reference"})

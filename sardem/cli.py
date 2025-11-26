@@ -1,6 +1,4 @@
-"""
-Command line interface for running sardem
-"""
+"""Command line interface for running sardem."""
 
 import json
 from argparse import (
@@ -11,8 +9,8 @@ from argparse import (
     RawTextHelpFormatter,
 )
 
-from sardem.download import Downloader
 from sardem import utils
+from sardem.download import Downloader
 
 
 def positive_small_int(argstring):
@@ -20,7 +18,8 @@ def positive_small_int(argstring):
         intval = int(argstring)
         assert 0 < intval < 50
     except (ValueError, AssertionError):
-        raise ArgumentTypeError("--rate must be positive integer < 50")
+        msg = "--rate must be positive integer < 50"
+        raise ArgumentTypeError(msg)
     return intval
 
 
@@ -77,37 +76,47 @@ def get_cli_args():
         nargs=4,
         metavar=("left", "bottom", "right", "top"),
         type=float,
-        help="Bounding box of area of interest "
-        " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). \n"
-        "--bbox points to the *edges* of the pixels, \n"
-        " following the 'pixel is area' convention as used in gdal. ",
+        help=(
+            "Bounding box of area of interest "
+            " (e.g. --bbox -106.1 30.1 -103.1 33.1 ). \n"
+            "--bbox points to the *edges* of the pixels, \n"
+            " following the 'pixel is area' convention as used in gdal. "
+        ),
     )
     parser.add_argument(
         "--geojson",
         "-g",
         type=FileType(),
-        help="Alternate to corner/dlon/dlat box specification: \n"
-        "File containing the geojson object for DEM bounds",
+        help=(
+            "Alternate to corner/dlon/dlat box specification: \n"
+            "File containing the geojson object for DEM bounds"
+        ),
     )
     parser.add_argument(
         "--wkt-file",
         type=FileType(),
-        help="Alternate to corner/dlon/dlat box specification: \n"
-        "File containing the WKT string for DEM bounds",
+        help=(
+            "Alternate to corner/dlon/dlat box specification: \n"
+            "File containing the WKT string for DEM bounds"
+        ),
     )
     parser.add_argument(
         "--match-file",
         "-m",
-        help="Alternate to corner/dlon/dlat box specification: \n"
-        "Geospatial raster file to match bounds from (e.g. a GeoTIFF)",
+        help=(
+            "Alternate to corner/dlon/dlat box specification: \n"
+            "Geospatial raster file to match bounds from (e.g. a GeoTIFF)"
+        ),
     )
     parser.add_argument(
         "--buffer",
         "-b",
         type=float,
         default=0.0,
-        help="Buffer to add around bounding box in degrees (default=0). \n"
-        "Expands the bbox by this amount in all directions.",
+        help=(
+            "Buffer to add around bounding box in degrees (default=0). \n"
+            "Expands the bbox by this amount in all directions."
+        ),
     )
     parser.add_argument(
         "--xrate",
@@ -126,8 +135,10 @@ def get_cli_args():
     parser.add_argument(
         "--output",
         "-o",
-        help="Name of output dem file"
-        " (default=elevation.dem for DEM, watermask.wbd for water mask)",
+        help=(
+            "Name of output dem file"
+            " (default=elevation.dem for DEM, watermask.wbd for water mask)"
+        ),
     )
     parser.add_argument(
         "--data-source",
@@ -155,25 +166,24 @@ def get_cli_args():
         "--shift-rsc",
         action="store_true",
         help=(
-            "Shift the .rsc file by half a pixel so that X_FIRST and Y_FIRST "
-            "are at the pixel center (instead of GDAL's convention of the top left edge)."
-            " Default is GDAL's top-left edge convention."
+            "Shift the .rsc file by half a pixel so that X_FIRST and Y_FIRST are at the"
+            " pixel center (instead of GDAL's convention of the top left edge). Default"
+            " is GDAL's top-left edge convention."
         ),
     )
     parser.add_argument(
         "--cache-dir",
-        help=(
-            "Location to save downloaded files (Default = {})".format(
-                utils.get_cache_dir()
-            )
-        ),
+        help=f"Location to save downloaded files (Default = {utils.get_cache_dir()})",
     )
     parser.add_argument(
         "--output-format",
         "-of",
         choices=["ENVI", "GTiff", "ROI_PAC"],
         default="GTiff",
-        help="Output format (default %(default)s). Used for COP data; NASA data always outputs ENVI format.",
+        help=(
+            "Output format (default %(default)s). Used for COP data; NASA data always"
+            " outputs ENVI format."
+        ),
     )
     parser.add_argument(
         "--output-type",
@@ -190,11 +200,15 @@ def cli():
     args = get_cli_args()
     import sardem.dem
 
-    if (args.left_lon and args.geojson) or (args.left_lon and args.bbox) or (args.left_lon and args.match_file):
+    if (
+        (args.left_lon and args.geojson)
+        or (args.left_lon and args.bbox)
+        or (args.left_lon and args.match_file)
+    ):
         raise ArgumentError(
             args.geojson,
-            "Can only use one type of bounding box specifier: (left_lon top_lat dlon dlat) "
-            ", --geojson, --bbox, --wkt-file, or --match-file",
+            "Can only use one type of bounding box specifier: (left_lon top_lat dlon"
+            " dlat) , --geojson, --bbox, --wkt-file, or --match-file",
         )
     # Need all 4 positionals, or the --geojson
     elif (
@@ -204,7 +218,8 @@ def cli():
         and not args.wkt_file
         and not args.match_file
     ):
-        raise ValueError("Need --bbox, --geojson, --wkt-file, or --match-file")
+        msg = "Need --bbox, --geojson, --wkt-file, or --match-file"
+        raise ValueError(msg)
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
     if args.left_lon:

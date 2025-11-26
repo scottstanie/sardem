@@ -1,5 +1,3 @@
-from __future__ import division
-
 import collections
 import os
 
@@ -29,7 +27,7 @@ DEFAULT_KEYS = {
 
 
 def load_elevation(filename):
-    """Loads a digital elevation map from either .hgt file or .dem
+    """Loads a digital elevation map from either .hgt file or .dem.
 
     .hgt is the NASA SRTM files given. Documentation on format here:
     https://dds.cr.usgs.gov/srtm/version2_1/Documentation/SRTM_Topo.pdf
@@ -68,11 +66,11 @@ def load_elevation(filename):
             # STRM3- 3 arc second data, 90 meter data
             dem_img = data.reshape((1201, 1201))
         else:
-            raise ValueError(
-                "Invalid .hgt in {} data size: must be square size 1201 or 3601".format(
-                    filename
-                )
+            msg = (
+                f"Invalid .hgt in {filename} data size: must be square size 1201 or"
+                " 3601"
             )
+            raise ValueError(msg)
         # TODO: Verify that the min real value will be above -1000
         min_valid = -1000
         # Set NaN values to 0
@@ -82,17 +80,18 @@ def load_elevation(filename):
 
 
 def load_watermask(filename):
-    """Loads a .raw waterbody data file mask
+    """Loads a .raw waterbody data file mask.
 
     Reference:
     https://lpdaac.usgs.gov/products/srtmswbdv003/
     """
     import numpy as np
+
     return np.fromfile(filename, dtype=np.uint8).reshape((3601, 3601))
 
 
 def load_dem_rsc(filename, lower=False, **kwargs):
-    """Loads and parses the .dem.rsc file
+    """Loads and parses the .dem.rsc file.
 
     Args:
         filename (str) path to either the .dem or .dem.rsc file.
@@ -114,16 +113,14 @@ def load_dem_rsc(filename, lower=False, **kwargs):
     Z_OFFSET      0
     Z_SCALE       1
     PROJECTION    LL
-    """
 
+    """
     # Use OrderedDict so that upsample_dem_rsc creates with same ordering as old
     output_data = collections.OrderedDict()
     # Second part in tuple is used to cast string to correct type
 
-    rsc_filename = (
-        "{}.rsc".format(filename) if not filename.endswith(".rsc") else filename
-    )
-    with open(rsc_filename, "r") as f:
+    rsc_filename = f"{filename}.rsc" if not filename.endswith(".rsc") else filename
+    with open(rsc_filename) as f:
         for line in f.readlines():
             for field, num_type in RSC_KEY_TYPES:
                 if line.startswith(field.upper()):
@@ -135,7 +132,7 @@ def load_dem_rsc(filename, lower=False, **kwargs):
 
 
 def format_dem_rsc(rsc_dict):
-    """Creates the .dem.rsc file string from key/value pairs of an OrderedDict
+    """Creates the .dem.rsc file string from key/value pairs of an OrderedDict.
 
     Output of function can be written to a file as follows
         with open('my.dem.rsc', 'w') as f:
@@ -159,16 +156,15 @@ def format_dem_rsc(rsc_dict):
 
         value = rsc_dict.get(field, DEFAULT_KEYS.get(field))
         if value is None:
-            raise ValueError("%s is necessary for .rsc file: missing from dict" % field)
+            msg = f"{field} is necessary for .rsc file: missing from dict"
+            raise ValueError(msg)
 
         # Files seemed to be left justified with 14 spaces? Not sure why 14
         # Apparently it was an old fortran format, where they use "read(15)"
         if field in ("x_step", "y_step"):
             # give step floats proper sig figs to not output scientific notation
-            outstring += "{field:<14s}{val:0.12f}\n".format(
-                field=field.upper(), val=value
-            )
+            outstring += f"{field.upper():<14s}{value:0.12f}\n"
         else:
-            outstring += "{field:<14s}{val}\n".format(field=field.upper(), val=value)
+            outstring += f"{field.upper():<14s}{value}\n"
 
     return outstring

@@ -10,7 +10,6 @@ import responses
 
 from sardem import dem, download, utils
 
-
 DATA_PATH = join(dirname(__file__), "data")
 NETRC_PATH = join(DATA_PATH, "netrc")
 
@@ -22,7 +21,7 @@ class TestNetrc(unittest.TestCase):
             "machine urs.earthdata.nasa.gov\n\tlogin testuser\n\tpassword testpass\n"
         )
 
-        self.assertEqual(n.format(), expected)
+        assert n.format() == expected
 
 
 class TestTile(unittest.TestCase):
@@ -33,15 +32,14 @@ class TestTile(unittest.TestCase):
         t = download.Tile(*self.bounds)
         expected = (-155.4, 19.749, -155.399, 19.75)
 
-        self.assertEqual(expected, t.bounds)
+        assert expected == t.bounds
 
 
 class TestDownload(unittest.TestCase):
     def setUp(self):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
         self.test_tile = "N19W156"
-        self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/\
-SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
+        self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
         sample_hgt_path = join(DATA_PATH, self.test_tile + ".hgt.zip")
         with open(sample_hgt_path, "rb") as f:
@@ -54,8 +52,8 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
 
     def test_init(self):
         d = download.Downloader([self.test_tile], netrc_file=NETRC_PATH)
-        self.assertEqual(
-            d.data_url, "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
+        assert (
+            d.data_url == "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
         )
 
     @responses.activate
@@ -65,7 +63,7 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
             [self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
         )
         d.download_all()
-        self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
+        assert os.path.exists(d._filepath(self.test_tile))
 
 
 class TestBounds:
@@ -83,7 +81,7 @@ class TestBounds:
 
     def test_corner_input(self):
         result = utils.corner_coords(self.left_lon, self.top_lat, self.dlon, self.dlat)
-        assert set(tuple(c) for c in result) == set(tuple(c) for c in self.coords)
+        assert {tuple(c) for c in result} == {tuple(c) for c in self.coords}
 
     def test_bounding_box(self):
         assert utils.bounding_box(
@@ -107,7 +105,7 @@ def test_main_srtm(tmp_path, srtm_tile_path, srtm_tile, srtm_tile_bbox):
 
 
 def test_main_match_file(tmp_path, srtm_tile_path, srtm_tile):
-    """Test sardem with --match-file option by creating a dummy tiff and matching its bounds"""
+    """Test sardem with --match-file option by creating a dummy tiff and matching its bounds."""
     import rasterio
     from rasterio.transform import from_bounds
 
@@ -162,7 +160,7 @@ def test_main_match_file(tmp_path, srtm_tile_path, srtm_tile):
 
 
 def test_main_match_file_with_buffer(tmp_path, srtm_tile_path, srtm_tile):
-    """Test sardem with --match-file and --buffer options"""
+    """Test sardem with --match-file and --buffer options."""
     import rasterio
     from rasterio.transform import from_bounds
 
