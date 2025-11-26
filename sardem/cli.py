@@ -38,6 +38,8 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
         sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
         sardem --bbox -156 18.8 -154.7 20.3 --data-source COP  # Copernicus DEM
         sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
+        sardem --match-file input.tif  # Match bounds from existing raster file
+        sardem --match-file input.tif --buffer 0.1  # Match bounds with 0.1 degree buffer
         sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
 
@@ -92,6 +94,20 @@ def get_cli_args():
         type=FileType(),
         help="Alternate to corner/dlon/dlat box specification: \n"
         "File containing the WKT string for DEM bounds",
+    )
+    parser.add_argument(
+        "--match-file",
+        "-m",
+        help="Alternate to corner/dlon/dlat box specification: \n"
+        "Geospatial raster file to match bounds from (e.g. a GeoTIFF)",
+    )
+    parser.add_argument(
+        "--buffer",
+        "-b",
+        type=float,
+        default=0.0,
+        help="Buffer to add around bounding box in degrees (default=0). \n"
+        "Expands the bbox by this amount in all directions.",
     )
     parser.add_argument(
         "--xrate",
@@ -174,11 +190,11 @@ def cli():
     args = get_cli_args()
     import sardem.dem
 
-    if (args.left_lon and args.geojson) or (args.left_lon and args.bbox):
+    if (args.left_lon and args.geojson) or (args.left_lon and args.bbox) or (args.left_lon and args.match_file):
         raise ArgumentError(
             args.geojson,
             "Can only use one type of bounding box specifier: (left_lon top_lat dlon dlat) "
-            ", --geojson, --bbox, or --wkt-file",
+            ", --geojson, --bbox, --wkt-file, or --match-file",
         )
     # Need all 4 positionals, or the --geojson
     elif (
@@ -186,8 +202,9 @@ def cli():
         and not args.geojson
         and not args.bbox
         and not args.wkt_file
+        and not args.match_file
     ):
-        raise ValueError("Need --bbox, --geojson, or --wkt-file")
+        raise ValueError("Need --bbox, --geojson, --wkt-file, or --match-file")
 
     geojson_dict = json.load(args.geojson) if args.geojson else None
     if args.left_lon:
@@ -196,8 +213,14 @@ def cli():
         bbox = utils.bounding_box(left_lon, top_lat, dlon, dlat)
     elif args.bbox:
         bbox = args.bbox
+    elif args.match_file:
+        bbox = utils.get_file_bbox(args.match_file)
     else:
         bbox = None
+
+    # Apply buffer if specified
+    if bbox and args.buffer != 0.0:
+        bbox = utils.buffer_bbox(bbox, args.buffer)
 
     if not args.output:
         output = (

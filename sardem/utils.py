@@ -146,6 +146,44 @@ def get_wkt_bbox(fname):
     # return wkt.load(f).bounds
 
 
+def get_file_bbox(filename):
+    """Get bounding box from a geospatial raster file
+
+    Args:
+        filename (str): Path to a geospatial raster file (e.g., GeoTIFF)
+
+    Returns:
+        tuple[float]: the left, bottom, right, top coords of bounding box
+    """
+    try:
+        import rasterio
+    except ImportError:
+        logger.error("Need rasterio installed to load bounds from raster file")
+        raise
+
+    with rasterio.open(filename) as src:
+        return src.bounds
+
+
+def buffer_bbox(bbox, buffer_degrees):
+    """Apply a buffer to a bounding box
+
+    Args:
+        bbox (tuple[float]): Bounding box as (left, bottom, right, top)
+        buffer_degrees (float): Buffer to add in degrees (can be negative to shrink)
+
+    Returns:
+        tuple[float]: Buffered bounding box (left, bottom, right, top)
+    """
+    left, bottom, right, top = bbox
+    return (
+        left - buffer_degrees,
+        bottom - buffer_degrees,
+        right + buffer_degrees,
+        top + buffer_degrees,
+    )
+
+
 def shift_rsc_file(rsc_filename=None, outname=None, to_gdal=True):
     """Shift the top-left of a .rsc file by half pixel
 
