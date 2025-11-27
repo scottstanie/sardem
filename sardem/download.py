@@ -13,11 +13,6 @@ import requests
 from sardem import utils
 from sardem.constants import DEFAULT_RES
 
-try:
-    input = raw_input  # Check for python 2
-except NameError:
-    pass
-
 logger = logging.getLogger("sardem")
 
 
@@ -79,7 +74,7 @@ class Tile:
 
     @staticmethod
     def get_tile_parts(tile_name):
-        r"""Parses the lat/lon information of a .hgt tile.
+        r"""Parse the lat/lon information of a .hgt tile.
 
         Validates that the string is an actual tile name
 
@@ -87,8 +82,8 @@ class Tile:
             tile_name
 
         Returns:
-            tuple: lat_str (either 'N' for north, 'S' for south), lat: int latitude from 0 to 90
-                lon_str (either 'W' for west, 'E' for east), lon: int longitude from 0 to 180
+            tuple: lat_str ('N' or 'S'), lat (int, 0-90)
+                lon_str ('W' or 'E'), lon (int, 0-180)
 
         Raises:
             ValueError: if regex match fails on tile_name
@@ -128,7 +123,7 @@ class Tile:
         return math.floor(lon), math.floor(lat)
 
     def srtm1_tile_names(self):
-        """Iterator over all tiles needed to cover the requested bounds.
+        """Iterate over all tiles needed to cover the requested bounds.
 
         Args:
             None: bounds provided to Tile __init__()
@@ -286,13 +281,15 @@ class Downloader:
 
         """
         if self.data_source.startswith("NASA"):
-            url = (
-                f"{self.data_url}/{tile_name + self.TILE_ENDINGS[self.data_source]}.{self.compress_type}"
-            )
+            tile_ending = self.TILE_ENDINGS[self.data_source]
+            url = f"{self.data_url}/{tile_name + tile_ending}.{self.compress_type}"
         return url
 
     def _download_hgt_tile(self, url):
-        """Example from https://lpdaac.usgs.gov/data_access/daac2disk "command line tips"."""
+        """Download file from URL.
+
+        Based on https://lpdaac.usgs.gov/data_access/daac2disk command line tips.
+        """
         # Using a netrc file is the easy cases
         logger.info(f"Downloading {url}")
         if self.data_source.startswith("NASA") and self._has_nasa_netrc():
@@ -303,8 +300,7 @@ class Downloader:
             with requests.Session() as session:
                 session.auth = (self.username, self.password)
                 r1 = session.request("get", url)
-                # NASA then redirects to
-                # urs.earthdata.nasa.gov/oauth/authorize?scope=uid&app_type=401&client_id=...
+                # NASA then redirects to urs.earthdata.nasa.gov/oauth/authorize
                 response = session.get(r1.url, auth=(self.username, self.password))
 
         return response
@@ -371,7 +367,7 @@ class Downloader:
         data.tofile(local_filename)
 
     def download_all(self):
-        """Downloads and saves all tiles from tile list."""
+        """Download and save all tiles from tile list."""
         # Only need to get credentials for this case:
         if (
             not self._all_files_exist()

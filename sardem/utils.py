@@ -3,7 +3,6 @@
 import logging
 import os
 import subprocess
-import sys
 from math import floor
 
 from sardem import loading
@@ -11,6 +10,7 @@ from sardem.constants import DEFAULT_RES
 
 
 def set_logger_handler(logger, level="INFO"):
+    """Configure logger with appropriate handler and level."""
     logger.setLevel(level)
     if logger.hasHandlers():
         # logger.handlers.clear()
@@ -57,8 +57,8 @@ def floor_float(num, ndigits):
 
 
 def is_file(f):
-    """Python 2/3 compatible check for file object."""
-    return isinstance(f, file) if sys.version_info[0] == 2 else hasattr(f, "read")
+    """Check if object is a file-like object."""
+    return hasattr(f, "read")
 
 
 def corner_coords(lon, lat, dlon, dlat):
@@ -112,7 +112,8 @@ def shift_integer_bbox(bbox):
 
 
 def coords(geojson):
-    """Finds the coordinates of a geojson polygon
+    """Find the coordinates of a geojson polygon.
+
     Note: we are assuming one simple polygon with no holes.
 
     Args:
@@ -133,11 +134,12 @@ def coords(geojson):
             geojson = geojson["geometry"]
     except KeyError:
         msg = "Invalid geojson"
-        raise ValueError(msg)
+        raise ValueError(msg) from None
     return geojson["coordinates"][0]
 
 
 def get_wkt_bbox(fname):
+    """Extract bounding box from WKT file."""
     try:
         from shapely import wkt
     except ImportError:
@@ -335,7 +337,7 @@ def gdal2isce_xml(fname, keep_egm=False):
     dataType = GDAL2ISCE_DATATYPE[dataTypeGdal]
     logger.info("dataType: " + "\t" + str(dataType))
 
-    # transformation contains gridcorners (lines/pixels or lonlat and the spacing 1/-1 or deltalon/deltalat)
+    # transformation contains grid corners (pixels or lonlat and spacing)
     transform = ds.GetGeoTransform()
     # if a complex data type, then create complex image
     # if a real data type, then create a regular image
@@ -389,7 +391,7 @@ def gdal2isce_xml(fname, keep_egm=False):
 
 
 def _add_reference_datum(xml_file, keep_egm=False):
-    """Example of modifying an existing XML file."""
+    """Add reference datum information to an existing XML file."""
     import xml.etree.ElementTree as ET
     from xml.dom import minidom
 

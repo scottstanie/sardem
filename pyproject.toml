@@ -84,21 +84,31 @@ select = [
 ]
 
 ignore = [
-  "PTH123", # `open()` should be replaced by `Path.open()`
+  "PTH",    # flake8-use-pathlib - would require extensive refactoring
   "PLR",    # Pylint Refactor
   "D100",   # Missing docstring in public module
   "D104",   # Missing docstring in public package
   "D105",   # Missing docstring in magic method
   "D102",   # Missing docstring in public method
+  "D107",   # Missing docstring in __init__
   "D213",   # Multi-line docstring summary should start at the second line
   "D203",   # 1 blank line required before class docstring
+  "D417",   # Missing argument descriptions - nice to have but not critical
   "N806",   # Variable _ in function should be lowercase
   "SIM108", # Use ternary operator
+  "RUF012", # Mutable class attributes - would need typing.ClassVar
+  "TRY300", # Consider moving statement to else block
+  "PLW2901", # Loop variable overwritten
+  "ARG001", # Unused function argument
+  "PGH004", # Use specific noqa codes
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "**/__init__.py" = ["F401", "F403"]
 "tests/**" = ["D", "N", "PTH", "ARG001", "PLR2004", "E501"]
+"sardem/tests/**" = ["D", "N", "PTH", "ARG001", "PLR2004", "E501", "RUF012", "PT011", "SIM115"]
+"notebooks/**" = ["E501", "D", "N"]
+"**/*.ipynb" = ["E501", "D", "N"]
 
 [tool.black]
 target-version = ["py310", "py311", "py312", "py313"]

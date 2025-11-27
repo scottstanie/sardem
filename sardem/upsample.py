@@ -93,6 +93,7 @@ def upsample_by_blocks(
 
 
 def bilinear_interpolate(arr, x, y):
+    """Perform bilinear interpolation on array at given coordinates."""
     x = np.asarray(x)
     y = np.asarray(y)
 
@@ -170,7 +171,7 @@ def resample(arr, rsc_dict, bbox):
 
 
 def _block_iterator(arr_shape, block_shape):
-    """Iterator to get indexes for accessing blocks of a raster.
+    """Get indexes for accessing blocks of a raster.
 
     Args:
         arr_shape = (num_rows, num_cols), full size of array to access
@@ -211,7 +212,7 @@ def _block_iterator(arr_shape, block_shape):
 
 
 def upsample_dem_rsc(xrate=None, yrate=None, rsc_dict=None, rsc_filename=None):
-    """Creates a new .dem.rsc file for upsampled version.
+    """Create a new .dem.rsc file for upsampled version.
 
     Adjusts the FILE_LENGTH, WIDTH, X_STEP, Y_STEP for new rate
 

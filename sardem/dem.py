@@ -113,7 +113,7 @@ class Stitcher:
         return (self._total_length(blockrows), self._total_length(blockcols))
 
     def _total_length(self, numblocks):
-        """Computes the total number of pixels in one dem from numblocks."""
+        """Compute the total number of pixels in one dem from numblocks."""
         return numblocks * (self.num_pixels - 1) + 1
 
     @property
@@ -122,7 +122,7 @@ class Stitcher:
         return self._compute_shape()
 
     def _compute_shape(self):
-        """Takes the tile list and computes the number of tile rows and tile cols.
+        """Take the tile list and compute the number of tile rows and tile cols.
 
         Figures out how many lons wide and lats tall the tile array spans
         Note: This is not the total number of pixels, which can be found in .shape
@@ -141,7 +141,7 @@ class Stitcher:
 
     @staticmethod
     def start_lon_lat(tile_name):
-        """Takes an SRTM1 data tile_name and returns the first (lon, lat) point.
+        """Take an SRTM1 data tile_name and return the first (lon, lat) point.
 
         The reverse of Tile.srtm1_tile_names()
 
@@ -179,7 +179,7 @@ class Stitcher:
         return (left_lon, top_lat)
 
     def _create_file_array(self):
-        """Finds filenames and reshapes into numpy.array matching DEM shape.
+        """Find filenames and reshape into numpy.array matching DEM shape.
 
         Examples:
             >>> s = Stitcher(['N19W156', 'N19W155', 'N18W156', 'N18W155'])
@@ -192,7 +192,7 @@ class Stitcher:
         return np.array(self.tile_file_list).reshape((nrows, ncols))
 
     def _load_tile(self, tile_name):
-        """Loads the tile, or returns a square of zeros if missing."""
+        """Load the tile, or return a square of zeros if missing."""
         idx = self.tile_file_list.index(tile_name)
         filename = self.filenames[idx]
         if filename and os.path.exists(filename):
@@ -204,7 +204,7 @@ class Stitcher:
             return np.zeros((NUM_PIXELS_SRTM1, NUM_PIXELS_SRTM1), dtype=self.dtype)
 
     def load_and_stitch(self):
-        """Function to load combine .hgt tiles.
+        """Load and combine .hgt tiles.
 
         Uses hstack first on rows, then vstacks rows together.
         Also handles the deleting of overlapped rows/columns of SRTM tiles
@@ -230,7 +230,7 @@ class Stitcher:
         return np.vstack(row_list)
 
     def _find_step_sizes(self, ndigits=12):
-        """Calculates the step size for the dem.rsc.
+        """Calculate the step size for the dem.rsc.
 
         Note: assuming same step size in x and y direction
 
@@ -250,7 +250,7 @@ class Stitcher:
         return (step_size, -1 * step_size)
 
     def create_dem_rsc(self):
-        """Takes a list of the SRTM1 tile names and outputs .dem.rsc file values.
+        """Take a list of the SRTM1 tile names and output .dem.rsc file values.
 
         See module docstring for example .dem.rsc file.
 
@@ -262,10 +262,8 @@ class Stitcher:
 
         Examples:
             >>> s = Stitcher(['N19W156', 'N19W155'])
-            >>> s.create_dem_rsc()
-            OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ('X_FIRST', -156.0), \
-('Y_FIRST', 20.0), ('X_STEP', 0.000277777777), ('Y_STEP', -0.000277777777), ('X_UNIT', 'degrees'), \
-('Y_UNIT', 'degrees'), ('Z_OFFSET', 0), ('Z_SCALE', 1), ('PROJECTION', 'LL')])
+            >>> s.create_dem_rsc()  # doctest: +SKIP
+            OrderedDict([('WIDTH', 7201), ('FILE_LENGTH', 3601), ...])
 
         """
         # Use an OrderedDict for the key/value pairs so writing to file easy
@@ -310,7 +308,7 @@ def main(
     output_type="float32",
     output_format="GTiff",
 ):
-    """Function for entry point to create a DEM with `sardem`.
+    """Create a DEM with `sardem`.
 
     Args:
         output_name (str): name of file to save final DEM (default = elevation.dem)

@@ -14,12 +14,13 @@ from sardem.download import Downloader
 
 
 def positive_small_int(argstring):
+    """Validate and convert argument to positive integer less than 50."""
     try:
         intval = int(argstring)
         assert 0 < intval < 50
     except (ValueError, AssertionError):
         msg = "--rate must be positive integer < 50"
-        raise ArgumentTypeError(msg)
+        raise ArgumentTypeError(msg) from None
     return intval
 
 
@@ -33,14 +34,16 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
     I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 
     Usage Examples:
-        sardem --bbox -156 18.8 -154.7 20.3  # bounding box: [left  bottom  right top]
-        sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # Makes a box 1 degree wide, 2 deg high
+        sardem --bbox -156 18.8 -154.7 20.3  # bbox: [left bottom right top]
+        sardem -156.0 20.2 1 2 --xrate 2 --yrate 2  # 1 deg wide, 2 deg high
         sardem --bbox -156 18.8 -154.7 20.3 --data-source COP  # Copernicus DEM
-        sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
-        sardem --match-file input.tif  # Match bounds from existing raster file
-        sardem --match-file input.tif --buffer 0.1  # Match bounds with 0.1 degree buffer
-        sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
-        sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
+        sardem --geojson dem_area.geojson -x 11 -y 3  # Use geojson file
+        sardem --match-file input.tif  # Match bounds from existing raster
+        sardem --match-file input.tif --buffer 0.1  # Match with 0.1 deg buffer
+        # Water mask
+        sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o mask.wbd
+        # Generate .isce XML files as well
+        sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce
 
 
     Default out is elevation.dem for the final upsampled DEM.
@@ -48,6 +51,7 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
 
 
 def get_cli_args():
+    """Parse command line arguments for sardem."""
     parser = ArgumentParser(
         prog="sardem",
         description=DESCRIPTION,
@@ -197,6 +201,7 @@ def get_cli_args():
 
 
 def cli():
+    """Entry point for the sardem command-line interface."""
     args = get_cli_args()
     import sardem.dem
 

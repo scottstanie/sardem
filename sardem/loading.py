@@ -27,7 +27,7 @@ DEFAULT_KEYS = {
 
 
 def load_elevation(filename):
-    """Loads a digital elevation map from either .hgt file or .dem.
+    """Load a digital elevation map from either .hgt file or .dem.
 
     .hgt is the NASA SRTM files given. Documentation on format here:
     https://dds.cr.usgs.gov/srtm/version2_1/Documentation/SRTM_Topo.pdf
@@ -80,7 +80,7 @@ def load_elevation(filename):
 
 
 def load_watermask(filename):
-    """Loads a .raw waterbody data file mask.
+    """Load a .raw waterbody data file mask.
 
     Reference:
     https://lpdaac.usgs.gov/products/srtmswbdv003/
@@ -91,7 +91,7 @@ def load_watermask(filename):
 
 
 def load_dem_rsc(filename, lower=False, **kwargs):
-    """Loads and parses the .dem.rsc file.
+    """Load and parse the .dem.rsc file.
 
     Args:
         filename (str) path to either the .dem or .dem.rsc file.
@@ -132,7 +132,7 @@ def load_dem_rsc(filename, lower=False, **kwargs):
 
 
 def format_dem_rsc(rsc_dict):
-    """Creates the .dem.rsc file string from key/value pairs of an OrderedDict.
+    """Create the .dem.rsc file string from key/value pairs of an OrderedDict.
 
     Output of function can be written to a file as follows
         with open('my.dem.rsc', 'w') as f:

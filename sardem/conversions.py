@@ -18,7 +18,7 @@ EGM_FILES = {
 
 
 def egm_to_wgs84(filename, output=None, overwrite=True, copy_rsc=True, geoid="egm96"):
-    """Convert a DEM with a EGM96/2008 vertical datum to WGS84 heights above ellipsoid."""
+    """Convert a DEM with EGM96/2008 datum to WGS84 heights above ellipsoid."""
     if output is None:
         ext = os.path.splitext(filename)[1]
         output = filename.replace(ext, ".wgs84" + ext)
