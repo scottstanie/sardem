@@ -79,7 +79,7 @@ class Tile:
 
     @staticmethod
     def get_tile_parts(tile_name):
-        """Parses the lat/lon information of a .hgt tile
+        r"""Parses the lat/lon information of a .hgt tile
 
         Validates that the string is an actual tile name
 
