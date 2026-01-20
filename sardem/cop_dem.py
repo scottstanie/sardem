@@ -69,6 +69,12 @@ def download_and_stitch(
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
     )
+    # When converting from geoid to ellipsoid, preserve ocean (value=0) as nodata
+    # COP DEM has ocean areas as 0 (sea level relative to geoid), which would
+    # otherwise become ~geoid_undulation after the vertical datum conversion
+    if not keep_egm:
+        option_dict["srcNodata"] = 0
+        option_dict["dstNodata"] = 0
 
     # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
