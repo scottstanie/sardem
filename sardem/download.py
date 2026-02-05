@@ -101,8 +101,7 @@ class Tile:
             >>> Tile.get_tile_parts('Notrealname')
             Traceback (most recent call last):
                ...
-            ValueError: Invalid SRTM1 tile name: Notrealname, must match \
-([NS])(\d{1,2})([EW])(\d{1,3})
+            ValueError: Invalid SRTM1 tile name: Notrealname, must match ([NS])(\d{1,2})([EW])(\d{1,3})
         """
         lon_lat_regex = r"([NS])(\d{1,2})([EW])(\d{1,3})"
         match = re.match(lon_lat_regex, tile_name)

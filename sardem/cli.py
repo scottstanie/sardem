@@ -42,8 +42,9 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
 
 
-    Default out is elevation.dem for the final upsampled DEM.
-    Also creates elevation.dem.rsc with start lat/lon, stride, and other info."""
+    Default out is elevation.tif for GTiff format (the default).
+    If making the binary ROI_PAC format, will also creates elevation.tif.rsc with 
+    start lat/lon, stride, and other info."""
 
 
 def get_cli_args():
@@ -111,7 +112,7 @@ def get_cli_args():
         "--output",
         "-o",
         help="Name of output dem file"
-        " (default=elevation.dem for DEM, watermask.wbd for water mask)",
+        " (default=elevation.tif for GTiff, elevation.dem otherwise, watermask.flg for water mask)",
     )
     parser.add_argument(
         "--data-source",
@@ -200,9 +201,12 @@ def cli():
         bbox = None
 
     if not args.output:
-        output = (
-            "watermask.flg" if args.data_source == "NASA_WATER" else "elevation.dem"
-        )
+        if args.data_source == "NASA_WATER":
+            output = "watermask.flg"
+        elif args.output_format == "GTiff":
+            output = "elevation.tif"
+        else:
+            output = "elevation.dem"
     else:
         output = args.output
 
