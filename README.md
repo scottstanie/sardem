@@ -6,7 +6,7 @@ A tool for making Digital Elevation Maps (DEMs) in binary data format (16-bit in
 The `sardem` command creates a cropped (and possibly upsampled) digital elevation map:
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm] [--shift-rsc]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm] [--shift-rsc]
               [left_lon] [top_lat] [dlon] [dlat]
 ```
 
@@ -39,7 +39,7 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data. 
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data, or `--data-source NISAR` for the NISAR DEM (see below).
 To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
@@ -76,7 +76,7 @@ sardem --help
 ```
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm]
               [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
@@ -123,7 +123,7 @@ options:
                         Rate in y dir to upsample DEM (default=1, no upsampling)
   --output OUTPUT, -o OUTPUT
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
-  --data-source {NASA,NASA_WATER,COP}, -d {NASA,NASA_WATER,COP}
+  --data-source {NASA,NASA_WATER,COP,NISAR}, -d {NASA,NASA_WATER,COP,NISAR}
                         Source of DEM data (default COP). See README for more.
   -isce, --make-isce-xml
                         Make an isce2 XML file for the DEM.
@@ -157,6 +157,30 @@ machine urs.earthdata.nasa.gov
     password PASSWORD
 ```
 
+## NISAR DEM
+
+The NISAR DEM (`--data-source NISAR`) is a modified Copernicus DEM prepared by JPL for the NISAR mission. Key properties:
+
+- **Already WGS84 ellipsoidal heights** -- the EGM2008-to-WGS84 conversion has been pre-applied, so no vertical datum conversion is needed (the `--keep-egm` flag has no effect).
+- **Ocean gaps filled** with the EGM2008 geoid model, providing complete global coverage.
+- Available as a hierarchical VRT at `https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt`
+
+### Authentication
+
+The NISAR DEM requires NASA Earthdata credentials. Sign up at https://urs.earthdata.nasa.gov/users/new , then add the following to your `~/.netrc`:
+
+```
+machine urs.earthdata.nasa.gov
+    login USERNAME
+    password PASSWORD
+```
+
+### Usage
+
+```bash
+sardem --bbox -104 30 -103 31 --data-source NISAR
+```
+
 ## Citations and Acknowledgments
 
 ### Copernicus DEM
@@ -170,3 +194,11 @@ And include the following attribution notice:
 > © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
 
 For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
+
+### NISAR DEM
+
+When using the NISAR DEM (`--data-source NISAR`), please include the following acknowledgment:
+
+> This DEM was produced by the NISAR Science Data System (SDS) at the Jet Propulsion Laboratory, California Institute of Technology, using a modified version of the Copernicus GLO-30 DEM distributed by the European Space Agency.
+
+For more information, visit: https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/
