@@ -6,7 +6,7 @@ A tool for making Digital Elevation Maps (DEMs) in binary data format (16-bit in
 The `sardem` command creates a cropped (and possibly upsampled) digital elevation map:
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm] [--shift-rsc]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm] [--shift-rsc]
               [left_lon] [top_lat] [dlon] [dlat]
 ```
 
@@ -39,8 +39,8 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data. 
-To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data, or `--data-source NISAR` for the NISAR DEM (see below).
+The [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook has a comparison of the COP and SRTM 1 data.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
 For the Copernicus data, the minimum required GDAL version is 3.4.2; versions earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
@@ -51,21 +51,18 @@ For the Copernicus data, the minimum required GDAL version is 3.4.2; versions ea
 `sardem` uses the gdal convention ("pixel is area") where `--bbox` points to the *edges* of the [left, bottom, right, top] pixels.
 I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 
-
-
 ### Converting to WGS84 ellipsoidal heights from EGM96/EGM2008 geoid heights
 
 GDAL is required for the conversion, which is installed when using `conda install -c conda-forge sardem`.
 If you already are using an existing environment, make sure that the GDAL version is >=3.4.2.
 
-```bash 
+```bash
 conda install -c conda-forge "gdal>=3.4.2"
 
 # or
 # conda install -c conda-forge mamba
 # mamba install -c conda-forge "gdal>=3.4.2"
 ```
-
 
 ## Command Line Interface
 
@@ -76,7 +73,7 @@ sardem --help
 ```
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP}] [-isce] [--keep-egm]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm]
               [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
@@ -123,7 +120,7 @@ options:
                         Rate in y dir to upsample DEM (default=1, no upsampling)
   --output OUTPUT, -o OUTPUT
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
-  --data-source {NASA,NASA_WATER,COP}, -d {NASA,NASA_WATER,COP}
+  --data-source {NASA,NASA_WATER,COP,NISAR}, -d {NASA,NASA_WATER,COP,NISAR}
                         Source of DEM data (default COP). See README for more.
   -isce, --make-isce-xml
                         Make an isce2 XML file for the DEM.
@@ -157,6 +154,18 @@ machine urs.earthdata.nasa.gov
     password PASSWORD
 ```
 
+## NISAR DEM
+
+The NISAR DEM (`--data-source NISAR`) is a modified Copernicus DEM prepared by JPL for the NISAR mission. The DEM has been converted to WGS84 ellipsoidal heights, and is available as a hierarchical VRT at `https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt` for mid-latitudes, `EPSG3031.vrt` for the south pole, `EPSG3413.vrt` for the north pole.
+
+The NISAR DEM requires NASA Earthdata credentials like the SRTM data.
+
+### Usage
+
+```bash
+sardem --bbox -104 30 -103 31 --data-source NISAR
+```
+
 ## Citations and Acknowledgments
 
 ### Copernicus DEM
@@ -170,3 +179,5 @@ And include the following attribution notice:
 > © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
 
 For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
+
+When using the NISAR DEM (`--data-source NISAR`), [you can cite the data as described here.](https://www.earthdata.nasa.gov/data/catalog/asf-nisar-dem-1#toc-citation)

@@ -366,6 +366,28 @@ def main(
             utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
         return
 
+    if data_source == "NISAR":
+        if keep_egm:
+            logger.info(
+                "NISAR DEM is already in WGS84 ellipsoidal heights;"
+                " --keep-egm has no effect."
+            )
+        utils._gdal_installed_correctly()
+        from sardem import nisar_dem
+
+        nisar_dem.download_and_stitch(
+            output_name,
+            bbox,
+            xrate=xrate,
+            yrate=yrate,
+            output_format=output_format,
+            output_type=output_type,
+        )
+        if make_isce_xml:
+            logger.info("Creating ISCE2 XML file")
+            utils.gdal2isce_xml(output_name, keep_egm=False)
+        return
+
     # If using SRTM, download tiles manually and stitch
     if output_format != "ENVI":
         logger.warning(
