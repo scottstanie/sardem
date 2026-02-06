@@ -40,7 +40,7 @@ which will run `pip install --upgrade .` and create the command line script.
 
 ## Data sources
 The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data, or `--data-source NISAR` for the NISAR DEM (see below).
-To see a comparison of the two, see the [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook.
+The [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook has a comparison of the COP and SRTM 1 data.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
 For the Copernicus data, the minimum required GDAL version is 3.4.2; versions earlier than 3.4.0 seem to hang upon using `gdalwarp` on the global VRT, and <3.4.2 have an internal bug https://github.com/isce-framework/isce2/issues/556 .
@@ -51,21 +51,18 @@ For the Copernicus data, the minimum required GDAL version is 3.4.2; versions ea
 `sardem` uses the gdal convention ("pixel is area") where `--bbox` points to the *edges* of the [left, bottom, right, top] pixels.
 I.e. (left, bottom) refers to the lower left corner of the lower left pixel.
 
-
-
 ### Converting to WGS84 ellipsoidal heights from EGM96/EGM2008 geoid heights
 
 GDAL is required for the conversion, which is installed when using `conda install -c conda-forge sardem`.
 If you already are using an existing environment, make sure that the GDAL version is >=3.4.2.
 
-```bash 
+```bash
 conda install -c conda-forge "gdal>=3.4.2"
 
 # or
 # conda install -c conda-forge mamba
 # mamba install -c conda-forge "gdal>=3.4.2"
 ```
-
 
 ## Command Line Interface
 
@@ -159,21 +156,9 @@ machine urs.earthdata.nasa.gov
 
 ## NISAR DEM
 
-The NISAR DEM (`--data-source NISAR`) is a modified Copernicus DEM prepared by JPL for the NISAR mission. Key properties:
+The NISAR DEM (`--data-source NISAR`) is a modified Copernicus DEM prepared by JPL for the NISAR mission. The DEM has been converted to WGS84 ellipsoidal heights, and is available as a hierarchical VRT at `https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt` for mid-latitudes, `EPSG3031.vrt` for the south pole, `EPSG3413.vrt` for the north pole.
 
-- **Already WGS84 ellipsoidal heights** -- the EGM2008-to-WGS84 conversion has been pre-applied, so no vertical datum conversion is needed (the `--keep-egm` flag has no effect).
-- **Ocean gaps filled** with the EGM2008 geoid model, providing complete global coverage.
-- Available as a hierarchical VRT at `https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt`
-
-### Authentication
-
-The NISAR DEM requires NASA Earthdata credentials. Sign up at https://urs.earthdata.nasa.gov/users/new , then add the following to your `~/.netrc`:
-
-```
-machine urs.earthdata.nasa.gov
-    login USERNAME
-    password PASSWORD
-```
+The NISAR DEM requires NASA Earthdata credentials like the SRTM data.
 
 ### Usage
 
@@ -195,10 +180,4 @@ And include the following attribution notice:
 
 For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
 
-### NISAR DEM
-
-When using the NISAR DEM (`--data-source NISAR`), please include the following acknowledgment:
-
-> This DEM was produced by the NISAR Science Data System (SDS) at the Jet Propulsion Laboratory, California Institute of Technology, using a modified version of the Copernicus GLO-30 DEM distributed by the European Space Agency.
-
-For more information, visit: https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/
+When using the NISAR DEM (`--data-source NISAR`), [you can cite the data as described here.](https://www.earthdata.nasa.gov/data/catalog/asf-nisar-dem-1#toc-citation)
