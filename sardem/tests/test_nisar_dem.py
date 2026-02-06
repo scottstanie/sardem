@@ -2,6 +2,7 @@ import os
 import zipfile
 
 import numpy as np
+import pytest
 import rasterio as rio
 
 from sardem import nisar_dem
@@ -52,3 +53,22 @@ def test_main_nisar(tmp_path):
 
     np.testing.assert_allclose(expected, output, atol=1.0)
     os.remove(temp_absolute_vrt)
+
+
+@pytest.mark.parametrize(
+    "bbox, expected_key",
+    [
+        ((-104, 30, -103, 31), "EPSG4326"),  # mid-latitude
+        ((0, -80, 10, -70), "EPSG3031"),  # Antarctica
+        ((0, 70, 10, 80), "EPSG3413"),  # Arctic
+        ((-104, -60, -103, -50), "EPSG4326"),  # top above threshold -> mid-lat
+        ((-104, 50, -103, 60), "EPSG4326"),  # bottom below threshold -> mid-lat
+    ],
+)
+def test_select_vrt(bbox, expected_key):
+    url, dst_srs = nisar_dem._select_vrt(bbox)
+    assert expected_key in url
+    if expected_key == "EPSG4326":
+        assert dst_srs is None
+    else:
+        assert dst_srs == "EPSG:4326"

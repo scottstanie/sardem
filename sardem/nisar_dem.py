@@ -6,7 +6,16 @@ from copy import deepcopy
 from sardem import utils
 from sardem.constants import DEFAULT_RES
 
-NISAR_VRT_URL = "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt"
+_NISAR_BASE_URL = "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2"
+NISAR_VRTS = {
+    "EPSG4326": f"{_NISAR_BASE_URL}/EPSG4326/EPSG4326.vrt",
+    "EPSG3031": f"{_NISAR_BASE_URL}/EPSG3031/EPSG3031.vrt",  # South pole
+    "EPSG3413": f"{_NISAR_BASE_URL}/EPSG3413/EPSG3413.vrt",  # North pole
+}
+# Latitude thresholds for switching to polar stereographic VRTs
+_SOUTH_POLE_LAT = -60.0
+_NORTH_POLE_LAT = 60.0
+
 EARTHDATA_HOST = "urs.earthdata.nasa.gov"
 
 logger = logging.getLogger("sardem")
@@ -50,6 +59,35 @@ def _configure_gdal_auth() -> None:
     gdal.SetConfigOption("GDAL_HTTP_NETRC", "YES")
 
 
+def _select_vrt(bbox: tuple) -> tuple[str, str | None]:
+    """Choose the appropriate NISAR VRT and output SRS based on bbox latitude.
+
+    Parameters
+    ----------
+    bbox : tuple
+        (left, bottom, right, top) in degrees.
+
+    Returns
+    -------
+    vrt_url : str
+        The ``/vsicurl/`` URL to the selected VRT.
+    dst_srs : str or None
+        Target SRS for ``gdal.Warp``.  ``None`` when the VRT is already
+        EPSG:4326; ``"EPSG:4326"`` when reprojecting from a polar VRT.
+    """
+    _left, bottom, _right, top = bbox
+    if top <= _SOUTH_POLE_LAT:
+        key = "EPSG3031"
+    elif bottom >= _NORTH_POLE_LAT:
+        key = "EPSG3413"
+    else:
+        key = "EPSG4326"
+    url = "/vsicurl/" + NISAR_VRTS[key]
+    dst_srs = "EPSG:4326" if key != "EPSG4326" else None
+    logger.info("Selected NISAR VRT: %s", key)
+    return url, dst_srs
+
+
 def download_and_stitch(
     output_name: str,
     bbox: tuple,
@@ -90,10 +128,11 @@ def download_and_stitch(
 
     gdal.UseExceptions()
 
+    dst_srs = None
     if vrt_filename is None:
         _check_earthdata_credentials()
         _configure_gdal_auth()
-        vrt_filename = "/vsicurl/" + NISAR_VRT_URL
+        vrt_filename, dst_srs = _select_vrt(bbox)
 
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
@@ -102,6 +141,7 @@ def download_and_stitch(
     option_dict = dict(
         format=output_format,
         outputBounds=bbox,
+        dstSRS=dst_srs,
         xRes=xres,
         yRes=yres,
         outputType=gdal.GetDataTypeByName(output_type.title()),
