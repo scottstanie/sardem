@@ -195,4 +195,14 @@ And include the following attribution notice:
 
 For more information about the Copernicus DEM, visit: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
 
+### USGS 3DEP
+
+When using the 3DEP data (`--data-source 3DEP`), please cite:
+
+> U.S. Geological Survey, 2019, USGS 3D Elevation Program Digital Elevation Model, accessed [date] at https://www.usgs.gov/3d-elevation-program
+
+For more details on citing USGS data, see: https://www.usgs.gov/faqs/how-should-i-cite-datasets-and-services-national-map
+
+### NISAR DEM
+
 When using the NISAR DEM (`--data-source NISAR`), [you can cite the data as described here.](https://www.earthdata.nasa.gov/data/catalog/asf-nisar-dem-1#toc-citation)
