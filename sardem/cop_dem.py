@@ -58,7 +58,7 @@ def download_and_stitch(
     # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
         format=output_format,
-        outputBounds=bbox,
+        outputBounds=utils.align_bounds_to_pixel_grid(bbox),
         dstSRS=t_srs,
         srcSRS=s_srs,
         xRes=xres,

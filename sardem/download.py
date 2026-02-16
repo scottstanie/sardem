@@ -199,6 +199,7 @@ class Downloader:
             "https://elevation.nationalmap.gov/arcgis/rest/services"
             "/3DEPElevation/ImageServer/exportImage"
         ),
+        "NISAR": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt"
     }
     VALID_SOURCES = DATA_URLS.keys()
     TILE_ENDINGS = {

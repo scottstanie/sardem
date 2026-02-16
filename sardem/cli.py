@@ -40,6 +40,7 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
         sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
         sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
+        sardem --bbox -104 30 -103 31 --data-source NISAR  # NISAR DEM (requires Earthdata login)
 
 
     Default out is elevation.tif for GTiff format (the default).
@@ -158,7 +159,7 @@ def get_cli_args():
         "-of",
         choices=["ENVI", "GTiff", "ROI_PAC"],
         default="GTiff",
-        help="Output format (default %(default)s). Used for COP data; NASA data always outputs ENVI format.",
+        help="Output format (default %(default)s). Used for COP/NISAR data; NASA data always outputs ENVI format.",
     )
     parser.add_argument(
         "--output-type",

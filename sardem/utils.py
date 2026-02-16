@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 import sys
-from math import floor
+from math import ceil, floor
 
 from sardem import loading
 from sardem.constants import DEFAULT_RES
@@ -108,6 +108,57 @@ def shift_integer_bbox(bbox):
     hp = 0.5 * DEFAULT_RES  # half pixel
     # Tile names refer to the center of the bottom-left corner of the tile
     return left - hp, bottom + hp, right - hp, top + hp
+
+
+def align_bounds_to_pixel_grid(bbox):
+    """Snap output bounds outward to source pixel edges.
+
+    COP and NISAR source tiles have pixel *centers* at multiples of 1/3600
+    degrees (e.g. at integer degrees for tile corners).  Their pixel *edges*
+    are therefore offset by half a pixel (1/7200 degree) from those centers.
+
+    When ``gdal.Warp`` is called with ``outputBounds`` whose edges coincide
+    with source pixel *centers* (the common case for integer-degree bounding
+    boxes), the output pixel centers land exactly on the boundary between two
+    source pixels.  Nearest-neighbour resampling must then break a tie, and
+    the result depends on floating-point rounding of the source VRT origin --
+    COP and NISAR VRTs have different origins (-179 vs -180 degrees), so the
+    rounding goes opposite ways, producing a 1-pixel shift between the two
+    data sources.
+
+    This function snaps each bound outward to the nearest source pixel *edge*
+    so that output pixel centers coincide with source pixel centers,
+    eliminating the ambiguity.  The resulting ``gdal.Warp`` with
+    nearest-neighbour becomes a pure pixel copy -- bit-for-bit identical to
+    reading the source tiles directly.
+
+    For bounds already on pixel edges (e.g. from ``shift_integer_bbox``),
+    this is a no-op.
+
+    Parameters
+    ----------
+    bbox : tuple
+        ``(left, bottom, right, top)`` in degrees.
+
+    Returns
+    -------
+    tuple
+        Snapped ``(left, bottom, right, top)``.
+    """
+    left, bottom, right, top = bbox
+    inv_res = 1.0 / DEFAULT_RES  # 3600.0
+    # Source pixel edges sit at (k + 0.5) * DEFAULT_RES for integer k.
+    # Snap left/bottom outward (floor) and right/top outward (ceil).
+    left_k = floor(left * inv_res - 0.5)
+    bottom_k = floor(bottom * inv_res - 0.5)
+    right_k = ceil(right * inv_res - 0.5)
+    top_k = ceil(top * inv_res - 0.5)
+    return (
+        (left_k + 0.5) * DEFAULT_RES,
+        (bottom_k + 0.5) * DEFAULT_RES,
+        (right_k + 0.5) * DEFAULT_RES,
+        (top_k + 0.5) * DEFAULT_RES,
+    )
 
 
 def coords(geojson):
