@@ -140,7 +140,7 @@ def download_and_stitch(
 
     option_dict = dict(
         format=output_format,
-        outputBounds=bbox,
+        outputBounds=utils.align_bounds_to_pixel_grid(bbox),
         dstSRS=dst_srs,
         xRes=xres,
         yRes=yres,
