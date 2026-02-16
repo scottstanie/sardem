@@ -6,7 +6,7 @@ A tool for making Digital Elevation Maps (DEMs) in binary data format (16-bit in
 The `sardem` command creates a cropped (and possibly upsampled) digital elevation map:
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm] [--shift-rsc]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,3DEP,NISAR}] [-isce] [--keep-egm] [--shift-rsc]
               [left_lon] [top_lat] [dlon] [dlat]
 ```
 
@@ -39,7 +39,7 @@ which will run `pip install --upgrade .` and create the command line script.
 
 
 ## Data sources
-The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data, or `--data-source NISAR` for the NISAR DEM (see below).
+The default data source is `--data-source COP`, which uses the newer [Copernicus Digital Surface Model (DSM)](https://registry.opendata.aws/copernicus-dem/). You can also use `--data-source NASA` for the SRTM 1 arcsecond data, `--data-source 3DEP` for the USGS 3DEP lidar-derived DEM (see below), or `--data-source NISAR` for the NISAR DEM (see below).
 The [srtm_copernicus_comparison](notebooks/srtm_copernicus_comparison.ipynb) notebook has a comparison of the COP and SRTM 1 data.
 
 **Note:** To convert the elevation values to heights about the WGS84 ellipsoid (which is the default), or to use the Copernicus data, **GDAL is required**. 
@@ -73,7 +73,7 @@ sardem --help
 ```
 
 ```bash
-usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,NISAR}] [-isce] [--keep-egm]
+usage: sardem [-h] [--bbox left bottom right top] [--geojson GEOJSON] [--wkt-file WKT_FILE] [--xrate XRATE] [--yrate YRATE] [--output OUTPUT] [--data-source {NASA,NASA_WATER,COP,3DEP,NISAR}] [-isce] [--keep-egm]
               [--shift-rsc] [--cache-dir CACHE_DIR] [--output-format {ENVI,GTiff,ROI_PAC}] [--output-type {int16,float32,uint8}]
               [left_lon] [top_lat] [dlon] [dlat]
 
@@ -92,6 +92,7 @@ Download and stitch DEM data for local InSAR processing.
         sardem --bbox -156 18.8 -154.7 20.3 --data-source COP  # Copernicus DEM
         sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
         sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
+        sardem --bbox -104 30 -103 31 --data-source 3DEP  # USGS 3DEP lidar DEM (US only)
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
 
     Default out is elevation.dem for the final upsampled DEM.
@@ -120,7 +121,7 @@ options:
                         Rate in y dir to upsample DEM (default=1, no upsampling)
   --output OUTPUT, -o OUTPUT
                         Name of output dem file (default=elevation.dem for DEM, watermask.wbd for water mask)
-  --data-source {NASA,NASA_WATER,COP,NISAR}, -d {NASA,NASA_WATER,COP,NISAR}
+  --data-source {NASA,NASA_WATER,COP,3DEP,NISAR}, -d {NASA,NASA_WATER,COP,3DEP,NISAR}
                         Source of DEM data (default COP). See README for more.
   -isce, --make-isce-xml
                         Make an isce2 XML file for the DEM.
@@ -164,6 +165,20 @@ The NISAR DEM requires NASA Earthdata credentials like the SRTM data.
 
 ```bash
 sardem --bbox -104 30 -103 31 --data-source NISAR
+```
+
+## USGS 3DEP Lidar DEM
+
+The USGS 3D Elevation Program (3DEP) (`--data-source 3DEP`) provides high-resolution lidar-derived elevation data for the United States. The data is accessed via the USGS National Map ImageServer and is available at 1/3 arc-second (~10m) resolution for most of CONUS, with 1-meter resolution in many areas.
+
+Unlike the global Copernicus DEM, 3DEP coverage is limited to the US, but offers higher accuracy in areas with lidar coverage. The [cop_vs_3dep_comparison](notebooks/cop_vs_3dep_comparison.ipynb) notebook has a comparison of the Copernicus and 3DEP data.
+
+No authentication is required.
+
+### Usage
+
+```bash
+sardem --bbox -104 30 -103 31 --data-source 3DEP
 ```
 
 ## Citations and Acknowledgments

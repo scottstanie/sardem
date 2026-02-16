@@ -40,6 +40,7 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
         sardem --geojson dem_area.geojson -x 11 -y 3 # Use geojson file to define area
         sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
+        sardem --bbox -104 30 -103 31 --data-source 3DEP  # USGS 3DEP lidar DEM (US only)
         sardem --bbox -104 30 -103 31 --data-source NISAR  # NISAR DEM (requires Earthdata login)
 
 
