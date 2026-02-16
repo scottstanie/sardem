@@ -414,24 +414,124 @@ def main(
             output_format,
         )
 
-    tile_names = list(Tile(*bbox).srtm1_tile_names())
+    # Check for dateline crossing
+    bboxes = utils.check_dateline(bbox)
 
-    d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
-    local_filenames = d.download_all()
+    if len(bboxes) == 1:
+        # No dateline crossing, proceed normally
+        tile_names = list(Tile(*bbox).srtm1_tile_names())
 
-    s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
-    stitched_dem = s.load_and_stitch()
+        d = Downloader(tile_names, data_source=data_source, cache_dir=cache_dir)
+        local_filenames = d.download_all()
 
-    # Now create corresponding rsc file for all the tiles
-    rsc_dict_tiles = s.create_dem_rsc()
+        s = Stitcher(tile_names, filenames=local_filenames, data_source=data_source)
+        stitched_dem = s.load_and_stitch()
 
-    logger.info("Cropping stitched DEM to boundaries")
-    stitched_dem = upsample.resample(stitched_dem, rsc_dict_tiles, bbox)
-    rsc_dict = rsc_dict_tiles.copy()
-    rsc_dict["X_FIRST"] = bbox[0]
-    rsc_dict["Y_FIRST"] = bbox[3]
-    rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]
-    rsc_dict["WIDTH"] = stitched_dem.shape[1]
+        rsc_dict_tiles = s.create_dem_rsc()
+
+        logger.info("Cropping stitched DEM to boundaries")
+        stitched_dem = upsample.resample(stitched_dem, rsc_dict_tiles, bbox)
+        rsc_dict = rsc_dict_tiles.copy()
+        rsc_dict["X_FIRST"] = bbox[0]
+        rsc_dict["Y_FIRST"] = bbox[3]
+        rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]
+        rsc_dict["WIDTH"] = stitched_dem.shape[1]
+    else:
+        # Dateline crossing: download each sub-bbox, merge via GDAL VRT
+        import tempfile
+
+        logger.info(
+            "Dateline crossing detected, downloading {} separate regions".format(
+                len(bboxes)
+            )
+        )
+        utils._gdal_installed_correctly()
+        from osgeo import gdal, osr
+
+        temp_files = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for idx, sub_bbox in enumerate(bboxes):
+                logger.info(
+                    "Processing region {} of {}".format(idx + 1, len(bboxes))
+                )
+
+                tile_names = list(Tile(*sub_bbox).srtm1_tile_names())
+                d = Downloader(
+                    tile_names, data_source=data_source, cache_dir=cache_dir
+                )
+                local_filenames = d.download_all()
+
+                s = Stitcher(
+                    tile_names, filenames=local_filenames, data_source=data_source
+                )
+                dem_part = s.load_and_stitch()
+
+                rsc_dict_part = s.create_dem_rsc()
+                dem_part = upsample.resample(dem_part, rsc_dict_part, sub_bbox)
+
+                # Write as GeoTIFF for VRT merging
+                temp_tif = os.path.join(tmpdir, "dem_part_{}.tif".format(idx))
+                temp_files.append(temp_tif)
+
+                x_first = sub_bbox[0]
+                y_first = sub_bbox[3]
+                x_step = (sub_bbox[2] - sub_bbox[0]) / dem_part.shape[1]
+                y_step = -(sub_bbox[3] - sub_bbox[1]) / dem_part.shape[0]
+
+                # Shift western tile to 0-360 range so GDAL sees tiles as adjacent
+                if x_first < 0:
+                    x_first += 360.0
+
+                driver = gdal.GetDriverByName("GTiff")
+                ds = driver.Create(
+                    temp_tif,
+                    dem_part.shape[1],
+                    dem_part.shape[0],
+                    1,
+                    gdal.GDT_Int16
+                    if data_source != "NASA_WATER"
+                    else gdal.GDT_Byte,
+                )
+                ds.SetGeoTransform([x_first, x_step, 0, y_first, 0, y_step])
+
+                srs = osr.SpatialReference()
+                srs.ImportFromEPSG(4326)
+                ds.SetProjection(srs.ExportToWkt())
+
+                ds.GetRasterBand(1).WriteArray(dem_part)
+                ds.FlushCache()
+                ds = None
+
+            # Merge sub-regions via VRT
+            logger.info("Merging {} regions into VRT".format(len(temp_files)))
+            vrt_temp = os.path.join(tmpdir, "merged.vrt")
+            gdal.BuildVRT(vrt_temp, temp_files)
+
+            ds = gdal.Open(vrt_temp)
+            stitched_dem = ds.GetRasterBand(1).ReadAsArray()
+            geotransform = ds.GetGeoTransform()
+            ds = None
+
+            rsc_dict = collections.OrderedDict.fromkeys(RSC_KEYS)
+            rsc_dict.update(
+                {
+                    "X_UNIT": "degrees",
+                    "Y_UNIT": "degrees",
+                    "Z_OFFSET": 0,
+                    "Z_SCALE": 1,
+                    "PROJECTION": "LL",
+                }
+            )
+            x_first = geotransform[0]
+            # Wrap back to -180..180 if needed
+            if x_first > 180:
+                x_first -= 360
+            rsc_dict["X_FIRST"] = x_first
+            rsc_dict["Y_FIRST"] = geotransform[3]
+            rsc_dict["X_STEP"] = geotransform[1]
+            rsc_dict["Y_STEP"] = geotransform[5]
+            rsc_dict["FILE_LENGTH"] = stitched_dem.shape[0]
+            rsc_dict["WIDTH"] = stitched_dem.shape[1]
 
     rsc_filename = output_name + ".rsc"
 

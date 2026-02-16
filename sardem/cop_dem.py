@@ -32,18 +32,115 @@ def download_and_stitch(
         https://spacedata.copernicus.eu/web/cscda/dataset-details?articleId=394198
         https://copernicus-dem-30m.s3.amazonaws.com/readme.html
     """
+    import os
+    import tempfile
+
     from osgeo import gdal
 
     gdal.UseExceptions()
-    # TODO: does downloading make it run any faster?
-    # if download_vrt:
-    #     cache_dir = utils.get_cache_dir()
-    #     vrt_filename = os.path.join(cache_dir, "cop_global.vrt")
-    #     if not os.path.exists(vrt_filename):
-    #         make_cop_vrt(vrt_filename)
-    # else:
+
     if vrt_filename is None:
         vrt_filename = "/vsicurl/https://raw.githubusercontent.com/scottstanie/sardem/master/sardem/data/cop_global.vrt"  # noqa
+
+    bboxes = utils.check_dateline(bbox)
+
+    if len(bboxes) == 1:
+        _download_single_bbox(
+            output_name,
+            bbox,
+            vrt_filename,
+            keep_egm,
+            xrate,
+            yrate,
+            output_format,
+            output_type,
+        )
+        return
+
+    # Dateline crossing: download each sub-bbox, shift tiles, merge
+    logger.info(
+        "Dateline crossing detected, downloading {} separate regions".format(
+            len(bboxes)
+        )
+    )
+
+    temp_files = []
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for idx, sub_bbox in enumerate(bboxes):
+            temp_file = os.path.join(tmpdir, "dem_part_{}.tif".format(idx))
+            temp_files.append(temp_file)
+            logger.info("Downloading region {} of {}".format(idx + 1, len(bboxes)))
+            _download_single_bbox(
+                temp_file,
+                sub_bbox,
+                vrt_filename,
+                keep_egm,
+                xrate,
+                yrate,
+                "GTiff",
+                output_type,
+            )
+
+        # Shift eastern tiles so they're adjacent to western tiles in pixel space
+        for temp_file in temp_files:
+            _shift_tile_if_needed(temp_file)
+
+        logger.info("Merging {} regions into final DEM".format(len(temp_files)))
+        vrt_temp = os.path.join(tmpdir, "merged.vrt")
+        gdal.BuildVRT(vrt_temp, temp_files)
+
+        if output_format == "GTiff":
+            gdal.Warp(
+                output_name,
+                vrt_temp,
+                options=gdal.WarpOptions(
+                    format=output_format,
+                    multithread=True,
+                    callback=gdal.TermProgress,
+                ),
+            )
+        else:
+            gdal.Translate(
+                output_name,
+                vrt_temp,
+                format=output_format,
+                callback=gdal.TermProgress,
+            )
+
+
+def _shift_tile_if_needed(filepath):
+    """Shift tile geotransform by -360 if x origin is positive.
+
+    Makes eastern tiles (e.g., 179.7 to 180) adjacent to western tiles
+    (e.g., -180 to -179.8) by shifting to (-180.3 to -180).
+    Only useful for tiles that are part of a dateline-crossing split.
+    """
+    from osgeo import gdal
+
+    ds = gdal.Open(filepath, gdal.GA_Update)
+    gt = list(ds.GetGeoTransform())
+    if gt[0] > 0:
+        logger.info("Shifting tile {} x origin from {} to {}".format(
+            filepath, gt[0], gt[0] - 360.0
+        ))
+        gt[0] -= 360.0
+        ds.SetGeoTransform(gt)
+    ds.FlushCache()
+    ds = None
+
+
+def _download_single_bbox(
+    output_name,
+    bbox,
+    vrt_filename,
+    keep_egm,
+    xrate,
+    yrate,
+    output_format,
+    output_type,
+):
+    """Download a single bbox from the COP DEM."""
+    from osgeo import gdal
 
     if keep_egm:
         t_srs = s_srs = None
@@ -55,7 +152,6 @@ def download_and_stitch(
     yres = DEFAULT_RES / yrate
     resamp = "bilinear" if (xrate > 1 or yrate > 1) else "nearest"
 
-    # access_mode = "overwrite" if overwrite else None
     option_dict = dict(
         format=output_format,
         outputBounds=utils.align_bounds_to_pixel_grid(bbox),
@@ -69,14 +165,11 @@ def download_and_stitch(
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
     )
-    # When converting from geoid to ellipsoid, preserve ocean (value=0) as nodata
-    # COP DEM has ocean areas as 0 (sea level relative to geoid), which would
-    # otherwise become ~geoid_undulation after the vertical datum conversion
+    # Preserve ocean (value=0) as nodata during geoid-to-ellipsoid conversion
     if not keep_egm:
         option_dict["srcNodata"] = 0
         option_dict["dstNodata"] = 0
 
-    # Used the __RETURN_OPTION_LIST__ to get the list of options for debugging
     logger.info("Creating {}".format(output_name))
     logger.info("Fetching remote tiles...")
     try:
@@ -84,14 +177,12 @@ def download_and_stitch(
         logger.info("Running GDAL command:")
         logger.info(cmd)
     except Exception:
-        # Can't form the cli version due to `deepcopy` Pickle error, just skip
         logger.info("Running gdal.Warp with options:")
         logger.info(option_dict)
         pass
-    # Now convert to something GDAL can actually use
+
     option_dict["callback"] = gdal.TermProgress
     gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
-    return
 
 
 def _gdal_cmd_from_options(src, dst, option_dict):
