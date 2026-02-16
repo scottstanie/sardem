@@ -10,6 +10,7 @@ logger = logging.getLogger("sardem")
 EPSG_CODES = {
     "egm96": "5773",  # https://epsg.io/5773
     "egm08": "3855",  # https://epsg.io/3855
+    "navd88": "5703",  # https://epsg.io/5703
 }
 EGM_FILES = {
     "egm96": os.path.join(utils.get_cache_dir(), "egm96_15.gtx"),

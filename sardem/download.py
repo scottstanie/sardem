@@ -195,6 +195,10 @@ class Downloader:
         "NASA": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
         "NASA_WATER": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
         "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif",
+        "3DEP": (
+            "https://elevation.nationalmap.gov/arcgis/rest/services"
+            "/3DEPElevation/ImageServer/exportImage"
+        ),
         "NISAR": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/DEM/v1.2/EPSG4326/EPSG4326.vrt"
     }
     VALID_SOURCES = DATA_URLS.keys()

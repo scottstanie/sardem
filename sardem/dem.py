@@ -366,6 +366,25 @@ def main(
             utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
         return
 
+    # For USGS 3DEP, download from ImageServer and convert datum
+    if data_source == "3DEP":
+        utils._gdal_installed_correctly()
+        from sardem import usgs_3dep
+
+        usgs_3dep.download_and_stitch(
+            output_name,
+            bbox,
+            keep_egm=keep_egm,
+            xrate=xrate,
+            yrate=yrate,
+            output_format=output_format,
+            output_type=output_type,
+        )
+        if make_isce_xml:
+            logger.info("Creating ISCE2 XML file")
+            utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
+        return
+
     if data_source == "NISAR":
         if keep_egm:
             logger.info(
