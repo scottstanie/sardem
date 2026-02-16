@@ -30,4 +30,4 @@ jobs:
         python -m pip install -r requirements-dev.txt
     - name: Run tests
       run: |
-        pytest --doctest-modules -v
+        pytest --doctest-modules -v sardem
