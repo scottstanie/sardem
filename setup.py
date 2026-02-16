@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sardem",
-    version="0.12.1",
+    version="0.13.0",
     author="Scott Staniewicz",
     author_email="scott.stanie@gmail.com",
     description="Download and crop DEMs for InSAR processing",
