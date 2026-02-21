@@ -385,6 +385,25 @@ def main(
             utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
         return
 
+    # For USGS 3DEP 1m, download tiles from S3 COGs via TNM API
+    if data_source == "3DEP_1M":
+        utils._gdal_installed_correctly()
+        from sardem import usgs_3dep_1m
+
+        usgs_3dep_1m.download_and_stitch(
+            output_name,
+            bbox,
+            keep_egm=keep_egm,
+            xrate=xrate,
+            yrate=yrate,
+            output_format=output_format,
+            output_type=output_type,
+        )
+        if make_isce_xml:
+            logger.info("Creating ISCE2 XML file")
+            utils.gdal2isce_xml(output_name, keep_egm=keep_egm)
+        return
+
     if data_source == "NISAR":
         if keep_egm:
             logger.info(
