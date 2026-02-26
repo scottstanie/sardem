@@ -181,6 +181,21 @@ No authentication is required.
 sardem --bbox -104 30 -103 31 --data-source 3DEP
 ```
 
+## USGS 3DEP 1-Meter Lidar DEM
+
+The `--data-source 3DEP_1M` option provides access to 1-meter resolution lidar-derived DEMs from the USGS 3DEP program. Tiles are discovered via the [TNM Access API](https://tnmaccess.nationalmap.gov/api/v1/products) and fetched as Cloud Optimized GeoTIFFs (COGs) from S3.
+
+- **US coverage only** — not all areas have 1m lidar data. If no tiles are found, the command will raise an error.
+- **No authentication required.**
+- Output resolution matches the native ~1m resolution of the source tiles.
+- `--xrate`/`--yrate` upsampling is not supported (data is already high-resolution).
+
+### Usage
+
+```bash
+sardem --bbox -118.4 33.7 -118.3 33.8 --data-source 3DEP_1M
+```
+
 ## Citations and Acknowledgments
 
 ### Copernicus DEM
