@@ -75,7 +75,6 @@ def download_and_stitch(
 
     tile_urls = _find_tile_urls(bbox)
     vsicurl_paths = ["/vsicurl/" + url for url in tile_urls]
-    logger.info("Found %d tile(s) covering the bounding box", len(vsicurl_paths))
 
     out_type = gdal.GetDataTypeByName(output_type.title())
 
