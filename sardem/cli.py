@@ -41,6 +41,7 @@ DESCRIPTION = """Download and stitch DEM data for local InSAR processing.
         sardem --bbox -156 18.8 -154.7 20.3 --data-source NASA_WATER -o my_watermask.wbd # Water mask
         sardem --bbox -156 18.8 -154.7 20.3 --data COP -isce  # Generate .isce XML files as well
         sardem --bbox -104 30 -103 31 --data-source 3DEP  # USGS 3DEP lidar DEM (US only)
+        sardem --bbox -118.4 33.7 -118.3 33.8 --data-source 3DEP_1M  # USGS 3DEP 1m lidar (US only)
         sardem --bbox -104 30 -103 31 --data-source NISAR  # NISAR DEM (requires Earthdata login)
 
 

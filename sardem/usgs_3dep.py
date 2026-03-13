@@ -34,7 +34,7 @@ EXPORT_URL = (
     "/3DEPElevation/ImageServer/exportImage"
 )
 # ArcGIS ImageServer typically limits exports; use a safe chunk size
-MAX_EXPORT_SIZE = 4000
+MAX_EXPORT_SIZE = 2000
 
 
 def download_and_stitch(
@@ -65,9 +65,15 @@ def download_and_stitch(
 
     gdal.UseExceptions()
 
-    left, bottom, right, top = bbox
     xres = DEFAULT_RES / xrate
     yres = DEFAULT_RES / yrate
+
+    # Snap bounds to COP pixel edges so that the server returns pixels whose
+    # centers land on the 1/3600-degree grid used by COP/NISAR.  Without this,
+    # the ArcGIS PixelIsArea convention places centers at half-pixel offsets,
+    # and nearest-neighbor tie-breaking in the final warp causes a 1-pixel shift.
+    aligned = utils.align_bounds_to_pixel_grid(bbox)
+    left, bottom, right, top = aligned
 
     total_width = int(round((right - left) / xres))
     total_height = int(round((top - bottom) / yres))
@@ -103,7 +109,7 @@ def download_and_stitch(
 
         option_dict = dict(
             format=output_format,
-            outputBounds=utils.align_bounds_to_pixel_grid(bbox),
+            outputBounds=aligned,
             dstSRS=t_srs,
             srcSRS=s_srs,
             xRes=xres,
