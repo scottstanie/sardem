@@ -202,6 +202,10 @@ def cli():
     else:
         bbox = None
 
+    # NASA sources write raw binary + .rsc sidecar, not GeoTIFF
+    if args.data_source in ("NASA", "NASA_WATER"):
+        args.output_format = "ENVI"
+
     if not args.output:
         if args.data_source == "NASA_WATER":
             output = "watermask.flg"

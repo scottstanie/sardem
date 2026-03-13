@@ -408,11 +408,10 @@ def main(
         return
 
     # If using SRTM, download tiles manually and stitch
-    if output_format != "ENVI":
-        logger.warning(
-            "NASA data source only supports ENVI format. Ignoring output_format=%s",
-            output_format,
-        )
+    assert output_format == "ENVI", (
+        f"NASA data source only supports ENVI format, got {output_format!r}."
+        " Use COP or 3DEP for GTiff output."
+    )
 
     # Check for dateline crossing
     bboxes = utils.check_dateline(bbox)
