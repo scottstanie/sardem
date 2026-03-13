@@ -19,9 +19,9 @@ NASA MEaSUREs SRTM Version 3 (SRTMGL1) houses the data
     See https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3s_v003
     more info on SRTMGL1: https://cmr.earthdata.nasa.gov/search/concepts/C1000000240-LPDAAC_ECS.html
 
-Example url: "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N06W001.SRTMGL1.hgt.zip"
+Example url: "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003/N06W001.SRTMGL1.hgt/N06W001.SRTMGL1.hgt.zip"
 Example Water body url:
-    https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N05W060.SRTMSWBD.raw.zip
+    https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003/N05W060.SRTMSWBD.raw/N05W060.SRTMSWBD.raw.zip
 
 
 Example .dem.rsc (for N19W156.hgt and N19W155.hgt stitched horizontally):
@@ -408,11 +408,10 @@ def main(
         return
 
     # If using SRTM, download tiles manually and stitch
-    if output_format != "ENVI":
-        logger.warning(
-            "NASA data source only supports ENVI format. Ignoring output_format=%s",
-            output_format,
-        )
+    assert output_format == "ENVI", (
+        f"NASA data source only supports ENVI format, got {output_format!r}."
+        " Use COP or 3DEP for GTiff output."
+    )
 
     # Check for dateline crossing
     bboxes = utils.check_dateline(bbox)
