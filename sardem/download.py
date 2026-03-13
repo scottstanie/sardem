@@ -192,8 +192,8 @@ class Downloader:
     """
 
     DATA_URLS = {
-        "NASA": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
-        "NASA_WATER": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
+        "NASA": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003",
+        "NASA_WATER": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003",
         "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif",
         "3DEP": (
             "https://elevation.nationalmap.gov/arcgis/rest/services"
@@ -283,17 +283,18 @@ class Downloader:
         Examples:
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
             >>> print(d._form_tile_url('N19W155'))
-            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
+            https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003/N19W155.SRTMGL1.hgt/N19W155.SRTMGL1.hgt.zip
 
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
             >>> print(d._form_tile_url('N19W155'))
-            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
+            https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003/N19W155.SRTMSWBD.raw/N19W155.SRTMSWBD.raw.zip
 
         """
         if self.data_source.startswith("NASA"):
-            url = "{base}/{tile}.{ext}".format(
+            tile_file = tile_name + self.TILE_ENDINGS[self.data_source]
+            url = "{base}/{tile_file}/{tile_file}.{ext}".format(
                 base=self.data_url,
-                tile=tile_name + self.TILE_ENDINGS[self.data_source],
+                tile_file=tile_file,
                 ext=self.compress_type,
             )
         return url
