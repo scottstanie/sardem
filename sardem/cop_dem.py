@@ -252,7 +252,7 @@ def download_local_vrt(dest_dir, branch="master"):
     Examples
     --------
     >>> from sardem.cop_dem import download_local_vrt
-    >>> vrt = download_local_vrt("/data/sardem_vrt")
+    >>> vrt = download_local_vrt("/data/sardem_vrt")  # doctest: +SKIP
     >>> # Then use it via the CLI or library:
     >>> # sardem --bbox ... --vrt-filename /data/sardem_vrt/cop_global.vrt
     """
