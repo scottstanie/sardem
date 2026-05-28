@@ -223,6 +223,71 @@ def make_cop_vrt(outname="copernicus_GLO_30_dem.vrt"):
     vrt_file = None
 
 
+SARDEM_DATA_TARBALL = (
+    "https://github.com/scottstanie/sardem/archive/refs/heads/{branch}.tar.gz"
+)
+
+
+def download_local_vrt(dest_dir, branch="master"):
+    """Download the COP DEM VRT tree from GitHub for offline use.
+
+    Fetches the ``sardem/data/*.vrt`` files from the sardem repository
+    on GitHub and extracts them into ``dest_dir``. After the download,
+    pass ``{dest_dir}/cop_global.vrt`` to ``--vrt-filename`` (or the
+    ``vrt_filename`` argument of ``download_and_stitch``) to avoid the
+    slow remote VRT resolution path.
+
+    Parameters
+    ----------
+    dest_dir : str
+        Directory to extract the VRT files into. Created if missing.
+    branch : str
+        Repository branch or tag to download from. Defaults to ``"master"``.
+
+    Returns
+    -------
+    str
+        Path to the extracted ``cop_global.vrt``.
+
+    Examples
+    --------
+    >>> from sardem.cop_dem import download_local_vrt
+    >>> vrt = download_local_vrt("/data/sardem_vrt")
+    >>> # Then use it via the CLI or library:
+    >>> # sardem --bbox ... --vrt-filename /data/sardem_vrt/cop_global.vrt
+    """
+    import io
+    import os
+    import tarfile
+    import urllib.request
+
+    os.makedirs(dest_dir, exist_ok=True)
+    url = SARDEM_DATA_TARBALL.format(branch=branch)
+    logger.info("Downloading sardem VRT tree from %s", url)
+    with urllib.request.urlopen(url) as resp:
+        buf = io.BytesIO(resp.read())
+
+    n_extracted = 0
+    with tarfile.open(fileobj=buf, mode="r:gz") as tar:
+        for member in tar.getmembers():
+            parts = member.name.split("/")
+            if (
+                len(parts) == 4
+                and parts[1] == "sardem"
+                and parts[2] == "data"
+                and parts[3].endswith(".vrt")
+            ):
+                src = tar.extractfile(member)
+                assert src is not None
+                with open(os.path.join(dest_dir, parts[3]), "wb") as out:
+                    out.write(src.read())
+                n_extracted += 1
+
+    assert n_extracted > 0, "No VRT files found in tarball; check branch name"
+    logger.info("Extracted %d VRT files into %s", n_extracted, dest_dir)
+    return os.path.join(dest_dir, "cop_global.vrt")
+
+
 def get_tile_list():
     """Get the list of tiles from the Copernicus DEM 30m tile list"""
     logger.info("Getting list of COP tiles from %s", TILE_LIST_URL)

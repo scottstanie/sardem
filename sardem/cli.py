@@ -170,12 +170,38 @@ def get_cli_args():
         default="float32",
         help="Output data type (default %(default)s).",
     )
+    parser.add_argument(
+        "--vrt-filename",
+        help=(
+            "Path or URL to a VRT to read tiles from (COP and NISAR sources only).\n"
+            "Useful when the default remote VRT is slow or unreachable: download\n"
+            "the VRT tree locally with `--download-cop-vrt DEST` and pass\n"
+            "DEST/cop_global.vrt here."
+        ),
+    )
+    parser.add_argument(
+        "--download-cop-vrt",
+        metavar="DEST",
+        help=(
+            "Download the COP DEM VRT tree from GitHub into DEST and exit.\n"
+            "After downloading, pass DEST/cop_global.vrt to --vrt-filename on\n"
+            "subsequent runs to avoid the slow remote VRT resolution path."
+        ),
+    )
     return parser.parse_args()
 
 
 def cli():
     args = get_cli_args()
     import sardem.dem
+
+    if args.download_cop_vrt:
+        from sardem import cop_dem
+
+        path = cop_dem.download_local_vrt(args.download_cop_vrt)
+        print("Wrote local COP VRT tree. Use:")
+        print("    sardem ... --vrt-filename {}".format(path))
+        return
 
     if (args.left_lon and args.geojson) or (args.left_lon and args.bbox):
         raise ArgumentError(
@@ -230,4 +256,5 @@ def cli():
         cache_dir=args.cache_dir,
         output_format=args.output_format,
         output_type=args.output_type,
+        vrt_filename=args.vrt_filename,
     )
