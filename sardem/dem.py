@@ -300,6 +300,7 @@ def main(
     cache_dir=None,
     output_type="float32",
     output_format="GTiff",
+    vrt_filename=None,
 ):
     """Function for entry point to create a DEM with `sardem`
 
@@ -322,6 +323,9 @@ def main(
         cache_dir (str): directory to cache downloaded tiles
         output_type (str): output type for DEM (default = int16)
         output_format (str): output format for copernicus DEM (default = ENVI)
+        vrt_filename (str): Path or URL to a VRT to read tiles from. Applies to
+            the COP and NISAR data sources only. Defaults to the remote VRT
+            built into each module.
     """
     if bbox is None:
         if geojson:
@@ -358,6 +362,7 @@ def main(
             keep_egm=keep_egm,
             xrate=xrate,
             yrate=yrate,
+            vrt_filename=vrt_filename,
             output_format=output_format,
             output_type=output_type,
         )
@@ -399,6 +404,7 @@ def main(
             bbox,
             xrate=xrate,
             yrate=yrate,
+            vrt_filename=vrt_filename,
             output_format=output_format,
             output_type=output_type,
         )

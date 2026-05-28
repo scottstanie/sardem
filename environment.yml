@@ -5,4 +5,5 @@ dependencies:
 - gdal >= 3.4.2
 - numpy >= 1.14.2
 - requests >= 2.20.0
+- shapely >= 2.0
 - pip
