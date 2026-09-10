@@ -165,10 +165,15 @@ def _download_single_bbox(
         warpMemoryLimit=5000,
         warpOptions=["NUM_THREADS=4"],
     )
-    # Preserve ocean (value=0) as nodata during geoid-to-ellipsoid conversion
-    if not keep_egm:
-        option_dict["srcNodata"] = 0
-        option_dict["dstNodata"] = 0
+    # Do NOT treat the ocean's 0 as nodata here. In the Copernicus DEM the sea
+    # surface is a valid height of 0 m above the EGM2008 geoid, so it has to
+    # go through the same vertical datum shift as the land. Marking 0 as
+    # nodata left the ocean at 0 m *ellipsoidal* while the shoreline moved to
+    # the geoid undulation (about -28 m in Florida, +/- tens of meters
+    # elsewhere): a cliff along every coast that biases InSAR flattening,
+    # geolocation, and height-above-DEM products for anything laying over
+    # onto water. The source tiles carry their own nodata sentinel, which
+    # gdal.Warp propagates on its own.
 
     logger.info("Creating {}".format(output_name))
     logger.info("Fetching remote tiles...")
