@@ -7,3 +7,5 @@ sphinx
 m2r
 sphinx_rtd_theme
 rasterio
+# EGM2008 grid for the ocean datum-shift test
+pyproj

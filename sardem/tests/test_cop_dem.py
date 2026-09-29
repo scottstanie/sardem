@@ -93,6 +93,7 @@ def test_ocean_is_converted_to_ellipsoid_heights(tmp_path):
     """
     import pytest
 
+    pytest.importorskip("pyproj")
     if not _egm2008_grid_available():
         pytest.skip("PROJ EGM2008 grid not available (enable PROJ_NETWORK)")
 
