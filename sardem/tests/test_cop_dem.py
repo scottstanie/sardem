@@ -60,27 +60,33 @@ def test_main_cop(tmp_path):
     os.remove(temp_absolute_vrt)
 
 
-def _egm2008_grid_available():
-    """The vertical shift needs PROJ's EGM2008 grid; skip cleanly without it.
+def _egm2008_undulation():
+    """Return a function (lon, lat) -> EGM2008 undulation (m), or None.
 
-    The grid is fetched over the network when ``PROJ_NETWORK=ON`` (set here
-    for both pyproj and GDAL's own PROJ context) or read from the PROJ data
-    directory when installed locally.
+    It uses GDAL's own PROJ, the same one that ``gdal.Warp`` uses for the
+    datum shift. PROJ reads the EGM2008 grid over the network, or from the
+    PROJ data directory when it is installed there.
     """
-    os.environ.setdefault("PROJ_NETWORK", "ON")
-    import pyproj
-    from pyproj import Transformer
+    from osgeo import gdal, osr
 
-    pyproj.network.set_network_enabled(True)
+    gdal.UseExceptions()
+    osr.SetPROJEnableNetwork(True)
+    src = osr.SpatialReference()
+    src.SetFromUserInput("EPSG:4326+3855")
+    dst = osr.SpatialReference()
+    dst.ImportFromEPSG(4979)
+    for srs in (src, dst):
+        srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    transform = osr.CoordinateTransformation(src, dst)
+
+    def undulation(lon, lat):
+        return transform.TransformPoint(lon, lat, 0.0)[2]
+
     try:
-        t = Transformer.from_pipeline(
-            "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad"
-            " +step +proj=vgridshift +grids=us_nga_egm08_25.tif +multiplier=1"
-            " +step +proj=unitconvert +xy_in=rad +xy_out=deg"
-        )
-        return abs(t.transform(-155.5, 19.5, 0.0)[2]) > 1.0
-    except Exception:
-        return False
+        # Without the grid, PROJ leaves the height unchanged
+        return undulation if abs(undulation(-155.5, 19.5)) > 1.0 else None
+    except RuntimeError:
+        return None
 
 
 def test_ocean_is_converted_to_ellipsoid_heights(tmp_path):
@@ -93,9 +99,9 @@ def test_ocean_is_converted_to_ellipsoid_heights(tmp_path):
     """
     import pytest
 
-    pytest.importorskip("pyproj")
-    if not _egm2008_grid_available():
-        pytest.skip("PROJ EGM2008 grid not available (enable PROJ_NETWORK)")
+    undulation = _egm2008_undulation()
+    if undulation is None:
+        pytest.skip("PROJ cannot read the EGM2008 grid (no network or grid file)")
 
     bbox = [
         -156.0 - HALF_PIXEL,
@@ -133,18 +139,8 @@ def test_ocean_is_converted_to_ellipsoid_heights(tmp_path):
     # Ocean pixels must sit at the geoid undulation of their own location.
     # The undulation changes by meters across this tile, so compare per
     # pixel rather than land against ocean.
-    import pyproj
-    from pyproj import Transformer
-
-    pyproj.network.set_network_enabled(True)
-    undulation = Transformer.from_pipeline(
-        "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad"
-        " +step +proj=vgridshift +grids=us_nga_egm08_25.tif +multiplier=1"
-        " +step +proj=unitconvert +xy_in=rad +xy_out=deg"
-    )
     rows, cols = np.nonzero(ocean)
     rng = np.random.default_rng(0)
     for i in rng.choice(rows.size, size=20, replace=False):
         lon, lat = transform * (cols[i] + 0.5, rows[i] + 0.5)
-        expected = undulation.transform(lon, lat, 0.0)[2]
-        assert abs(hae[rows[i], cols[i]] - expected) < 0.5
+        assert abs(hae[rows[i], cols[i]] - undulation(lon, lat)) < 0.5
