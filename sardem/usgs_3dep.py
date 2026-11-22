@@ -23,7 +23,7 @@ import tempfile
 
 import requests
 
-from sardem import utils
+from sardem import conversions, utils
 from sardem.constants import DEFAULT_RES
 
 logger = logging.getLogger("sardem")
@@ -117,7 +117,12 @@ def download_and_stitch(
 
         logger.info("Creating %s", output_name)
         option_dict["callback"] = gdal.TermProgress
-        gdal.Warp(output_name, src, options=gdal.WarpOptions(**option_dict))
+        if s_srs is None:
+            gdal.Warp(output_name, src, options=gdal.WarpOptions(**option_dict))
+        else:
+            lon, lat = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+            with conversions.geoid_grid_access(s_srs, lon, lat):
+                gdal.Warp(output_name, src, options=gdal.WarpOptions(**option_dict))
     finally:
         # Clean up temp files
         for f in tmp_files:
