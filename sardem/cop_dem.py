@@ -187,7 +187,12 @@ def _download_single_bbox(
         pass
 
     option_dict["callback"] = gdal.TermProgress
-    gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
+    if s_srs is None:
+        gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
+        return
+    lon, lat = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+    with conversions.geoid_grid_access(s_srs, lon, lat):
+        gdal.Warp(output_name, vrt_filename, options=gdal.WarpOptions(**option_dict))
 
 
 def _gdal_cmd_from_options(src, dst, option_dict):
