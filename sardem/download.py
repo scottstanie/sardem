@@ -192,8 +192,10 @@ class Downloader:
     """
 
     DATA_URLS = {
-        "NASA": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11",
-        "NASA_WATER": "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11",
+        # LP DAAC moved SRTM from the e4ftl01 data pool to Earthdata Cloud; the old
+        # addresses return 404 for every tile.
+        "NASA": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003",
+        "NASA_WATER": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003",
         "COP": "https://copernicus-dem-30m.s3.amazonaws.com/{t}/{t}.tif",
         "3DEP": (
             "https://elevation.nationalmap.gov/arcgis/rest/services"
@@ -223,6 +225,7 @@ class Downloader:
         self.compress_type = self.COMPRESS_TYPES[data_source]
         self.netrc_file = os.path.expanduser(netrc_file)
         self.cache_dir = cache_dir or utils.get_cache_dir()
+        self._zero_filled = []
 
     def _get_netrc_file(self):
         return Netrc(self.netrc_file)
@@ -283,18 +286,18 @@ class Downloader:
         Examples:
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA')
             >>> print(d._form_tile_url('N19W155'))
-            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N19W155.SRTMGL1.hgt.zip
+            https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003/N19W155.SRTMGL1.hgt/N19W155.SRTMGL1.hgt.zip
 
             >>> d = Downloader(['N19W156', 'N19W155'], data_source='NASA_WATER')
             >>> print(d._form_tile_url('N19W155'))
-            https://e4ftl01.cr.usgs.gov/MEASURES/SRTMSWBD.003/2000.02.11/N19W155.SRTMSWBD.raw.zip
+            https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMSWBD.003/N19W155.SRTMSWBD.raw/N19W155.SRTMSWBD.raw.zip
 
         """
         if self.data_source.startswith("NASA"):
-            url = "{base}/{tile}.{ext}".format(
-                base=self.data_url,
-                tile=tile_name + self.TILE_ENDINGS[self.data_source],
-                ext=self.compress_type,
+            # Earthdata Cloud keeps each granule in a folder named after it
+            granule = tile_name + self.TILE_ENDINGS[self.data_source]
+            url = "{base}/{granule}/{granule}.{ext}".format(
+                base=self.data_url, granule=granule, ext=self.compress_type
             )
         return url
 
@@ -344,11 +347,11 @@ class Downloader:
                 response = self._download_hgt_tile(url)
                 # Now check response for auth issues/ errors
                 if response.status_code == 404:
+                    # SRTM has no tiles over open ocean, so a 404 means "all water"
                     logger.warning("Cannot find url %s, using zeros for tile." % url)
-                    # Raise only if we want to kill everything
-                    # response.raise_for_status()
                     local_filename = os.path.splitext(local_filename)[0]
                     self._write_zeros(local_filename)
+                    self._zero_filled.append(local_filename)
                     return local_filename
 
                 f.write(response.content)
@@ -389,10 +392,18 @@ class Downloader:
         pool = ThreadPool(processes=5)
         local_filenames = pool.map(self.download_and_save, self.tile_names)
         pool.close()
-        if not any(local_filenames):
+        if self._zero_filled and len(self._zero_filled) == len(local_filenames):
+            # Every tile missing is almost never open ocean: more likely the data
+            # source moved. Remove the zero tiles so they are not reused from the
+            # cache later as if they were real data.
+            for f in self._zero_filled:
+                if os.path.exists(f):
+                    os.remove(f)
             raise ValueError(
-                "No successful .hgt tiles found and downloaded:"
-                " check lats/ lons of DEM box for valid SRTM land area"
-                " (<60 deg latitude not open ocean)."
+                "No {} tiles were found for this area (every download returned 404)."
+                " Check that the DEM box covers SRTM land area (< 60 deg latitude, not"
+                " open ocean) and that the data URL is current: {}".format(
+                    self.data_source, self.data_url
+                )
             )
         return local_filenames

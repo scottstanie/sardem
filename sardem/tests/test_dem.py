@@ -39,8 +39,10 @@ class TestDownload(unittest.TestCase):
     def setUp(self):
         self.bounds = utils.bounding_box(-155.4, 19.75, 0.001, 0.001)
         self.test_tile = "N19W156"
-        self.hgt_url = "https://e4ftl01.cr.usgs.gov/MEASURES/\
-SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
+        self.hgt_url = (
+            "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/"
+            "SRTMGL1.003/N19W156.SRTMGL1.hgt/N19W156.SRTMGL1.hgt.zip"
+        )
 
         sample_hgt_path = join(DATA_PATH, self.test_tile + ".hgt.zip")
         with open(sample_hgt_path, "rb") as f:
@@ -54,7 +56,8 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
     def test_init(self):
         d = download.Downloader([self.test_tile], netrc_file=NETRC_PATH)
         self.assertEqual(
-            d.data_url, "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
+            d.data_url,
+            "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/SRTMGL1.003",
         )
 
     @responses.activate
@@ -65,6 +68,33 @@ SRTMGL1.003/2000.02.11/N19W156.SRTMGL1.hgt.zip"
         )
         d.download_all()
         self.assertTrue(os.path.exists(d._filepath(self.test_tile)))
+
+    @responses.activate
+    def test_all_tiles_missing_raises_and_leaves_no_zero_tiles(self):
+        # A source that returns 404 for every tile must not give an all-zero DEM,
+        # and must not leave zero tiles in the cache to be reused later.
+        responses.add(responses.GET, self.hgt_url, status=404)
+        d = download.Downloader(
+            [self.test_tile], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
+        )
+        with self.assertRaises(ValueError):
+            d.download_all()
+        self.assertFalse(os.path.exists(d._filepath(self.test_tile)))
+
+    @responses.activate
+    def test_some_tiles_missing_are_zero_filled(self):
+        # Open-ocean tiles do not exist: a 404 for some tiles is still zero-filled.
+        ocean = "N19W157"
+        ocean_url = self.hgt_url.replace(self.test_tile, ocean)
+        responses.add(responses.GET, self.hgt_url, body=self.sample_hgt_zip, status=200)
+        responses.add(responses.GET, ocean_url, status=404)
+        d = download.Downloader(
+            [self.test_tile, ocean], netrc_file=NETRC_PATH, cache_dir=self.cache_dir
+        )
+        d.download_all()
+        zeros = np.fromfile(d._filepath(ocean), dtype=np.int16)
+        self.assertEqual(zeros.size, 3601 * 3601)
+        self.assertFalse(zeros.any())
 
 
 class TestBounds:
